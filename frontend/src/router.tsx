@@ -16,6 +16,7 @@ export const router = createBrowserRouter([
       { path: '/register', element: <RegisterScreen /> },
       { path: '/dashboard', element: <RequireAuth><DashboardScreen /></RequireAuth> },
       { path: '/polls/new', element: <RequireAuth><PollFormScreen /></RequireAuth> },
+      { path: '/polls/:id/edit', element: <RequireAuth><PollFormScreen /></RequireAuth> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
