@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { PollsModule } from './polls/polls.module';
 import { ResponsesModule } from './responses/responses.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     PollsModule,
     ResponsesModule,
     AnalyticsModule,
+    UsersModule,
   ],
   controllers: [AppController],
 })
