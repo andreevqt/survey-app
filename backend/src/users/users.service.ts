@@ -75,4 +75,17 @@ export class UsersService {
     const r = await this.prisma.user.deleteMany({ where: { id: { in: args.ids } } });
     return { count: r.count };
   }
+
+  async streamCsv(): Promise<string> {
+    const users = await this.prisma.user.findMany({
+      orderBy: { createdAt: 'asc' },
+      select: { id: true, email: true, name: true, role: true, createdAt: true },
+    });
+    const escape = (v: string) => /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+    const header = 'id,name,email,role,createdAt';
+    const body = users.map((u) =>
+      [u.id, u.name, u.email, u.role, u.createdAt.toISOString()].map(escape).join(','),
+    ).join('\n');
+    return '﻿' + header + '\n' + body;
+  }
 }

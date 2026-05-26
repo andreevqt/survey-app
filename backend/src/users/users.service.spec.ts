@@ -109,3 +109,31 @@ describe('UsersService.bulkDelete', () => {
       .rejects.toThrow(/LAST_ADMIN_FORBIDDEN|Forbidden/);
   });
 });
+
+describe('UsersService.streamCsv', () => {
+  let svc: UsersService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [UsersService, { provide: PrismaService, useValue: prisma }],
+    }).compile();
+    svc = mod.get(UsersService);
+  });
+
+  it('produces a UTF-8 BOM CSV with all users', async () => {
+    prisma.user.findMany.mockResolvedValueOnce([
+      { id: 'u1', email: 'a@x.com', name: 'A', role: Role.ADMIN, createdAt: new Date('2026-05-01T00:00:00Z') },
+      { id: 'u2', email: 'b@x.com', name: 'B, jr.', role: Role.USER, createdAt: new Date('2026-05-02T00:00:00Z') },
+    ] as any);
+
+    const csv = await svc.streamCsv();
+    expect(csv.startsWith('﻿')).toBe(true);
+    const lines = csv.replace(/^﻿/, '').split('\n').filter(Boolean);
+    expect(lines[0]).toBe('id,name,email,role,createdAt');
+    expect(lines[1]).toBe('u1,A,a@x.com,ADMIN,2026-05-01T00:00:00.000Z');
+    // Embedded comma in name → quoted
+    expect(lines[2]).toBe('u2,"B, jr.",b@x.com,USER,2026-05-02T00:00:00.000Z');
+  });
+});
