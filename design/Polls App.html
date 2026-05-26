@@ -1,0 +1,3855 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Polls — UI Kit</title>
+  <link rel="icon" href="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%3E%0A%20%20%0A%20%20%3Crect%20width%3D%2248%22%20height%3D%2248%22%20rx%3D%2211%22%20fill%3D%22%234F46E5%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2216%22%20r%3D%223.25%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Fcircle%3E%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2216%22%20r%3D%221.4%22%20fill%3D%22%234F46E5%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2214%22%20width%3D%2218%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2224%22%20r%3D%223.25%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.6%22%20opacity%3D%220.6%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2222%22%20width%3D%2214%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%20opacity%3D%220.55%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2232%22%20r%3D%223.25%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.6%22%20opacity%3D%220.6%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2230%22%20width%3D%2210%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%20opacity%3D%220.55%22%3E%3C%2Frect%3E%0A%3C%2Fsvg%3E" type="image/svg+xml" />
+  <style>/* Polls UI kit — vanilla CSS extract of the Tailwind classes the app uses.
+   Loaded by every component file so they render in isolation or together. */
+
+:root {
+  --indigo-50:#eef2ff; --indigo-100:#e0e7ff; --indigo-300:#a5b4fc;
+  --indigo-400:#818cf8; --indigo-500:#6366f1; --indigo-600:#4f46e5;
+  --indigo-700:#4338ca;
+  --gray-50:#f9fafb; --gray-100:#f3f4f6; --gray-200:#e5e7eb;
+  --gray-300:#d1d5db; --gray-400:#9ca3af; --gray-500:#6b7280;
+  --gray-600:#4b5563; --gray-700:#374151; --gray-800:#1f2937;
+  --gray-900:#111827;
+  --green-100:#dcfce7; --green-700:#15803d;
+  --red-50:#fef2f2; --red-100:#fee2e2; --red-200:#fecaca;
+  --red-600:#dc2626; --red-700:#b91c1c;
+  --blue-100:#dbeafe; --blue-700:#1d4ed8;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; }
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  color: var(--gray-900);
+  background: var(--gray-50);
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.5;
+}
+button, input, select, textarea { font-family: inherit; }
+a { color: var(--indigo-600); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Buttons ───────────────────────────────────────────────────────────── */
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border-radius:6px; font-weight:500; transition: background-color 200ms ease,
+    border-color 200ms ease, color 200ms ease; border:0; cursor:pointer;
+  padding:8px 16px; font-size:14px; outline:none;
+}
+.btn:focus-visible { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--indigo-500); }
+.btn-sm { padding:6px 12px; font-size:14px; }
+.btn-lg { padding:12px 24px; font-size:16px; }
+.btn-primary { background: var(--indigo-600); color:#fff; }
+.btn-primary:hover { background: var(--indigo-700); }
+.btn-primary:disabled { background: var(--indigo-300); cursor:not-allowed; }
+.btn-secondary { background:#fff; color: var(--gray-700); border:1px solid var(--gray-300); }
+.btn-secondary:hover { background: var(--gray-50); }
+.btn-danger { background: var(--red-600); color:#fff; }
+.btn-danger:hover { background: var(--red-700); }
+.btn-ghost { background: transparent; color: var(--gray-600); }
+.btn-ghost:hover { background: var(--gray-100); }
+.btn-soft-primary { background: var(--indigo-50); color: var(--indigo-700); padding:6px 12px; font-size:12px; }
+.btn-soft-primary:hover { background: var(--indigo-100); }
+.btn-soft-danger { background: var(--red-100); color: var(--red-700); padding:6px 12px; font-size:12px; }
+.btn-soft-danger:hover { background:#fecaca; }
+.btn-row { background:#fff; color: var(--gray-700); border:1px solid var(--gray-300); padding:6px 12px; font-size:12px; }
+.btn-row:hover { background: var(--gray-50); }
+
+/* ── Inputs ────────────────────────────────────────────────────────────── */
+.input, .textarea, .select {
+  width:100%; padding:8px 12px; font-size:14px; border:1px solid var(--gray-300);
+  border-radius:6px; background:#fff; color: var(--gray-900); outline:none;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.input:focus, .textarea:focus, .select:focus {
+  border-color: var(--indigo-500); box-shadow: 0 0 0 1px var(--indigo-500);
+}
+.textarea { resize: vertical; min-height: 76px; }
+.label { display:block; font-size:14px; font-weight:500; color: var(--gray-700); margin-bottom:4px; }
+.error-text { margin:4px 0 0; font-size:12px; color: var(--red-600); }
+
+/* ── Cards ─────────────────────────────────────────────────────────────── */
+.card {
+  background:#fff; border:1px solid var(--gray-200); border-radius:12px;
+  box-shadow: var(--shadow-sm);
+}
+.card-sm { padding:20px; }
+.card-md { padding:24px; }
+.card-lg { padding:32px; }
+
+/* ── Badges ────────────────────────────────────────────────────────────── */
+.badge {
+  display:inline-flex; align-items:center; padding:2px 10px; border-radius:9999px;
+  font-size:12px; font-weight:500;
+}
+.badge-default { background: var(--gray-100); color: var(--gray-700); }
+.badge-success { background: var(--green-100); color: var(--green-700); }
+.badge-danger  { background: var(--red-100);   color: var(--red-700); }
+.badge-info    { background: var(--blue-100);  color: var(--blue-700); }
+.badge-warning { background:#fef9c3; color:#a16207; }
+
+/* ── Avatar ────────────────────────────────────────────────────────────── */
+.avatar {
+  display:inline-flex; align-items:center; justify-content:center; border-radius:9999px;
+  background: var(--indigo-100); color: var(--indigo-700);
+  font-weight:600; flex-shrink:0;
+}
+.avatar-sm { width:32px; height:32px; font-size:13px; }
+.avatar-md { width:36px; height:36px; font-size:13px; }
+.avatar-lg { width:48px; height:48px; font-size:18px; }
+.avatar-dark { background: var(--indigo-600); color:#fff; }
+
+/* ── Spinner ───────────────────────────────────────────────────────────── */
+.spinner {
+  display:inline-block; border:2px solid var(--gray-300); border-top-color: var(--indigo-600);
+  border-radius:9999px; animation: spin 1s linear infinite;
+}
+.spinner-sm { width:16px; height:16px; }
+.spinner-md { width:32px; height:32px; }
+.spinner-lg { width:48px; height:48px; border-width:4px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Modal ─────────────────────────────────────────────────────────────── */
+.modal-scrim {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  display:flex; align-items:center; justify-content:center; padding:16px; z-index:50;
+}
+.modal {
+  background:#fff; border:1px solid var(--gray-200); border-radius:12px;
+  box-shadow: var(--shadow-xl); width:100%; max-width:480px; padding:24px;
+}
+
+/* ── Layout helpers ────────────────────────────────────────────────────── */
+.container-sm { max-width: 512px; margin: 0 auto; }
+.container-md { max-width: 768px; margin: 0 auto; }
+.container-lg { max-width: 1024px; margin: 0 auto; }
+.page { min-height: 100vh; background: var(--gray-50); padding: 32px 16px; }
+
+/* ── Admin shell ───────────────────────────────────────────────────────── */
+.admin-shell {
+  display:flex; min-height: 100vh; background: var(--gray-50);
+}
+.admin-sidebar {
+  width: 256px; flex-shrink:0; background: var(--gray-900); color:#fff;
+  display:flex; flex-direction:column;
+}
+.admin-content { flex:1; min-width:0; display:flex; flex-direction:column; }
+.admin-header {
+  background:#fff; border-bottom:1px solid var(--gray-200);
+  padding: 16px 24px; display:flex; align-items:center; justify-content:space-between;
+}
+
+/* ── Table ─────────────────────────────────────────────────────────────── */
+.table-wrap { overflow:hidden; background:#fff; border:1px solid var(--gray-200); border-radius:12px; box-shadow: var(--shadow-sm); }
+.table { width:100%; border-collapse: collapse; }
+.table th {
+  text-align:left; padding:12px 24px; background: var(--gray-50);
+  font-size:11px; font-weight:500; color: var(--gray-500);
+  text-transform: uppercase; letter-spacing:0.05em;
+  border-bottom:1px solid var(--gray-200);
+}
+.table td {
+  padding:16px 24px; border-top:1px solid var(--gray-200); font-size:14px; color: var(--gray-700);
+}
+.table tr:hover td { background: var(--gray-50); }
+.table tr.is-selected td { background: var(--indigo-50); }
+
+/* utility-ish */
+.flex { display:flex; }
+.flex-col { display:flex; flex-direction:column; }
+.items-center { align-items:center; }
+.justify-between { justify-content:space-between; }
+.gap-2 { gap:8px; } .gap-3 { gap:12px; } .gap-4 { gap:16px; } .gap-6 { gap:24px; }
+.mt-1 { margin-top:4px; } .mt-2 { margin-top:8px; } .mt-4 { margin-top:16px; }
+.mt-6 { margin-top:24px; } .mt-8 { margin-top:32px; }
+.text-xs { font-size:12px; } .text-sm { font-size:14px; }
+.text-lg { font-size:18px; } .text-xl { font-size:20px; }
+.text-2xl { font-size:24px; } .text-3xl { font-size:30px; } .text-4xl { font-size:36px; }
+.font-medium { font-weight:500; } .font-semibold { font-weight:600; } .font-bold { font-weight:700; }
+.text-gray-500 { color: var(--gray-500); } .text-gray-600 { color: var(--gray-600); }
+.text-gray-700 { color: var(--gray-700); } .text-gray-900 { color: var(--gray-900); }
+.text-indigo-600 { color: var(--indigo-600); }
+.text-white { color:#fff; }
+
+/* ── Toggle / Switch ───────────────────────────────────────────────────── */
+.toggle {
+  --t-h: 20px;  --t-w: 36px;  --t-knob: 16px;
+  position: relative; display: inline-flex; align-items: center; gap: 10px;
+  cursor: pointer; user-select: none;
+  font-family: inherit; font-size: 14px; color: var(--gray-700);
+}
+.toggle-sm { --t-h: 18px; --t-w: 32px; --t-knob: 14px; font-size: 13px; }
+.toggle input { position: absolute; opacity: 0; pointer-events: none; }
+.toggle .track {
+  width: var(--t-w); height: var(--t-h); border-radius: 9999px;
+  background: var(--gray-300); position: relative; flex-shrink: 0;
+  transition: background-color 200ms ease;
+}
+.toggle .knob {
+  position: absolute; top: 2px; left: 2px;
+  width: var(--t-knob); height: var(--t-knob); border-radius: 9999px;
+  background: #fff; box-shadow: var(--shadow-sm);
+  transition: transform 200ms ease;
+}
+.toggle.is-on .track { background: var(--indigo-600); }
+.toggle.is-on .knob  { transform: translateX(calc(var(--t-w) - var(--t-knob) - 4px)); }
+.toggle:hover.is-on .track { background: var(--indigo-700); }
+.toggle:hover:not(.is-on) .track { background: var(--gray-400); }
+.toggle.is-disabled { cursor: not-allowed; opacity: 0.55; }
+.toggle:focus-within .track { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--indigo-500); }
+
+/* ── Dropdown / Select / MultiSelect / MenuPopover ─────────────────────── */
+.dd { position: relative; display: inline-block; font-family: inherit; }
+.dd-trigger {
+  display: inline-flex; align-items: center; justify-content: space-between;
+  gap: 8px; min-height: 36px; padding: 7px 10px 7px 12px;
+  background: #fff; color: var(--gray-700);
+  border: 1px solid var(--gray-300); border-radius: 6px;
+  font-size: 14px; cursor: pointer; transition: border-color 200ms ease;
+  outline: none; min-width: 0; width: 100%; font-family: inherit;
+}
+.dd-trigger:hover { border-color: var(--gray-400); }
+.dd-trigger:focus-visible, .dd-trigger.is-open {
+  border-color: var(--indigo-500); box-shadow: 0 0 0 1px var(--indigo-500);
+}
+.dd-trigger.is-placeholder { color: var(--gray-400); }
+.dd-trigger .chev { color: var(--gray-500); transition: transform 200ms ease; flex-shrink: 0; }
+.dd-trigger.is-open .chev { transform: rotate(180deg); }
+.dd-trigger-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.dd-popover {
+  position: absolute; top: calc(100% + 4px); left: 0;
+  min-width: 100%; max-height: 280px; overflow-y: auto;
+  background: #fff; border: 1px solid var(--gray-200); border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.10), 0 2px 4px -2px rgb(0 0 0 / 0.10);
+  padding: 4px; z-index: 50;
+}
+.dd-item {
+  display: flex; align-items: center; gap: 8px; justify-content: space-between;
+  padding: 8px 10px; border-radius: 6px;
+  font-size: 13px; color: var(--gray-700); cursor: pointer; user-select: none;
+  white-space: nowrap;
+}
+.dd-item:hover { background: var(--gray-100); }
+.dd-item.is-selected { background: var(--indigo-50); color: var(--indigo-700); font-weight: 500; }
+.dd-item.is-disabled { color: var(--gray-400); cursor: not-allowed; }
+.dd-item.is-disabled:hover { background: transparent; }
+.dd-item.is-danger { color: var(--red-600); }
+.dd-item.is-danger:hover { background: var(--red-50); color: var(--red-700); }
+.dd-item .leading, .dd-item .trailing { display: inline-flex; align-items: center; flex-shrink: 0; }
+.dd-item .leading svg, .dd-item .trailing svg { width: 14px; height: 14px; }
+.dd-divider { height: 1px; background: var(--gray-200); margin: 4px 2px; }
+
+.dd-check {
+  width: 14px; height: 14px; flex-shrink: 0;
+  border: 1.5px solid var(--gray-300); border-radius: 3px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: transparent;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+.dd-item.is-selected .dd-check {
+  background: var(--indigo-600); border-color: var(--indigo-600); color: #fff;
+}
+
+/* ── IconButton (round) ────────────────────────────────────────────────── */
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; padding: 0;
+  border-radius: 9999px; border: 0; cursor: pointer;
+  background: transparent; color: var(--gray-600);
+  transition: background-color 200ms ease, color 200ms ease;
+  flex-shrink: 0;
+}
+.icon-btn:hover { background: var(--gray-100); color: var(--gray-900); }
+.icon-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--indigo-500); }
+.icon-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.icon-btn:disabled:hover { background: transparent; color: var(--gray-600); }
+.icon-btn svg { width: 18px; height: 18px; }
+.icon-btn-sm { width: 30px; height: 30px; }
+.icon-btn-sm svg { width: 16px; height: 16px; }
+.icon-btn-lg { width: 40px; height: 40px; }
+.icon-btn-lg svg { width: 20px; height: 20px; }
+.icon-btn-soft   { background: var(--gray-100); color: var(--gray-700); }
+.icon-btn-soft:hover { background: var(--gray-200); color: var(--gray-900); }
+.icon-btn-indigo { background: var(--indigo-50); color: var(--indigo-600); }
+.icon-btn-indigo:hover { background: var(--indigo-100); color: var(--indigo-700); }
+.icon-btn-danger { color: var(--red-600); }
+.icon-btn-danger:hover { background: var(--red-50); color: var(--red-700); }
+
+/* Pill Button modifier */
+.btn-pill { border-radius: 9999px; }
+
+/* ── NavLink (top-bar nav link) ─────────────────────────────────────── */
+.nav-link {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 4px;
+  font-family: inherit; font-size: 14px; font-weight: 500; color: var(--gray-600);
+  text-decoration: none; background: transparent; cursor: pointer;
+  position: relative; transition: color 200ms ease; border: 0;
+}
+.nav-link:hover { color: var(--gray-900); text-decoration: none; }
+.nav-link.is-active { color: var(--gray-900); }
+.nav-link.is-active::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 2px; background: var(--indigo-600); border-radius: 2px 2px 0 0;
+}
+.nav-link:focus-visible {
+  outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--indigo-500);
+  border-radius: 6px;
+}
+.nav-link svg { width: 14px; height: 14px; }
+
+/* ── SearchInput ────────────────────────────────────────────────────── */
+.search { position: relative; display: inline-block; width: 100%; }
+.search .search-field {
+  width: 100%; padding: 8px 12px 8px 36px;
+  font-size: 14px; font-family: inherit; color: var(--gray-900); background: #fff;
+  border: 1px solid var(--gray-300); border-radius: 6px; outline: none;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.search .search-field::placeholder { color: var(--gray-400); }
+.search .search-field:hover { border-color: var(--gray-400); }
+.search .search-field:focus { border-color: var(--indigo-500); box-shadow: 0 0 0 1px var(--indigo-500); }
+.search .search-field:disabled { background: var(--gray-50); color: var(--gray-400); cursor: not-allowed; }
+.search.has-kbd .search-field { padding-right: 56px; }
+.search .search-icon {
+  position: absolute; top: 50%; left: 12px; transform: translateY(-50%);
+  width: 16px; height: 16px; color: var(--gray-400); pointer-events: none;
+}
+.search .search-kbd {
+  position: absolute; top: 50%; right: 8px; transform: translateY(-50%);
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 20px; padding: 0 6px;
+  background: var(--gray-100); color: var(--gray-500); border-radius: 6px;
+  font-family: inherit; font-size: 10px; font-weight: 600; letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+/* ── IconButton dot indicator ───────────────────────────────────────── */
+.icon-btn { position: relative; overflow: visible; }
+.icon-btn-dot {
+  position: absolute; top: 4px; right: 4px;
+  width: 9px; height: 9px; border-radius: 9999px;
+  box-shadow: 0 0 0 2px #fff; pointer-events: none;
+}
+.icon-btn-dot.red    { background: #ef4444; }
+.icon-btn-dot.indigo { background: var(--indigo-600); }
+
+/* ── Dashboard header responsive collapse ───────────────────────────── */
+.dash-header-row { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.dash-header-row .search { max-width: 240px; min-width: 140px; flex: 0 1 240px; }
+.dash-header-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.dash-new-poll-label { white-space: nowrap; }
+@media (max-width: 1080px) {
+  .dash-header-row .search { display: none; }
+}
+@media (max-width: 880px) {
+  .dash-header-row .nav-link span:last-child:not(:first-child) { display: none; }
+  .dash-new-poll-label { display: none; }
+  .dash-user-trigger .dash-user-name,
+  .dash-user-trigger .dash-user-chev { display: none; }
+  .dash-user-trigger { padding: 2px !important; border: 0 !important; }
+}
+@media (max-width: 640px) {
+  .dash-header-row .brand b { display: none; }
+}
+
+/* ── Modal ─────────────────────────────────────────────────────────────── */
+.modal-card {
+  background: #fff; border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.10), 0 8px 10px -6px rgb(0 0 0 / 0.10);
+  width: 100%; max-width: 640px; max-height: calc(100vh - 32px);
+  display: flex; flex-direction: column;
+  animation: modal-pop-in 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.modal-sm { max-width: 480px; }
+.modal-md { max-width: 640px; }
+.modal-lg { max-width: 880px; }
+.modal-xl { max-width: 1040px; }
+.modal-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--gray-200);
+}
+.modal-title { margin: 0; font-size: 18px; font-weight: 600; color: var(--gray-900); letter-spacing: -0.01em; }
+.modal-sub   { margin: 4px 0 0; font-size: 13px; color: var(--gray-500); line-height: 1.5; }
+.modal-body  { padding: 20px 24px; overflow-y: auto; font-size: 14px; color: var(--gray-700); line-height: 1.55; flex: 1; min-height: 0; }
+.modal-footer {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 16px 24px; border-top: 1px solid var(--gray-200);
+  background: var(--gray-50); border-radius: 0 0 12px 12px;
+}
+@keyframes modal-pop-in {
+  from { opacity: 0; transform: scale(0.96) translateY(4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── SidebarNav ────────────────────────────────────────────────────────── */
+.side {
+  display: flex; flex-direction: column;
+  width: 240px; flex-shrink: 0;
+  background: #fff; border-right: 1px solid var(--gray-200);
+  padding: 12px 8px; font-family: inherit;
+}
+.side-section { margin-top: 14px; }
+.side-section:first-child { margin-top: 0; }
+.side-section-label {
+  padding: 6px 12px 4px;
+  font-size: 11px; font-weight: 600; color: var(--gray-500);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.side-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 6px;
+  font-size: 14px; font-weight: 500; color: var(--gray-700);
+  background: transparent; border: 0; cursor: pointer; width: 100%; text-align: left;
+  text-decoration: none; font-family: inherit;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+.side-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.side-item .side-icon { display: inline-flex; color: var(--gray-500); flex-shrink: 0; }
+.side-item .side-icon svg { width: 16px; height: 16px; }
+.side-item:hover .side-icon { color: var(--gray-700); }
+.side-item.is-active { background: var(--indigo-50); color: var(--indigo-700); font-weight: 600; }
+.side-item.is-active .side-icon { color: var(--indigo-600); }
+.side-item .side-badge {
+  margin-left: auto; display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 18px; padding: 0 6px;
+  background: var(--gray-100); color: var(--gray-700);
+  border-radius: 9999px; font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.side-item.is-active .side-badge { background: var(--indigo-100); color: var(--indigo-700); }
+
+/* ── EmptyState ────────────────────────────────────────────────────────── */
+.empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 56px 32px;
+  background: #fff; border: 1px solid var(--gray-200); border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.empty-icon { width: 64px; height: 64px; border-radius: 14px; background: var(--indigo-50); color: var(--indigo-600); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+.empty-icon svg { width: 28px; height: 28px; }
+.empty-title { margin: 0; font-size: 18px; font-weight: 600; color: var(--gray-900); letter-spacing: -0.01em; }
+.empty-body  { margin: 8px 0 0; max-width: 380px; font-size: 14px; color: var(--gray-500); line-height: 1.55; }
+.empty-action { margin-top: 20px; display: inline-flex; gap: 8px; }
+
+/* ── Toast ─────────────────────────────────────────────────────────────── */
+.toast-region {
+  position: fixed; top: 16px; right: 16px; z-index: 60;
+  display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+}
+.toast {
+  display: flex; align-items: flex-start; gap: 10px;
+  min-width: 280px; max-width: 420px; padding: 12px 14px;
+  background: #fff; border: 1px solid var(--gray-200); border-left-width: 3px;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.10), 0 2px 4px -2px rgb(0 0 0 / 0.10);
+  font-family: inherit; pointer-events: auto;
+  animation: toast-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.toast.is-leaving { animation: toast-out 180ms ease forwards; }
+.toast-default { border-left-color: var(--gray-400); }
+.toast-success { border-left-color: #16a34a; } .toast-success .toast-icon { color: #16a34a; }
+.toast-error   { border-left-color: var(--red-600); } .toast-error .toast-icon { color: var(--red-600); }
+.toast-info    { border-left-color: var(--indigo-600); } .toast-info .toast-icon { color: var(--indigo-600); }
+.toast-icon { display: inline-flex; flex-shrink: 0; margin-top: 1px; }
+.toast-icon svg { width: 16px; height: 16px; }
+.toast-content { flex: 1; min-width: 0; }
+.toast-title { margin: 0; font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.toast-body  { margin: 2px 0 0; font-size: 12px; color: var(--gray-600); line-height: 1.5; }
+.toast-close { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border: 0; background: transparent; cursor: pointer; color: var(--gray-400); border-radius: 6px; margin: -2px -4px -2px 0; }
+.toast-close:hover { color: var(--gray-700); background: var(--gray-100); }
+.toast-close svg { width: 12px; height: 12px; }
+@keyframes toast-in  { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-out { from { opacity: 1; transform: translateY(0); }  to { opacity: 0; transform: translateY(-8px); } }
+
+/* ── Tooltip ───────────────────────────────────────────────────────────── */
+.tooltip-wrap { position: relative; display: inline-flex; }
+.tooltip {
+  position: absolute; z-index: 70;
+  background: var(--gray-900); color: #fff;
+  font-family: inherit; font-size: 12px; line-height: 1.4;
+  padding: 6px 8px; border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.10);
+  white-space: nowrap; pointer-events: none;
+  opacity: 0; transition: opacity 120ms ease;
+}
+.tooltip-wrap[data-tooltip-open="true"] .tooltip { opacity: 1; }
+.tooltip-top    { bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); }
+.tooltip-bottom { top:    calc(100% + 8px); left: 50%; transform: translateX(-50%); }
+</style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+// Primitives — Button, Badge, Spinner, Input, Avatar
+// Mirrors components/ui/* from andreevqt/polls.
+
+function Spinner({ size = "md", className = "" }) {
+  return <span className={`spinner spinner-${size} ${className}`} role="status" aria-label="Loading" />;
+}
+
+function Button({
+  children, variant = "primary", size = "md", isLoading = false,
+  disabled, className = "", ...props
+}) {
+  const sizeCls = size === "sm" ? "btn-sm" : size === "lg" ? "btn-lg" : "";
+  return (
+    <button
+      disabled={disabled || isLoading}
+      className={`btn btn-${variant} ${sizeCls} ${className}`}
+      {...props}
+    >
+      {isLoading && <Spinner size="sm" />}
+      {children}
+    </button>
+  );
+}
+
+function Badge({ children, variant = "default", className = "" }) {
+  return <span className={`badge badge-${variant} ${className}`}>{children}</span>;
+}
+
+function Avatar({ name, size = "md", variant = "light" }) {
+  const initial = (name || "?").charAt(0).toUpperCase();
+  return (
+    <div className={`avatar avatar-${size} ${variant === "dark" ? "avatar-dark" : ""}`}>
+      {initial}
+    </div>
+  );
+}
+
+function Input({ label, error, id, ...props }) {
+  const inputId = id || `i-${Math.random().toString(36).slice(2, 7)}`;
+  return (
+    <div>
+      {label && <label htmlFor={inputId} className="label">{label}</label>}
+      <input id={inputId} className="input" {...props} />
+      {error && <p className="error-text">{error}</p>}
+    </div>
+  );
+}
+
+function Field({ label, error, children }) {
+  return (
+    <div>
+      {label && <label className="label">{label}</label>}
+      {children}
+      {error && <p className="error-text">{error}</p>}
+    </div>
+  );
+}
+
+/* Heroicons paths used inside StatCard wells */
+const STAT_ICONS = {
+  users: <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />,
+  polls: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.4 48.4 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" />,
+  check: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />,
+  chart: <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />,
+};
+
+const TONE_BG = {
+  indigo: "var(--indigo-50)",  green: "#dcfce7",  blue: "#dbeafe",  amber: "#fef3c7",
+};
+const TONE_FG = {
+  indigo: "var(--indigo-600)", green: "#16a34a",  blue: "#2563eb",  amber: "#b45309",
+};
+
+/* Compact area sparkline. Renders an indigo curve + soft fill. */
+function Sparkline({ data, color = "var(--indigo-600)", fill = "rgb(99 102 241 / 0.16)", w = 96, h = 32 }) {
+  if (!data || data.length === 0) return null;
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+  const stepX = w / (data.length - 1);
+  const pts = data.map((v, i) => [i * stepX, h - 2 - ((v - min) / range) * (h - 4)]);
+  const path = pts.map(([x, y], i) => `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
+  const area = `${path} L ${w} ${h} L 0 ${h} Z`;
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ display: "block" }}>
+      <path d={area} fill={fill} />
+      <path d={path} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      {/* End dot */}
+      <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="2.5" fill={color} />
+    </svg>
+  );
+}
+
+function StatCard({ title, value, icon, tone = "indigo", description, trend, sparkline }) {
+  // Allow icon = string name (key into STAT_ICONS) OR JSX element OR emoji string
+  let iconNode = null;
+  if (typeof icon === "string" && STAT_ICONS[icon]) {
+    iconNode = (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"
+           width="20" height="20" style={{ color: TONE_FG[tone] }}>
+        {STAT_ICONS[icon]}
+      </svg>
+    );
+  } else if (typeof icon === "string") {
+    // legacy: emoji fallback
+    iconNode = <span style={{ fontSize: 22 }}>{icon}</span>;
+  } else {
+    iconNode = icon;
+  }
+
+  return (
+    <div className="card" style={{ padding: 20, position: "relative", overflow: "hidden" }}>
+      <div className="flex items-center justify-between" style={{ alignItems: "flex-start" }}>
+        <div style={{ minWidth: 0 }}>
+          <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: "var(--gray-500)",
+                      letterSpacing: "0.01em" }}>{title}</p>
+          <p style={{ margin: "10px 0 0", fontSize: 32, fontWeight: 700, color: "var(--gray-900)",
+                      lineHeight: 1, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+            {value}
+          </p>
+        </div>
+        <div style={{
+          width: 40, height: 40, borderRadius: 10,
+          background: TONE_BG[tone], display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0,
+        }}>
+          {iconNode}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between" style={{ marginTop: 16, gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+          {trend && (
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 3,
+              padding: "2px 8px", borderRadius: 9999,
+              background: trend.positive ? "#dcfce7" : "#fee2e2",
+              color: trend.positive ? "#15803d" : "#b91c1c",
+              fontSize: 11, fontWeight: 600,
+            }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                {trend.positive
+                  ? <path d="M12 19V5M5 12l7-7 7 7" />
+                  : <path d="M12 5v14M5 12l7 7 7-7" />}
+              </svg>
+              {trend.value}
+            </span>
+          )}
+          {description && (
+            <span style={{ fontSize: 12, color: "var(--gray-500)",
+                           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {description}
+            </span>
+          )}
+        </div>
+        {sparkline && (
+          <Sparkline data={sparkline}
+                     color={TONE_FG[tone]}
+                     fill={tone === "indigo" ? "rgb(99 102 241 / 0.16)"
+                          : tone === "green"  ? "rgb(22 163 74 / 0.14)"
+                          : tone === "blue"   ? "rgb(37 99 235 / 0.14)"
+                                              : "rgb(180 83 9 / 0.14)"} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { Spinner, Button, Badge, Avatar, Input, Field, StatCard, Sparkline });
+
+/* ─────────────────────────────────────────────────────────────────────────
+   NEW PRIMITIVES (added 2026-05-20):
+   Toggle, Dropdown, MultiSelect, MenuPopover/KebabMenu, IconButton, PillButton.
+   See /preview/components-{toggle,dropdown,multiselect,menu,iconbutton,pill}.html
+   ───────────────────────────────────────────────────────────────────────── */
+const { useId: useIdP } = React;
+
+const _IconChev = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" width="14" height="14" {...p}>
+    <path d="m6 9 6 6 6-6" />
+  </svg>
+);
+const _IconCheck = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"
+       strokeLinecap="round" strokeLinejoin="round" width="12" height="12" {...p}>
+    <path d="M20 6 9 17l-5-5" />
+  </svg>
+);
+const _IconKebab = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" width="18" height="18" {...p}>
+    <circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" />
+  </svg>
+);
+
+function useOutsideClose(ref, onClose) {
+  React.useEffect(() => {
+    function onDoc(e) { if (ref.current && !ref.current.contains(e.target)) onClose(); }
+    function onKey(e) { if (e.key === "Escape") onClose(); }
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [ref, onClose]);
+}
+
+function Toggle({ checked, onChange, label, size = "md", disabled }) {
+  const id = useIdP();
+  return (
+    <label htmlFor={id}
+      className={`toggle ${size === "sm" ? "toggle-sm" : ""} ${checked ? "is-on" : ""} ${disabled ? "is-disabled" : ""}`}>
+      <input id={id} type="checkbox" checked={!!checked} disabled={disabled}
+             onChange={(e) => onChange && onChange(e.target.checked)} />
+      <span className="track"><span className="knob" /></span>
+      {label && <span className="toggle-label">{label}</span>}
+    </label>
+  );
+}
+
+function Dropdown({ value, options = [], onChange, placeholder = "Select…", width, disabled }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef(null);
+  useOutsideClose(ref, () => setOpen(false));
+  const selected = options.find((o) => o.value === value);
+  return (
+    <div className="dd" ref={ref} style={{ width }}>
+      <button type="button" disabled={disabled}
+        className={`dd-trigger ${open ? "is-open" : ""} ${!selected ? "is-placeholder" : ""}`}
+        onClick={() => setOpen((p) => !p)}
+        aria-haspopup="listbox" aria-expanded={open}>
+        <span className="dd-trigger-label">
+          {selected ? (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              {selected.icon}{selected.label}
+            </span>
+          ) : placeholder}
+        </span>
+        <_IconChev className="chev" />
+      </button>
+      {open && (
+        <div className="dd-popover" role="listbox">
+          {options.map((o) => {
+            const isSel = o.value === value;
+            return (
+              <div key={o.value}
+                className={`dd-item ${isSel ? "is-selected" : ""} ${o.disabled ? "is-disabled" : ""}`}
+                role="option" aria-selected={isSel}
+                onClick={() => { if (o.disabled) return; onChange && onChange(o.value); setOpen(false); }}>
+                <span className="leading" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                  {o.icon}{o.label}
+                </span>
+                {isSel && <span className="trailing"><_IconCheck /></span>}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MultiSelect({ value = [], options = [], onChange, placeholder = "Select…", width, disabled }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef(null);
+  useOutsideClose(ref, () => setOpen(false));
+  const labels = options.filter((o) => value.includes(o.value)).map((o) => o.label);
+  const joined = labels.join(", ");
+  const toggleVal = (v) => {
+    const next = value.includes(v) ? value.filter((x) => x !== v) : [...value, v];
+    onChange && onChange(next);
+  };
+  return (
+    <div className="dd" ref={ref} style={{ width }}>
+      <button type="button" disabled={disabled}
+        className={`dd-trigger ${open ? "is-open" : ""} ${labels.length === 0 ? "is-placeholder" : ""}`}
+        onClick={() => setOpen((p) => !p)}
+        aria-haspopup="listbox" aria-expanded={open} aria-multiselectable="true">
+        <span className="dd-trigger-label">
+          {labels.length === 0 ? placeholder : (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <span style={{
+                display: "inline-block", padding: "1px 7px",
+                borderRadius: 9999, background: "var(--indigo-50)",
+                color: "var(--indigo-700)", fontSize: 11, fontWeight: 600,
+              }}>{labels.length}</span>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{joined}</span>
+            </span>
+          )}
+        </span>
+        <_IconChev className="chev" />
+      </button>
+      {open && (
+        <div className="dd-popover" role="listbox">
+          {options.length === 0 && (
+            <div style={{ padding: 10, fontSize: 13, color: "var(--gray-500)" }}>No options available</div>
+          )}
+          {options.map((o) => {
+            const isSel = value.includes(o.value);
+            return (
+              <div key={o.value}
+                className={`dd-item ${isSel ? "is-selected" : ""} ${o.disabled ? "is-disabled" : ""}`}
+                role="option" aria-selected={isSel}
+                onClick={() => { if (o.disabled) return; toggleVal(o.value); }}>
+                <span className="leading" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                  <span className="dd-check"><_IconCheck /></span>
+                  {o.icon}{o.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MenuPopover({ trigger, items = [], align = "start" }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef(null);
+  useOutsideClose(ref, () => setOpen(false));
+  return (
+    <div className="dd" ref={ref} style={{ display: "inline-block" }}>
+      <span onClick={() => setOpen((p) => !p)}>{trigger}</span>
+      {open && (
+        <div className="dd-popover" role="menu"
+             style={{ minWidth: 180,
+                      left: align === "end" ? "auto" : 0,
+                      right: align === "end" ? 0 : "auto" }}>
+          {items.map((it, i) => {
+            if (it === "divider") return <div key={i} className="dd-divider" />;
+            return (
+              <div key={i}
+                className={`dd-item ${it.danger ? "is-danger" : ""} ${it.disabled ? "is-disabled" : ""}`}
+                role="menuitem"
+                onClick={() => { if (it.disabled) return; it.onClick && it.onClick(); setOpen(false); }}>
+                <span className="leading" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                  {it.icon}{it.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function KebabMenu({ items, align = "end", size = "md" }) {
+  return (
+    <MenuPopover align={align} items={items}
+      trigger={
+        <button type="button" className={`icon-btn icon-btn-${size}`} aria-label="More actions">
+          <_IconKebab />
+        </button>
+      } />
+  );
+}
+
+function IconButton({ icon, variant = "ghost", size = "md", label, dot, className = "", ...rest }) {
+  const variantCls = variant === "ghost" ? "" : `icon-btn-${variant}`;
+  const dotColor = dot === true ? "red" : dot;
+  return (
+    <button type="button" aria-label={label}
+            className={`icon-btn icon-btn-${size} ${variantCls} ${className}`} {...rest}>
+      {icon}
+      {dot && <span className={`icon-btn-dot ${dotColor}`} aria-hidden="true" />}
+    </button>
+  );
+}
+
+function NavLink({ active, leading, children, href = "#", onClick, ...rest }) {
+  return (
+    <a href={href} onClick={onClick}
+       className={`nav-link ${active ? "is-active" : ""}`} {...rest}>
+      {leading && <span style={{ display: "inline-flex" }}>{leading}</span>}
+      {children}
+    </a>
+  );
+}
+
+const _SearchIcon = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+  </svg>
+);
+function SearchInput({ value, onChange, placeholder = "Search…", kbd, disabled, width }) {
+  return (
+    <div className={`search ${kbd ? "has-kbd" : ""}`} style={{ width }}>
+      <span className="search-icon">{_SearchIcon}</span>
+      <input className="search-field" type="text" value={value}
+             placeholder={placeholder} disabled={disabled}
+             onChange={(e) => onChange && onChange(e.target.value)} />
+      {kbd && <span className="search-kbd">{kbd}</span>}
+    </div>
+  );
+}
+
+Object.assign(window, {
+  Toggle, Dropdown, MultiSelect, MenuPopover, KebabMenu, IconButton, PillButton,
+  NavLink, SearchInput,
+});
+
+/* ─── New design-system primitives (added 2026-05-20) ─────────────────────
+   Modal, ConfirmDialog, SidebarNav/SidebarSection/SidebarItem,
+   EmptyState, ToastProvider+useToast+Toast, Tooltip.
+   ──────────────────────────────────────────────────────────────────────── */
+
+function Modal({ open, onClose, size = "md", title, subtitle, children, footer, showClose = true, closeOnScrim = true }) {
+  React.useEffect(() => {
+    if (!open) return;
+    function onKey(e) { if (e.key === "Escape") onClose && onClose(); }
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; document.removeEventListener("keydown", onKey); };
+  }, [open, onClose]);
+  if (!open) return null;
+  return (
+    <div className="modal-scrim" role="dialog" aria-modal="true"
+         onClick={() => closeOnScrim && onClose && onClose()}>
+      <div className={`modal-card modal-${size}`} onClick={(e) => e.stopPropagation()}>
+        {(title || subtitle || showClose) && (
+          <div className="modal-header">
+            <div style={{ minWidth: 0, flex: 1 }}>
+              {title && <h2 className="modal-title">{title}</h2>}
+              {subtitle && <p className="modal-sub">{subtitle}</p>}
+            </div>
+            {showClose && (
+              <button type="button" className="icon-btn icon-btn-sm" aria-label="Close" onClick={onClose}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                     strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+              </button>
+            )}
+          </div>
+        )}
+        <div className="modal-body">{children}</div>
+        {footer && <div className="modal-footer">{footer}</div>}
+      </div>
+    </div>
+  );
+}
+
+function NewConfirmDialog({ open, onConfirm, onCancel, title, body, confirmLabel = "Confirm", cancelLabel = "Cancel", danger = false, isPending = false }) {
+  return (
+    <Modal open={open} onClose={onCancel} size="sm" title={title}
+      footer={<>
+        <button type="button" className="btn btn-secondary btn-sm" onClick={onCancel}>{cancelLabel}</button>
+        <button type="button" className={`btn btn-sm ${danger ? "btn-danger" : "btn-primary"}`}
+                disabled={isPending} onClick={onConfirm}>{confirmLabel}</button>
+      </>}>
+      {typeof body === "string" ? <p style={{ margin: 0 }}>{body}</p> : body}
+    </Modal>
+  );
+}
+
+function SidebarNav({ children, style }) { return <nav className="side" style={style}>{children}</nav>; }
+function SidebarSection({ label, children }) {
+  return (
+    <div className="side-section">
+      {label && <div className="side-section-label">{label}</div>}
+      {children}
+    </div>
+  );
+}
+function SidebarItem({ icon, label, active, onClick, badge, href }) {
+  const Tag = href ? "a" : "button";
+  return (
+    <Tag className={`side-item ${active ? "is-active" : ""}`}
+         href={href} type={href ? undefined : "button"} onClick={onClick}>
+      {icon && <span className="side-icon">{icon}</span>}
+      <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{label}</span>
+      {badge != null && <span className="side-badge">{badge}</span>}
+    </Tag>
+  );
+}
+
+function EmptyState({ icon, title, body, action }) {
+  return (
+    <div className="empty">
+      {icon && <div className="empty-icon">{icon}</div>}
+      <h2 className="empty-title">{title}</h2>
+      {body && <p className="empty-body">{body}</p>}
+      {action && <div className="empty-action">{action}</div>}
+    </div>
+  );
+}
+
+const ToastIcons = {
+  success: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+  error:   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+  info:    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
+};
+
+const ToastContext = React.createContext(null);
+
+function ToastProvider({ children }) {
+  const [toasts, setToasts] = React.useState([]);
+  const dismissToast = React.useCallback((id) => {
+    setToasts((p) => p.map((t) => t.id === id ? { ...t, leaving: true } : t));
+    setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 180);
+  }, []);
+  const showToast = React.useCallback((opts) => {
+    if (typeof opts === "string") opts = { title: opts };
+    const id = Math.random().toString(36).slice(2, 9);
+    const t = { id, variant: "default", duration: 2500, ...opts };
+    setToasts((p) => [...p, t]);
+    if (t.duration > 0) setTimeout(() => dismissToast(id), t.duration);
+    return id;
+  }, [dismissToast]);
+  return (
+    <ToastContext.Provider value={{ showToast, dismissToast }}>
+      {children}
+      <div className="toast-region">
+        {toasts.map((t) => <ToastView key={t.id} {...t} onDismiss={() => dismissToast(t.id)} />)}
+      </div>
+    </ToastContext.Provider>
+  );
+}
+function useToast() {
+  const ctx = React.useContext(ToastContext);
+  if (!ctx) throw new Error("useToast must be inside <ToastProvider>");
+  return ctx;
+}
+function ToastView({ variant = "default", title, body, leaving, onDismiss }) {
+  return (
+    <div className={`toast toast-${variant} ${leaving ? "is-leaving" : ""}`} role="status">
+      {ToastIcons[variant] && <span className="toast-icon">{ToastIcons[variant]}</span>}
+      <div className="toast-content">
+        {title && <p className="toast-title">{title}</p>}
+        {body && <p className="toast-body">{body}</p>}
+      </div>
+      <button className="toast-close" aria-label="Dismiss" onClick={onDismiss}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+             strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  );
+}
+
+function Tooltip({ content, placement = "top", children, delay = 400 }) {
+  const [open, setOpen] = React.useState(false);
+  const timerRef = React.useRef(null);
+  const show = () => { clearTimeout(timerRef.current); timerRef.current = setTimeout(() => setOpen(true), delay); };
+  const hide = () => { clearTimeout(timerRef.current); setOpen(false); };
+  React.useEffect(() => () => clearTimeout(timerRef.current), []);
+  return (
+    <span className="tooltip-wrap" data-tooltip-open={open}
+          onMouseEnter={show} onMouseLeave={hide} onFocus={show} onBlur={hide}>
+      {children}
+      <span className={`tooltip tooltip-${placement}`} role="tooltip">{content}</span>
+    </span>
+  );
+}
+
+Object.assign(window, {
+  Modal, NewConfirmDialog,
+  SidebarNav, SidebarSection, SidebarItem,
+  EmptyState, ToastProvider, useToast, Tooltip,
+});
+
+function PillButton({ children, variant = "primary", size = "md", className = "", ...rest }) {
+  const sizeCls = size === "sm" ? "btn-sm" : size === "lg" ? "btn-lg" : "";
+  return (
+    <button type="button" className={`btn btn-${variant} ${sizeCls} btn-pill ${className}`} {...rest}>
+      {children}
+    </button>
+  );
+}
+
+  </script>
+  <script type="text/babel">
+// Spectacular landing — multi-section, with a live animated poll-results hero card.
+// Stays inside the design system: indigo only, system font, flat surfaces, gray-200 borders.
+// The only motion is bar fills + auto-cycling poll content.
+
+const { useEffect, useState: useStateL, useMemo } = React;
+
+const ROTATING_POLLS = [
+  {
+    q: "How would you rate your overall workload?",
+    responses: 247,
+    options: [
+      { t: "Light",       pct: 12 },
+      { t: "Just right",  pct: 51 },
+      { t: "Heavy",       pct: 28 },
+      { t: "Overwhelming", pct: 9 },
+    ],
+  },
+  {
+    q: "Which framework do you reach for first?",
+    responses: 1842,
+    options: [
+      { t: "React",   pct: 58 },
+      { t: "Vue",     pct: 18 },
+      { t: "Svelte",  pct: 14 },
+      { t: "Solid",   pct: 10 },
+    ],
+  },
+  {
+    q: "Where should we hold the offsite?",
+    responses: 38,
+    options: [
+      { t: "Lisbon",    pct: 42 },
+      { t: "Berlin",    pct: 26 },
+      { t: "Mexico City", pct: 22 },
+      { t: "Stay remote", pct: 10 },
+    ],
+  },
+];
+
+/* Animated live-results card. Cycles through ROTATING_POLLS every 4.5s. Bars fill from 0. */
+function LiveResultsCard({ delay = 0, rotate = 0, opacity = 1, zIndex = 1, offset = { x:0, y:0 } }) {
+  const [idx, setIdx] = useStateL(0);
+  const [fill, setFill] = useStateL(false);
+
+  useEffect(() => {
+    const start = setTimeout(() => setFill(true), 200 + delay);
+    return () => clearTimeout(start);
+  }, [idx, delay]);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setFill(false);
+      setTimeout(() => setIdx((p) => (p + 1) % ROTATING_POLLS.length), 350);
+    }, 4500);
+    return () => clearInterval(t);
+  }, []);
+
+  const poll = ROTATING_POLLS[idx];
+
+  return (
+    <div style={{
+      position: "absolute",
+      top: offset.y, left: offset.x,
+      width: 340,
+      background: "#fff",
+      border: "1px solid var(--gray-200)",
+      borderRadius: 16,
+      padding: 20,
+      boxShadow: "0 20px 50px -12px rgb(31 41 55 / 0.18), 0 8px 16px -8px rgb(31 41 55 / 0.10)",
+      transform: `rotate(${rotate}deg)`,
+      opacity,
+      zIndex,
+      transition: "transform 400ms ease",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
+        <span style={{
+          width: 6, height: 6, borderRadius: 9999, background: "#16a34a",
+          boxShadow: "0 0 0 0 rgb(22 163 74 / 0.6)",
+          animation: "pulse 2s infinite",
+        }} />
+        <span style={{ fontSize: 10, color: "var(--gray-500)", fontWeight: 600,
+                       textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          Live · {poll.responses} responses
+        </span>
+      </div>
+      <p style={{ margin: "0 0 16px", fontSize: 15, fontWeight: 600, color: "var(--gray-900)", lineHeight: 1.35 }}>
+        {poll.q}
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+        {poll.options.map((o, i) => {
+          const isTop = i === 0 || o.pct === Math.max(...poll.options.map((x) => x.pct));
+          const max = Math.max(...poll.options.map((x) => x.pct));
+          const leader = o.pct === max;
+          return (
+            <div key={`${idx}-${i}`}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, fontSize: 12 }}>
+                <span style={{ color: "var(--gray-700)", fontWeight: leader ? 600 : 400 }}>{o.t}</span>
+                <span className="mono" style={{ color: leader ? "var(--indigo-600)" : "var(--gray-500)",
+                                                fontFamily: "ui-monospace, Menlo, monospace",
+                                                fontWeight: 500, fontSize: 11 }}>{o.pct}%</span>
+              </div>
+              <div style={{ height: 6, background: "var(--gray-100)", borderRadius: 9999, overflow: "hidden" }}>
+                <div style={{
+                  height: "100%",
+                  width: fill ? `${o.pct}%` : "0%",
+                  background: leader ? "var(--indigo-600)" : "var(--indigo-300)",
+                  borderRadius: 9999,
+                  transition: `width ${900 + i * 120}ms cubic-bezier(0.22, 1, 0.36, 1)`,
+                }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* Hero — left text + right floating cards stack */
+function LandingHero({ onNav }) {
+  return (
+    <section style={{ position: "relative", overflow: "hidden", background: "#fff" }}>
+      {/* soft indigo wash background */}
+      <div style={{
+        position: "absolute", top: -160, right: -80, width: 720, height: 720,
+        background: "radial-gradient(closest-side, rgb(99 102 241 / 0.13), transparent 70%)",
+        pointerEvents: "none",
+      }} />
+      {/* dotted grid background */}
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundImage: "radial-gradient(circle, rgb(99 102 241 / 0.10) 1px, transparent 1px)",
+        backgroundSize: "28px 28px",
+        maskImage: "linear-gradient(180deg, black, transparent 80%)",
+        WebkitMaskImage: "linear-gradient(180deg, black, transparent 80%)",
+        pointerEvents: "none",
+      }} />
+
+      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "72px 32px 96px", position: "relative" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 420px", gap: 64, alignItems: "center" }}
+             className="hero-grid">
+          <div>
+            {/* Eyebrow */}
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8,
+                          background: "var(--indigo-50)", color: "var(--indigo-700)",
+                          padding: "4px 12px", borderRadius: 9999,
+                          fontSize: 12, fontWeight: 600, letterSpacing: "0.04em" }}>
+              <span style={{ width: 6, height: 6, borderRadius: 9999, background: "var(--indigo-600)" }} />
+              Anonymous · Cookie-deduped · Free
+            </div>
+
+            <h1 style={{
+              margin: "20px 0 0",
+              fontSize: "clamp(40px, 6vw, 72px)",
+              lineHeight: 1.02,
+              letterSpacing: "-0.035em",
+              fontWeight: 700,
+              color: "var(--gray-900)",
+            }}>
+              Ask anyone.<br />
+              See it{" "}
+              <span style={{ position: "relative", whiteSpace: "nowrap" }}>
+                <span style={{ position: "relative", zIndex: 1, color: "var(--indigo-600)" }}>instantly</span>
+                <svg viewBox="0 0 240 20" preserveAspectRatio="none"
+                     style={{ position: "absolute", left: 0, right: 0, bottom: -8, width: "100%", height: 16, zIndex: 0 }}
+                     fill="none" stroke="var(--indigo-300)" strokeWidth="3" strokeLinecap="round">
+                  <path d="M4 14 Q 60 4, 120 12 T 236 8" />
+                </svg>
+              </span>.
+            </h1>
+
+            <p style={{
+              margin: "24px 0 0", maxWidth: 520,
+              fontSize: 18, lineHeight: 1.55, color: "var(--gray-600)",
+            }}>
+              Single-choice, multiple-choice, and free-text polls. Share a link.
+              Watch responses stream in. Export to CSV when you're done.
+            </p>
+
+            <div style={{ display: "flex", gap: 12, marginTop: 32, flexWrap: "wrap" }}>
+              <Button size="lg" onClick={() => onNav("register")}>
+                Create your first poll
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
+              </Button>
+              <Button size="lg" variant="secondary" onClick={() => onNav("login")}>Sign in</Button>
+            </div>
+
+            {/* Trust strip */}
+            <div style={{ display: "flex", alignItems: "center", gap: 24, marginTop: 32, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                {["AP", "JK", "SM", "LZ"].map((init, i) => (
+                  <div key={init} style={{
+                    width: 32, height: 32, borderRadius: 9999,
+                    background: ["#e0e7ff", "#dcfce7", "#dbeafe", "#fee2e2"][i],
+                    color: ["#4338ca", "#15803d", "#1d4ed8", "#b91c1c"][i],
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 11, fontWeight: 600,
+                    border: "2px solid #fff",
+                    marginLeft: i === 0 ? 0 : -8,
+                  }}>{init}</div>
+                ))}
+              </div>
+              <div style={{ fontSize: 13, color: "var(--gray-600)" }}>
+                <b style={{ color: "var(--gray-900)" }}>12,847</b> polls launched this week
+              </div>
+            </div>
+          </div>
+
+          {/* Right: floating cards stack */}
+          <div style={{ position: "relative", height: 480 }} className="hero-stack">
+            <LiveResultsCard offset={{ x: 40, y: 40 }} rotate={4}   opacity={0.5} zIndex={1} delay={200} />
+            <LiveResultsCard offset={{ x: 20, y: 20 }} rotate={-3}  opacity={0.75} zIndex={2} delay={100} />
+            <LiveResultsCard offset={{ x: 0,  y: 0  }} rotate={0}   opacity={1}    zIndex={3} delay={0} />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* Live, interactive demo poll. User clicks an answer, bars fill. */
+function LandingTryIt() {
+  const [picked, setPicked] = useStateL(null);
+  const opts = [
+    { t: "Tabs",   pct: 64 },
+    { t: "Spaces", pct: 31 },
+    { t: "Either", pct: 5  },
+  ];
+  return (
+    <section style={{ background: "var(--gray-50)", borderTop: "1px solid var(--gray-200)",
+                      borderBottom: "1px solid var(--gray-200)" }}>
+      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "72px 32px",
+                    display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+                    gap: 64, alignItems: "center" }} className="try-grid">
+        <div>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8,
+                        color: "var(--indigo-700)", fontSize: 12, fontWeight: 600,
+                        letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            <span style={{ width: 6, height: 6, borderRadius: 9999, background: "var(--indigo-600)" }} />
+            Try it
+          </div>
+          <h2 style={{ margin: "12px 0 0", fontSize: 36, lineHeight: 1.1,
+                       letterSpacing: "-0.025em", fontWeight: 700, color: "var(--gray-900)" }}>
+            One click. Instant&nbsp;results.
+          </h2>
+          <p style={{ margin: "16px 0 0", fontSize: 17, lineHeight: 1.55, color: "var(--gray-600)",
+                      maxWidth: 440 }}>
+            No login. No friction. Pick an option and watch the bars fill —
+            that's the same experience your respondents get.
+          </p>
+        </div>
+
+        <div className="card card-md" style={{ position: "relative" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
+            <span style={{ width: 6, height: 6, borderRadius: 9999, background: "#16a34a",
+                           animation: "pulse 2s infinite" }} />
+            <span style={{ fontSize: 11, color: "var(--gray-500)", fontWeight: 600,
+                           textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              Live · 3,127 responses
+            </span>
+          </div>
+          <p style={{ margin: "0 0 18px", fontSize: 18, fontWeight: 600, color: "var(--gray-900)" }}>
+            Tabs or spaces?
+          </p>
+
+          {picked === null ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {opts.map((o) => (
+                <button key={o.t} onClick={() => setPicked(o.t)}
+                  style={{
+                    textAlign: "left", padding: "12px 14px",
+                    border: "1px solid var(--gray-200)", borderRadius: 8,
+                    background: "#fff", cursor: "pointer", fontSize: 14, color: "var(--gray-700)",
+                    transition: "border-color 200ms ease, background-color 200ms ease",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--indigo-500)"; e.currentTarget.style.background = "var(--indigo-50)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--gray-200)"; e.currentTarget.style.background = "#fff"; }}
+                >
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ width: 16, height: 16, border: "2px solid var(--gray-300)",
+                                   borderRadius: 9999, display: "inline-block" }} />
+                    {o.t}
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {opts.map((o, i) => {
+                const isPicked = o.t === picked;
+                const max = Math.max(...opts.map((x) => x.pct));
+                const leader = o.pct === max;
+                return (
+                  <div key={o.t}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, fontSize: 13 }}>
+                      <span style={{ color: isPicked ? "var(--indigo-700)" : "var(--gray-700)",
+                                     fontWeight: isPicked ? 600 : 400,
+                                     display: "inline-flex", alignItems: "center", gap: 8 }}>
+                        {o.t}
+                        {isPicked && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                               stroke="var(--indigo-600)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 6 9 17l-5-5" />
+                          </svg>
+                        )}
+                      </span>
+                      <span style={{ color: leader ? "var(--indigo-600)" : "var(--gray-500)",
+                                     fontWeight: 500, fontSize: 12,
+                                     fontFamily: "ui-monospace, Menlo, monospace" }}>{o.pct}%</span>
+                    </div>
+                    <div style={{ height: 10, background: "var(--gray-100)", borderRadius: 9999, overflow: "hidden" }}>
+                      <div style={{
+                        height: "100%", width: `${o.pct}%`,
+                        background: leader ? "var(--indigo-600)" : "var(--indigo-300)",
+                        borderRadius: 9999,
+                        transition: `width ${800 + i * 150}ms cubic-bezier(0.22, 1, 0.36, 1)`,
+                      }} />
+                    </div>
+                  </div>
+                );
+              })}
+              <button onClick={() => setPicked(null)}
+                style={{ alignSelf: "flex-start", marginTop: 4, fontSize: 13,
+                         color: "var(--indigo-600)", background: "transparent", border: 0, cursor: "pointer", padding: 0 }}>
+                ← Reset
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* Features grid — 6 cards, Heroicons */
+function LandingFeatures() {
+  const items = [
+    {
+      title: "Three question types",
+      body: "Single-choice, multi-select, and free-text. Mix and match in one poll.",
+      icon: (
+        <path strokeLinecap="round" strokeLinejoin="round"
+              d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.4 48.4 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" />
+      ),
+    },
+    {
+      title: "Anonymous by default",
+      body: "Respondents need no account. Cookie-based dedup prevents accidental re-submits.",
+      icon: (
+        <path strokeLinecap="round" strokeLinejoin="round"
+              d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+      ),
+    },
+    {
+      title: "Live analytics",
+      body: "Per-question breakdowns and a response timeline that updates as answers roll in.",
+      icon: (
+        <path strokeLinecap="round" strokeLinejoin="round"
+              d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+      ),
+    },
+    {
+      title: "Public or private",
+      body: "Share a public link or generate a revocable access token. Regen it any time.",
+      icon: (
+        <path strokeLinecap="round" strokeLinejoin="round"
+              d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+      ),
+    },
+    {
+      title: "Export to CSV",
+      body: "One click downloads a clean CSV of every response. Hook into your own pipeline.",
+      icon: (
+        <path strokeLinecap="round" strokeLinejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+      ),
+    },
+    {
+      title: "Admin panel",
+      body: "Manage every user and every poll in the system. Bulk actions, filters, export.",
+      icon: (
+        <path strokeLinecap="round" strokeLinejoin="round"
+              d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+      ),
+    },
+  ];
+  return (
+    <section style={{ background: "#fff" }}>
+      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "96px 32px 32px" }}>
+        <div style={{ textAlign: "center", maxWidth: 640, margin: "0 auto" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8,
+                        color: "var(--indigo-700)", fontSize: 12, fontWeight: 600,
+                        letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            Everything you need
+          </div>
+          <h2 style={{ margin: "12px 0 0", fontSize: 40, lineHeight: 1.1,
+                       letterSpacing: "-0.025em", fontWeight: 700, color: "var(--gray-900)" }}>
+            Built for asking. Not&nbsp;a&nbsp;framework.
+          </h2>
+        </div>
+
+        <div style={{ marginTop: 48, display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                      gap: 16 }}>
+          {items.map((it) => (
+            <div key={it.title} className="card card-md feature-card"
+                 style={{ transition: "transform 200ms ease, border-color 200ms ease" }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 10,
+                background: "var(--indigo-50)", color: "var(--indigo-600)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" strokeWidth="1.6">
+                  {it.icon}
+                </svg>
+              </div>
+              <h3 style={{ margin: "16px 0 6px", fontSize: 16, fontWeight: 600, color: "var(--gray-900)" }}>
+                {it.title}
+              </h3>
+              <p style={{ margin: 0, fontSize: 14, color: "var(--gray-600)", lineHeight: 1.55 }}>
+                {it.body}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* Stats strip */
+function LandingStats() {
+  const items = [
+    { value: "12,847", label: "Polls launched this week" },
+    { value: "2.1M",   label: "Responses collected" },
+    { value: "<200ms", label: "Median response submit" },
+    { value: "0",      label: "Tracking cookies set" },
+  ];
+  return (
+    <section style={{ background: "#fff" }}>
+      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "0 32px 64px" }}>
+        <div style={{
+          background: "var(--gray-900)", borderRadius: 16,
+          padding: "32px 24px", color: "#fff",
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+          gap: 16,
+        }}>
+          {items.map((s, i) => (
+            <div key={s.label} style={{
+              textAlign: "center",
+              borderRight: i < items.length - 1 ? "1px solid var(--gray-700)" : "none",
+              padding: "8px 4px",
+            }}>
+              <div style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.02em",
+                            fontFamily: "ui-sans-serif, system-ui, sans-serif" }}>
+                {s.value}
+              </div>
+              <div style={{ marginTop: 4, fontSize: 13, color: "var(--gray-400)" }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* Final CTA banner */
+function LandingCTA({ onNav }) {
+  return (
+    <section style={{ background: "#fff" }}>
+      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "0 32px 96px" }}>
+        <div style={{
+          position: "relative", overflow: "hidden",
+          background: "var(--indigo-600)",
+          borderRadius: 20, padding: "56px 48px",
+          color: "#fff",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          flexWrap: "wrap", gap: 24,
+        }}>
+          {/* decorative grid */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: "radial-gradient(circle, rgb(255 255 255 / 0.16) 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+            maskImage: "linear-gradient(180deg, transparent, black 30%, black 70%, transparent)",
+            WebkitMaskImage: "linear-gradient(180deg, transparent, black 30%, black 70%, transparent)",
+            pointerEvents: "none",
+          }} />
+          <div style={{ position: "relative" }}>
+            <h2 style={{ margin: 0, fontSize: 36, lineHeight: 1.1,
+                         letterSpacing: "-0.025em", fontWeight: 700, color: "#fff" }}>
+              Ready to ask?
+            </h2>
+            <p style={{ margin: "10px 0 0", fontSize: 16, color: "rgb(224 231 255 / 0.9)", maxWidth: 460 }}>
+              Create a poll in under a minute. No credit card. Cancel by not signing in again.
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: 12, position: "relative" }}>
+            <button onClick={() => onNav("register")}
+              style={{
+                background: "#fff", color: "var(--indigo-700)",
+                padding: "12px 24px", borderRadius: 6, fontSize: 16, fontWeight: 600,
+                border: 0, cursor: "pointer",
+                display: "inline-flex", alignItems: "center", gap: 8,
+                transition: "background-color 200ms ease",
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "var(--gray-100)"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "#fff"}
+            >
+              Get started free
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            </button>
+            <button onClick={() => onNav("login")}
+              style={{
+                background: "transparent", color: "#fff",
+                padding: "12px 24px", borderRadius: 6, fontSize: 16, fontWeight: 600,
+                border: "1px solid rgb(255 255 255 / 0.3)", cursor: "pointer",
+                transition: "background-color 200ms ease",
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "rgb(255 255 255 / 0.1)"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+            >Sign in</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* Top nav bar */
+function LandingNav({ onNav }) {
+  return (
+    <header style={{
+      position: "sticky", top: 0, zIndex: 30,
+      background: "rgb(255 255 255 / 0.8)",
+      backdropFilter: "blur(10px)",
+      WebkitBackdropFilter: "blur(10px)",
+      borderBottom: "1px solid var(--gray-200)",
+    }}>
+      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "14px 32px",
+                    display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%3E%0A%20%20%0A%20%20%3Crect%20width%3D%2248%22%20height%3D%2248%22%20rx%3D%2211%22%20fill%3D%22%234F46E5%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2216%22%20r%3D%223.25%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Fcircle%3E%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2216%22%20r%3D%221.4%22%20fill%3D%22%234F46E5%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2214%22%20width%3D%2218%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2224%22%20r%3D%223.25%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.6%22%20opacity%3D%220.6%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2222%22%20width%3D%2214%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%20opacity%3D%220.55%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2232%22%20r%3D%223.25%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.6%22%20opacity%3D%220.6%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2230%22%20width%3D%2210%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%20opacity%3D%220.55%22%3E%3C%2Frect%3E%0A%3C%2Fsvg%3E" width={28} height={28} alt="" />
+          <span style={{ fontSize: 18, fontWeight: 700, color: "var(--gray-900)",
+                         letterSpacing: "-0.015em" }}>Polls</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <button onClick={() => onNav("login")}
+            style={{ padding: "8px 14px", border: 0, background: "transparent",
+                     color: "var(--gray-700)", fontWeight: 500, fontSize: 14, cursor: "pointer",
+                     borderRadius: 6 }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "var(--gray-100)"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+          >Sign in</button>
+          <Button size="sm" onClick={() => onNav("register")}>Get started</Button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function LandingScreen({ onNav }) {
+  return (
+    <div style={{ minHeight: "100vh", background: "#fff" }}>
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgb(22 163 74 / 0.6); }
+          50%      { box-shadow: 0 0 0 6px rgb(22 163 74 / 0); }
+        }
+        .feature-card:hover { transform: translateY(-2px); border-color: var(--indigo-300) !important; }
+        @media (max-width: 880px) {
+          .hero-grid, .try-grid { grid-template-columns: 1fr !important; }
+          .hero-stack { height: 440px !important; }
+        }
+      `}</style>
+      <LandingNav onNav={onNav} />
+      <LandingHero onNav={onNav} />
+      <LandingTryIt />
+      <LandingFeatures />
+      <LandingStats />
+      <LandingCTA onNav={onNav} />
+    </div>
+  );
+}
+
+/* Split layout shared by Sign in + Register.
+   Left: branding + benefits + one floating live-results card.
+   Right: the form. Mirrors the landing's visual vocabulary. */
+function AuthSplit({ side, children, onNav }) {
+  return (
+    <div style={{ minHeight: "100vh", background: "#fff", position: "relative", overflow: "hidden" }}>
+      <style>{`
+        @media (max-width: 920px) {
+          .auth-grid { grid-template-columns: 1fr !important; }
+          .auth-left { padding: 32px 24px !important; }
+          .auth-floater { display: none !important; }
+        }
+      `}</style>
+
+      {/* Backdrop — indigo wash + dotted grid (top-right anchored) */}
+      <div style={{
+        position: "absolute", top: -180, right: -160, width: 720, height: 720,
+        background: "radial-gradient(closest-side, rgb(99 102 241 / 0.14), transparent 70%)",
+        pointerEvents: "none",
+      }} />
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundImage: "radial-gradient(circle, rgb(99 102 241 / 0.10) 1px, transparent 1px)",
+        backgroundSize: "28px 28px",
+        maskImage: "linear-gradient(135deg, black, transparent 70%)",
+        WebkitMaskImage: "linear-gradient(135deg, black, transparent 70%)",
+        pointerEvents: "none",
+      }} />
+
+      {/* Top bar with logo + tiny "back to home" */}
+      <header style={{ position: "relative", zIndex: 2, padding: "20px 32px",
+                       display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <a href="#" onClick={(e) => { e.preventDefault(); onNav("landing"); }}
+           style={{ display: "inline-flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+          <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%3E%0A%20%20%0A%20%20%3Crect%20width%3D%2248%22%20height%3D%2248%22%20rx%3D%2211%22%20fill%3D%22%234F46E5%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2216%22%20r%3D%223.25%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Fcircle%3E%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2216%22%20r%3D%221.4%22%20fill%3D%22%234F46E5%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2214%22%20width%3D%2218%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2224%22%20r%3D%223.25%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.6%22%20opacity%3D%220.6%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2222%22%20width%3D%2214%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%20opacity%3D%220.55%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2232%22%20r%3D%223.25%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.6%22%20opacity%3D%220.6%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2230%22%20width%3D%2210%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%20opacity%3D%220.55%22%3E%3C%2Frect%3E%0A%3C%2Fsvg%3E" width={28} height={28} alt="" />
+          <span style={{ fontSize: 18, fontWeight: 700, color: "var(--gray-900)",
+                         letterSpacing: "-0.015em" }}>Polls</span>
+        </a>
+        <a href="#" onClick={(e) => { e.preventDefault(); onNav("landing"); }}
+           style={{ fontSize: 13, color: "var(--gray-500)", textDecoration: "none",
+                    display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Back to home
+        </a>
+      </header>
+
+      <div className="auth-grid" style={{
+        position: "relative", zIndex: 1,
+        maxWidth: 1120, margin: "0 auto",
+        padding: "20px 32px 64px",
+        display: "grid", gridTemplateColumns: "minmax(0, 1fr) 460px",
+        gap: 64, alignItems: "center", minHeight: "calc(100vh - 84px)",
+      }}>
+        {/* Left: brand-side content */}
+        <div className="auth-left" style={{ position: "relative" }}>
+          {side}
+
+          {/* Floating decorative live-results card */}
+          <div className="auth-floater" style={{
+            position: "absolute", bottom: -40, left: -40,
+            width: 300, transform: "rotate(-3deg)", opacity: 0.85,
+            pointerEvents: "none",
+          }}>
+            <div style={{ position: "relative" }}>
+              <LiveResultsCard offset={{ x: 0, y: 0 }} rotate={0} opacity={1} zIndex={1} />
+            </div>
+          </div>
+        </div>
+
+        {/* Right: form column */}
+        <div style={{ position: "relative", zIndex: 5 }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AuthBenefits() {
+  const items = [
+    "Single, multiple-choice, and free-text questions",
+    "Real-time results with per-question breakdowns",
+    "Anonymous responses · cookie-deduped",
+    "Public links or revocable private tokens",
+  ];
+  return (
+    <ul style={{ listStyle: "none", margin: "32px 0 0", padding: 0,
+                 display: "flex", flexDirection: "column", gap: 12 }}>
+      {items.map((it) => (
+        <li key={it} style={{ display: "flex", alignItems: "flex-start", gap: 12,
+                              fontSize: 15, color: "var(--gray-700)", lineHeight: 1.4 }}>
+          <span style={{
+            flexShrink: 0, width: 22, height: 22, borderRadius: 9999,
+            background: "var(--indigo-50)", color: "var(--indigo-600)",
+            display: "inline-flex", alignItems: "center", justifyContent: "center",
+            marginTop: 1,
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </span>
+          {it}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function AuthFormCard({ children }) {
+  return (
+    <div style={{
+      background: "#fff",
+      border: "1px solid var(--gray-200)",
+      borderRadius: 16,
+      padding: 36,
+      boxShadow: "0 20px 50px -12px rgb(31 41 55 / 0.12), 0 8px 16px -8px rgb(31 41 55 / 0.08)",
+    }}>
+      {children}
+    </div>
+  );
+}
+
+function LoginScreen({ onSubmit, onNav, isSubmitting, errors = {} }) {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  return (
+    <AuthSplit
+      onNav={onNav}
+      side={
+        <>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8,
+                        background: "var(--indigo-50)", color: "var(--indigo-700)",
+                        padding: "4px 12px", borderRadius: 9999,
+                        fontSize: 12, fontWeight: 600, letterSpacing: "0.04em" }}>
+            <span style={{ width: 6, height: 6, borderRadius: 9999, background: "var(--indigo-600)" }} />
+            Welcome back
+          </div>
+          <h1 style={{
+            margin: "20px 0 0",
+            fontSize: "clamp(36px, 5vw, 56px)",
+            lineHeight: 1.04, letterSpacing: "-0.03em", fontWeight: 700,
+            color: "var(--gray-900)",
+          }}>
+            Sign in to keep<br />
+            <span style={{ color: "var(--indigo-600)" }}>asking</span>.
+          </h1>
+          <p style={{ margin: "20px 0 0", maxWidth: 460, fontSize: 17, lineHeight: 1.55, color: "var(--gray-600)" }}>
+            Your polls, your responses, your analytics — pick up exactly where you left off.
+          </p>
+          <AuthBenefits />
+        </>
+      }
+    >
+      <AuthFormCard>
+        <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: "-0.015em",
+                     color: "var(--gray-900)" }}>Sign in</h2>
+        <p style={{ margin: "6px 0 0", fontSize: 14, color: "var(--gray-500)" }}>
+          Enter your email and password.
+        </p>
+        <form
+          onSubmit={(e) => { e.preventDefault(); onSubmit?.({ email, password }); }}
+          style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 24 }}
+        >
+          <Input label="Email" type="email" placeholder="you@example.com"
+                 value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <label className="label" htmlFor="login-pw" style={{ marginBottom: 4 }}>Password</label>
+              <a href="#" onClick={(e) => e.preventDefault()}
+                 style={{ fontSize: 12, color: "var(--indigo-600)" }}>Forgot?</a>
+            </div>
+            <input id="login-pw" className="input" type="password" placeholder="••••••••"
+                   value={password} onChange={(e) => setPassword(e.target.value)} />
+            {errors.password && <p className="error-text">{errors.password}</p>}
+          </div>
+          <Button type="submit" size="lg" isLoading={isSubmitting} style={{ width: "100%" }}>
+            Sign in
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          </Button>
+        </form>
+        <p style={{ margin: "20px 0 0", textAlign: "center", fontSize: 14, color: "var(--gray-600)" }}>
+          Don't have an account?{" "}
+          <a href="#" onClick={(e) => { e.preventDefault(); onNav("register"); }}
+             style={{ fontWeight: 500 }}>Create one</a>
+        </p>
+      </AuthFormCard>
+
+      <div style={{ marginTop: 16, textAlign: "center", fontSize: 12, color: "var(--gray-500)" }}>
+        Demo credentials: <span style={{ fontFamily: "ui-monospace, Menlo, monospace",
+                                          color: "var(--gray-700)" }}>admin@example.com</span>
+        {" · "}
+        <span style={{ fontFamily: "ui-monospace, Menlo, monospace",
+                       color: "var(--gray-700)" }}>Admin1234!</span>
+      </div>
+    </AuthSplit>
+  );
+}
+
+function RegisterScreen({ onSubmit, onNav, isSubmitting }) {
+  const [name, setName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  return (
+    <AuthSplit
+      onNav={onNav}
+      side={
+        <>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8,
+                        background: "var(--indigo-50)", color: "var(--indigo-700)",
+                        padding: "4px 12px", borderRadius: 9999,
+                        fontSize: 12, fontWeight: 600, letterSpacing: "0.04em" }}>
+            <span style={{ width: 6, height: 6, borderRadius: 9999, background: "var(--indigo-600)" }} />
+            Free · No credit card
+          </div>
+          <h1 style={{
+            margin: "20px 0 0",
+            fontSize: "clamp(36px, 5vw, 56px)",
+            lineHeight: 1.04, letterSpacing: "-0.03em", fontWeight: 700,
+            color: "var(--gray-900)",
+          }}>
+            Create your<br />
+            <span style={{ color: "var(--indigo-600)" }}>first poll</span> in 60s.
+          </h1>
+          <p style={{ margin: "20px 0 0", maxWidth: 460, fontSize: 17, lineHeight: 1.55, color: "var(--gray-600)" }}>
+            One account, unlimited polls. Share a link, collect responses, watch the bars fill.
+          </p>
+          <AuthBenefits />
+        </>
+      }
+    >
+      <AuthFormCard>
+        <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: "-0.015em",
+                     color: "var(--gray-900)" }}>Create account</h2>
+        <p style={{ margin: "6px 0 0", fontSize: 14, color: "var(--gray-500)" }}>
+          Takes about a minute.
+        </p>
+        <form
+          onSubmit={(e) => { e.preventDefault(); onSubmit?.({ name, email, password }); }}
+          style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 24 }}
+        >
+          <Input label="Name" placeholder="Alex Petrov" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input label="Email" type="email" placeholder="you@example.com"
+                 value={email} onChange={(e) => setEmail(e.target.value)} />
+          <div>
+            <label className="label">Password</label>
+            <input className="input" type="password" placeholder="At least 8 characters"
+                   value={password} onChange={(e) => setPassword(e.target.value)} />
+            <p style={{ margin: "6px 0 0", fontSize: 12, color: "var(--gray-500)" }}>
+              Use 8+ characters with a mix of letters, numbers &amp; symbols.
+            </p>
+          </div>
+          <Button type="submit" size="lg" isLoading={isSubmitting} style={{ width: "100%" }}>
+            Create account
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          </Button>
+        </form>
+        <p style={{ margin: "20px 0 0", textAlign: "center", fontSize: 14, color: "var(--gray-600)" }}>
+          Already have an account?{" "}
+          <a href="#" onClick={(e) => { e.preventDefault(); onNav("login"); }}
+             style={{ fontWeight: 500 }}>Sign in</a>
+        </p>
+      </AuthFormCard>
+
+      <p style={{ marginTop: 16, textAlign: "center", fontSize: 12, color: "var(--gray-500)",
+                  maxWidth: 380, marginLeft: "auto", marginRight: "auto", lineHeight: 1.5 }}>
+        By creating an account you agree to our Terms of Service and Privacy Policy.
+      </p>
+    </AuthSplit>
+  );
+}
+
+Object.assign(window, { LandingScreen, LoginScreen, RegisterScreen, AuthSplit, AuthFormCard });
+
+  </script>
+  <script type="text/babel">
+// Poll-taking and Poll dashboard components
+
+function QuestionRenderer({ question, value, onChange, error }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: "var(--gray-900)" }}>
+        {question.text}
+        {question.isRequired && <span style={{ marginLeft: 4, color: "var(--red-600)" }}>*</span>}
+      </p>
+
+      {question.type === "SINGLE_CHOICE" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {question.options.map((o) => (
+            <label key={o.id} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+              <input
+                type="radio"
+                name={`q-${question.id}`}
+                checked={value === o.id}
+                onChange={() => onChange(o.id)}
+                style={{ accentColor: "var(--indigo-600)", width: 16, height: 16 }}
+              />
+              <span className="text-sm text-gray-700">{o.text}</span>
+            </label>
+          ))}
+        </div>
+      )}
+
+      {question.type === "MULTIPLE_CHOICE" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {question.options.map((o) => {
+            const arr = Array.isArray(value) ? value : [];
+            const checked = arr.includes(o.id);
+            return (
+              <label key={o.id} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => onChange(checked ? arr.filter((v) => v !== o.id) : [...arr, o.id])}
+                  style={{ accentColor: "var(--indigo-600)", width: 16, height: 16 }}
+                />
+                <span className="text-sm text-gray-700">{o.text}</span>
+              </label>
+            );
+          })}
+        </div>
+      )}
+
+      {question.type === "TEXT" && (
+        <textarea
+          className="textarea"
+          rows={3}
+          placeholder="Your answer…"
+          value={typeof value === "string" ? value : ""}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      )}
+
+      {error && <p className="error-text">{error}</p>}
+    </div>
+  );
+}
+
+/* Public poll-taking screen — /:slug */
+function PollScreen({ poll, onSubmit, submitted, isSubmitting }) {
+  const [values, setValues] = React.useState({});
+  if (submitted) {
+    return (
+      <div className="page" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div className="card card-lg" style={{ width: "100%", maxWidth: 512, textAlign: "center" }}>
+          <div style={{ fontSize: 36 }}>🎉</div>
+          <h1 style={{ margin: "16px 0 0", fontSize: 20, fontWeight: 600, color: "var(--gray-900)" }}>Thank you!</h1>
+          <p className="text-sm text-gray-600" style={{ margin: "8px 0 0" }}>Your response has been recorded successfully.</p>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="page">
+      <div style={{ maxWidth: 512, margin: "0 auto" }}>
+        <div className="card card-md">
+          <h1 className="text-2xl font-bold text-gray-900" style={{ margin: 0 }}>{poll.title}</h1>
+          {poll.description && (
+            <p className="text-sm text-gray-600" style={{ margin: "8px 0 0" }}>{poll.description}</p>
+          )}
+          <form
+            onSubmit={(e) => { e.preventDefault(); onSubmit?.(values); }}
+            style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 24 }}
+          >
+            {poll.questions.map((q) => (
+              <QuestionRenderer
+                key={q.id}
+                question={q}
+                value={values[q.id] ?? (q.type === "MULTIPLE_CHOICE" ? [] : "")}
+                onChange={(v) => setValues((p) => ({ ...p, [q.id]: v }))}
+              />
+            ))}
+            <Button type="submit" isLoading={isSubmitting} style={{ width: "100%" }}>
+              {isSubmitting ? "Submitting…" : "Submit response"}
+            </Button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* Dashboard list item — one poll row */
+function PollListItem({ poll, onEdit, onDelete, onToggleActive, onCopyLink, onAnalytics }) {
+  return (
+    <div className="card card-sm">
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "flex-start", justifyContent: "space-between" }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
+            <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "var(--gray-900)" }}>{poll.title}</h3>
+            <Badge variant={poll.visibility === "PUBLIC" ? "success" : "default"}>{poll.visibility}</Badge>
+            <Badge variant={poll.isActive ? "info" : "danger"}>{poll.isActive ? "Active" : "Inactive"}</Badge>
+          </div>
+          <p className="text-xs text-gray-500" style={{ margin: "6px 0 0" }}>
+            /{poll.slug} · {poll.responseCount} response{poll.responseCount !== 1 ? "s" : ""}
+            {poll.expiresAt && <> · Expires {poll.expiresAt}</>}
+          </p>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          <button className="btn btn-row" onClick={() => onToggleActive?.(poll)}>
+            {poll.isActive ? "Deactivate" : "Activate"}
+          </button>
+          <button className="btn btn-row" onClick={() => onCopyLink?.(poll)}>Copy link</button>
+          <button className="btn btn-row" onClick={() => onAnalytics?.(poll)}>Analytics</button>
+          <button className="btn btn-soft-primary" onClick={() => onEdit?.(poll)}>Edit</button>
+          <button className="btn btn-soft-danger" onClick={() => onDelete?.(poll)}>Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DashboardScreen({ user, polls, onCreate, onAnalytics, onDelete, onEdit, onToggleActive, onCopyLink, onSignOut, initialTab = "polls" }) {
+  const [tab, setTab] = React.useState(initialTab);
+  const [search, setSearch] = React.useState("");
+  const [createOpen, setCreateOpen] = React.useState(false);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+
+  // Inline Heroicons
+  const ico = {
+    polls:    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>,
+    chart:    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+    users:    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+    server:   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="8" rx="1"/><rect x="2" y="13" width="20" height="8" rx="1"/><line x1="6" y1="7" x2="6.01" y2="7"/><line x1="6" y1="17" x2="6.01" y2="17"/></svg>,
+    bell:     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
+    help:     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+    plus:     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M12 5v14M5 12h14"/></svg>,
+    settings: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
+    user:     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+    signout:  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
+  };
+
+  const isAdmin = user?.role === "ADMIN";
+
+  // Sidebar item config
+  const PERSONAL = [
+    { id: "polls",     label: "My polls",  icon: ico.polls },
+    { id: "analytics", label: "Analytics", icon: ico.chart },
+  ];
+  const STAFF = [
+    { id: "all-users", label: "All users",  icon: ico.users  },
+    { id: "all-polls", label: "All polls",  icon: ico.polls  },
+    { id: "system",    label: "System",     icon: ico.server },
+  ];
+
+  // Title / subtitle per tab
+  const TITLES = {
+    polls:       { title: "My polls",  subtitle: `Welcome back, ${user?.name}` },
+    analytics:   { title: "Analytics", subtitle: "Insights across your polls" },
+    "all-users": { title: "All users", subtitle: `${SAMPLE_USERS.length} total users` },
+    "all-polls": { title: "All polls", subtitle: `${polls.length} total polls in the system` },
+    system:      { title: "System",    subtitle: "System health & monitoring" },
+  };
+  const meta = TITLES[tab] || TITLES.polls;
+
+  // Filter polls
+  const filteredPolls = polls.filter((p) =>
+    !search
+    || p.title.toLowerCase().includes(search.toLowerCase())
+    || p.slug.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div style={{ display: "flex", minHeight: "100vh", background: "var(--gray-50)" }}>
+      <SidebarNav style={{ width: 248, position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
+        {/* Brand */}
+        <div style={{ padding: "6px 8px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+          <svg viewBox="0 0 48 48" fill="none" width={26} height={26} aria-hidden="true">
+            <rect width="48" height="48" rx="11" fill="#4F46E5" />
+            <circle cx="13" cy="16" r="3.25" fill="#fff" />
+            <circle cx="13" cy="16" r="1.4" fill="#4F46E5" />
+            <rect x="20" y="14" width="18" height="4" rx="2" fill="#fff" />
+            <circle cx="13" cy="24" r="3.25" fill="none" stroke="#fff" strokeWidth="1.6" opacity="0.6" />
+            <rect x="20" y="22" width="14" height="4" rx="2" fill="#fff" opacity="0.55" />
+            <circle cx="13" cy="32" r="3.25" fill="none" stroke="#fff" strokeWidth="1.6" opacity="0.6" />
+            <rect x="20" y="30" width="10" height="4" rx="2" fill="#fff" opacity="0.55" />
+          </svg>
+          <span style={{ fontSize: 16, fontWeight: 700, color: "var(--gray-900)", letterSpacing: "-0.015em" }}>Polls</span>
+        </div>
+
+        <div style={{ padding: "0 4px 10px" }}>
+          <SearchInput value={search} onChange={setSearch} placeholder="Search…" kbd="⌘K" />
+        </div>
+
+        <SidebarSection label="Workspace">
+          {PERSONAL.map((n) => (
+            <SidebarItem key={n.id} icon={n.icon} label={n.label}
+              active={tab === n.id} onClick={() => setTab(n.id)} />
+          ))}
+        </SidebarSection>
+
+        {isAdmin && (
+          <SidebarSection label="Staff">
+            {STAFF.map((n) => (
+              <SidebarItem key={n.id} icon={n.icon} label={n.label}
+                active={tab === n.id} onClick={() => setTab(n.id)} />
+            ))}
+          </SidebarSection>
+        )}
+      </SidebarNav>
+
+      {/* ── Main column ─────────────────────────────────────────────── */}
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        {/* Top bar */}
+        <header style={{
+          height: 64, background: "#fff",
+          borderBottom: "1px solid var(--gray-200)",
+          padding: "0 32px", display: "flex", alignItems: "center", gap: 16,
+          position: "sticky", top: 0, zIndex: 10,
+        }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "var(--gray-900)",
+                         letterSpacing: "-0.01em" }}>{meta.title}</h1>
+            {meta.subtitle && (
+              <p style={{ margin: "2px 0 0", fontSize: 13, color: "var(--gray-500)" }}>{meta.subtitle}</p>
+            )}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {(tab === "polls" || tab === "all-polls") && (
+              <Button onClick={() => setCreateOpen(true)}>
+                {ico.plus}<span>New poll</span>
+              </Button>
+            )}
+            <IconButton label="Notifications" icon={ico.bell} dot="red" />
+            <IconButton label="Help" icon={ico.help} />
+
+            {/* User profile menu */}
+            <MenuPopover
+              align="end"
+              items={[
+                { icon: ico.user,     label: "Your profile",  onClick: () => setSettingsOpen(true) },
+                { icon: ico.settings, label: "Settings",       onClick: () => setSettingsOpen(true) },
+                "divider",
+                { icon: ico.signout,  label: "Sign out", danger: true, onClick: onSignOut },
+              ]}
+              trigger={
+                <button style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  marginLeft: 4,
+                  padding: "4px 10px 4px 4px", borderRadius: 9999,
+                  background: "transparent", border: "1px solid var(--gray-200)",
+                  cursor: "pointer", transition: "background-color 200ms ease, border-color 200ms ease",
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = "var(--gray-50)"}
+                onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                  <Avatar name={user?.name || "?"} size="sm" />
+                  <span className="dash-user-name" style={{ fontSize: 13, fontWeight: 500, color: "var(--gray-700)",
+                                 maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {(user?.name || "Account").split(" ")[0]}
+                  </span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                       strokeLinecap="round" strokeLinejoin="round" width="14" height="14"
+                       className="dash-user-chev"
+                       style={{ color: "var(--gray-400)" }}>
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                </button>
+              } />
+          </div>
+        </header>
+
+        {/* Body */}
+        <main style={{ flex: 1, padding: "28px 32px", maxWidth: 1200, width: "100%", margin: "0 auto" }}>
+          {tab === "polls" && (
+            polls.length === 0 ? (
+              <EmptyState
+                icon={ico.polls}
+                title="No polls yet"
+                body="Create your first poll to start collecting responses."
+                action={<Button onClick={() => setCreateOpen(true)}>Create poll</Button>} />
+            ) : filteredPolls.length === 0 ? (
+              <EmptyState
+                title={`No polls match “${search}”`}
+                body="Try a different search term." />
+            ) : (
+              <AdminPollsTable
+                polls={filteredPolls}
+                search={search}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onAnalytics={onAnalytics}
+                onToggleActive={onToggleActive} />
+            )
+          )}
+
+          {tab === "all-polls" && isAdmin && (
+            polls.length === 0 ? (
+              <EmptyState
+                icon={ico.polls}
+                title="No polls in the system"
+                body="Once users create polls, they will show up here." />
+            ) : filteredPolls.length === 0 ? (
+              <EmptyState
+                title={`No polls match “${search}”`}
+                body="Try a different search term." />
+            ) : (
+              <AdminPollsTable
+                polls={filteredPolls}
+                search={search}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onAnalytics={onAnalytics}
+                onToggleActive={onToggleActive} />
+            )
+          )}
+
+          {tab === "analytics" && (
+            <AnalyticsView totalResponses={ANALYTICS_DEMO.totalResponses} questions={ANALYTICS_DEMO.questions} regions={ANALYTICS_DEMO.regions} />
+          )}
+
+          {tab === "all-users" && isAdmin && (
+            <AdminUsersTable users={SAMPLE_USERS} />
+          )}
+
+          {tab === "system" && isAdmin && (
+            <div className="card card-md">
+              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>System health</h2>
+              <p style={{ margin: "8px 0 0", fontSize: 14, color: "var(--gray-600)" }}>
+                Real implementation polls <code>GET /api/v1/admin/system</code> for DB / queue / uptime.
+                Not recreated in the kit.
+              </p>
+            </div>
+          )}
+
+          {tab === "settings" && (
+            <SettingsScreen user={user} onSignOut={onSignOut} />
+          )}
+        </main>
+      </div>
+
+      {/* Create-poll modal */}
+      {createOpen && (
+        <PollCreateModal onClose={() => setCreateOpen(false)} />
+      )}
+
+      {/* Settings modal */}
+      {settingsOpen && (
+        <SettingsModal user={user} onSignOut={onSignOut} onClose={() => setSettingsOpen(false)} />
+      )}
+    </div>
+  );
+}
+
+/* (local SidebarSection / SidebarItem removed — now provided by the design system) */
+
+function SettingsSection({ title, subtitle, children, footer }) {
+  return (
+    <section style={{
+      display: "grid", gridTemplateColumns: "260px 1fr", gap: 32,
+      padding: "28px 0", borderTop: "1px solid var(--gray-200)",
+    }}>
+      <div>
+        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "var(--gray-900)" }}>{title}</h3>
+        {subtitle && (
+          <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--gray-500)", lineHeight: 1.5 }}>{subtitle}</p>
+        )}
+      </div>
+      <div className="card card-md" style={{ padding: 0 }}>
+        <div style={{ padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
+          {children}
+        </div>
+        {footer && (
+          <div style={{
+            padding: "12px 20px", borderTop: "1px solid var(--gray-200)",
+            background: "var(--gray-50)", display: "flex", justifyContent: "flex-end", gap: 8,
+            borderBottomLeftRadius: "var(--radius-lg, 12px)", borderBottomRightRadius: "var(--radius-lg, 12px)",
+          }}>
+            {footer}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function SettingsRow({ title, body, control }) {
+  return (
+    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: "var(--gray-900)" }}>{title}</p>
+        {body && <p style={{ margin: "2px 0 0", fontSize: 13, color: "var(--gray-500)", lineHeight: 1.5 }}>{body}</p>}
+      </div>
+      <div style={{ flexShrink: 0 }}>{control}</div>
+    </div>
+  );
+}
+
+function SettingsScreen({ user, onSignOut }) {
+  const [name, setName]   = React.useState(user?.name  || "");
+  const [email, setEmail] = React.useState(user?.email || "");
+  const [emailNew,    setEmailNew]    = React.useState(true);
+  const [emailWeekly, setEmailWeekly] = React.useState(true);
+  const [emailMarket, setEmailMarket] = React.useState(false);
+  const [theme, setTheme]             = React.useState("system");
+  const [confirmDeleteAcct, setConfirmDeleteAcct] = React.useState(false);
+
+  return (
+    <div>
+      <SettingsSection
+        title="Profile"
+        subtitle="This information will be displayed publicly on polls you create."
+        footer={<><Button variant="secondary">Cancel</Button><Button>Save changes</Button></>}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <Avatar name={name || "?"} size="lg" />
+          <div style={{ display: "flex", gap: 8 }}>
+            <Button variant="secondary" size="sm">Upload new</Button>
+            <Button variant="ghost" size="sm">Remove</Button>
+          </div>
+        </div>
+        <Input label="Full name" value={name} onChange={(e) => setName(e.target.value)} />
+        <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <div>
+          <label className="label">Role</label>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Badge variant={user?.role === "ADMIN" ? "info" : "default"}>{user?.role || "USER"}</Badge>
+            <span style={{ fontSize: 13, color: "var(--gray-500)" }}>Contact an admin to change your role.</span>
+          </div>
+        </div>
+      </SettingsSection>
+
+      <SettingsSection
+        title="Password"
+        subtitle="Update the password used to sign in."
+        footer={<Button>Update password</Button>}
+      >
+        <Input label="Current password" type="password" placeholder="••••••••" />
+        <Input label="New password" type="password" placeholder="At least 8 characters" />
+        <Input label="Confirm new password" type="password" placeholder="Re-enter new password" />
+      </SettingsSection>
+
+      <SettingsSection
+        title="Email notifications"
+        subtitle="Choose which emails you want to receive from Polls."
+      >
+        <SettingsRow
+          title="New responses"
+          body="Get an email whenever someone submits a response to one of your polls."
+          control={<Toggle checked={emailNew} onChange={setEmailNew} />}
+        />
+        <SettingsRow
+          title="Weekly summary"
+          body="A weekly digest of activity across your polls every Monday."
+          control={<Toggle checked={emailWeekly} onChange={setEmailWeekly} />}
+        />
+        <SettingsRow
+          title="Product updates"
+          body="Occasional news about new features and tips."
+          control={<Toggle checked={emailMarket} onChange={setEmailMarket} />}
+        />
+      </SettingsSection>
+
+      <SettingsSection
+        title="Appearance"
+        subtitle="Change how Polls looks on this device."
+      >
+        <div>
+          <label className="label">Theme</label>
+          <div style={{ display: "flex", gap: 8 }}>
+            {[
+              { id: "light",  label: "Light"  },
+              { id: "dark",   label: "Dark"   },
+              { id: "system", label: "System" },
+            ].map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => setTheme(opt.id)}
+                className={theme === opt.id ? "btn btn-soft-primary" : "btn btn-row"}
+                style={{ flex: 1 }}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </SettingsSection>
+
+      <SettingsSection
+        title="Sessions"
+        subtitle="You are signed in on this device."
+      >
+        <SettingsRow
+          title="Sign out of this session"
+          body="You will need to log in again to access your polls."
+          control={<Button variant="secondary" onClick={onSignOut}>Sign out</Button>}
+        />
+      </SettingsSection>
+
+      <SettingsSection
+        title={<span style={{ color: "var(--red-700, #b91c1c)" }}>Danger zone</span>}
+        subtitle="Irreversible actions. Please be certain."
+      >
+        <SettingsRow
+          title="Delete account"
+          body="Permanently delete your account along with all of your polls and responses. This cannot be undone."
+          control={<Button variant="danger" onClick={() => setConfirmDeleteAcct(true)}>Delete account</Button>}
+        />
+      </SettingsSection>
+
+      {confirmDeleteAcct && (
+        <ConfirmDialog
+          title="Delete your account?"
+          body={<>This will permanently erase <b>{user?.name || "your account"}</b> and all associated polls, questions and responses. This action cannot be undone.</>}
+          confirmLabel="Delete account"
+          onCancel={() => setConfirmDeleteAcct(false)}
+          onConfirm={() => { setConfirmDeleteAcct(false); onSignOut && onSignOut(); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function SettingsModal({ user, onSignOut, onClose }) {
+  return (
+    <Modal open={true} onClose={onClose} size="xl"
+      title="Settings" subtitle="Manage your account and preferences."
+      footer={
+        <>
+          <div style={{ fontSize: 13, color: "var(--gray-500)", marginRight: "auto" }}>
+            Signed in as <span style={{ color: "var(--gray-700)" }}>{user?.email}</span>
+          </div>
+          <Button onClick={onClose}>Done</Button>
+        </>
+      }>
+      <div style={{ background: "var(--gray-50)", margin: -20, padding: "8px 24px 24px" }}>
+        <div style={{ maxWidth: 880, margin: "0 auto" }}>
+          <SettingsScreen user={user} onSignOut={() => { onClose && onClose(); onSignOut && onSignOut(); }} />
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+/* Demo data shared between dashboard tabs */
+const SAMPLE_USERS = [
+  { id:"u1", name:"Alex Petrov",  email:"alex@polls.app",         role:"ADMIN", joined:"Jan 4, 2024"  },
+  { id:"u2", name:"Jordan Kim",   email:"jordan.kim@example.com", role:"USER",  joined:"Mar 17, 2024" },
+  { id:"u3", name:"Sam Müller",   email:"sam@firma.de",           role:"USER",  joined:"Apr 2, 2024"  },
+  { id:"u4", name:"Lin Zhao",     email:"lin@zh.ao",              role:"USER",  joined:"Jun 11, 2024" },
+  { id:"u5", name:"Priya Shah",   email:"priya@shah.dev",         role:"ADMIN", joined:"Aug 30, 2024" },
+];
+const ANALYTICS_DEMO = {
+  totalResponses: 47,
+  regions: [
+    { id:"na", name:"North America", count:18, pct:38.3, color:"#4F46E5" },
+    { id:"eu", name:"Europe",        count:15, pct:31.9, color:"#7C3AED" },
+    { id:"as", name:"Asia",           count:9,  pct:19.1, color:"#10B981" },
+    { id:"sa", name:"South America",  count:3,  pct:6.4,  color:"#F59E0B" },
+    { id:"af", name:"Africa",         count:1,  pct:2.1,  color:"#EF4444" },
+    { id:"oc", name:"Oceania",        count:1,  pct:2.1,  color:"#06B6D4" },
+  ],
+  questions: [
+    { id:"q1", text:"How would you rate your overall workload?", total:47, options:[
+      { id:"o1", text:"Light",        count:6,  pct:12.8 },
+      { id:"o2", text:"Just right",   count:24, pct:51.1 },
+      { id:"o3", text:"Heavy",        count:13, pct:27.7 },
+      { id:"o4", text:"Overwhelming", count:4,  pct:8.5  },
+    ]},
+    { id:"q2", text:"Which areas would you like more support in?", total:39, options:[
+      { id:"p1", text:"Career growth",        count:22, pct:56.4 },
+      { id:"p2", text:"Technical mentorship", count:18, pct:46.2 },
+      { id:"p3", text:"Cross-team work",      count:9,  pct:23.1 },
+      { id:"p4", text:"Process & tooling",    count:14, pct:35.9 },
+    ]},
+    { id:"q3", type:"text", text:"Anything else you’d like the team to know?", total:18, answers:[
+      "More 1:1 time with my manager would help me feel less stuck on long-running projects.",
+      "The current sprint length feels too aggressive for the size of features we ship.",
+      "I love the new design review process — way clearer feedback than before.",
+      "Pairing sessions with senior engineers have been the best part of this quarter.",
+      "Can we revisit on-call rotation? Three weeks in a row is rough.",
+      "Office snacks took a hit this month, please bring back the good coffee.",
+      "Documentation for the auth service is still really hard to find.",
+    ]},
+  ],
+};
+
+function ConfirmDialog({ title, body, confirmLabel = "Delete", danger = true, onCancel, onConfirm, isPending }) {
+  return (
+    <div className="modal-scrim" role="dialog" aria-modal="true" onClick={onCancel}>
+      <div className="modal" style={{ maxWidth: 384 }} onClick={(e) => e.stopPropagation()}>
+        <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "var(--gray-900)" }}>{title}</h2>
+        <p className="text-sm text-gray-600" style={{ margin: "8px 0 0" }}>{body}</p>
+        <div className="flex" style={{ marginTop: 16, justifyContent: "flex-end", gap: 12 }}>
+          <Button variant="secondary" onClick={onCancel}>Cancel</Button>
+          <Button variant={danger ? "danger" : "primary"} onClick={onConfirm} isLoading={isPending}>{confirmLabel}</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { QuestionRenderer, PollScreen, PollListItem, DashboardScreen, ConfirmDialog, ANALYTICS_DEMO });
+
+  </script>
+  <script type="text/babel">
+// Admin shell — sidebar, header, dashboard, users table, analytics view
+
+const ADMIN_NAV = [
+  { key: "dashboard", label: "Dashboard" },
+  { key: "users",     label: "Users" },
+  { key: "polls",     label: "Polls" },
+  { key: "analytics", label: "Analytics" },
+  { key: "system",    label: "System" },
+];
+
+function AdminSidebar({ active, onNav, user, onSignOut }) {
+  return (
+    <aside className="admin-sidebar">
+      <div style={{
+        height: 64, display: "flex", alignItems: "center", gap: 10,
+        padding: "0 24px", borderBottom: "1px solid var(--gray-700)",
+      }}>
+        <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%3E%0A%20%20%0A%20%20%3Crect%20width%3D%2248%22%20height%3D%2248%22%20rx%3D%2211%22%20fill%3D%22%234F46E5%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2216%22%20r%3D%223.25%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Fcircle%3E%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2216%22%20r%3D%221.4%22%20fill%3D%22%234F46E5%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2214%22%20width%3D%2218%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2224%22%20r%3D%223.25%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.6%22%20opacity%3D%220.6%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2222%22%20width%3D%2214%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%20opacity%3D%220.55%22%3E%3C%2Frect%3E%0A%20%20%0A%20%20%3Ccircle%20cx%3D%2213%22%20cy%3D%2232%22%20r%3D%223.25%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.6%22%20opacity%3D%220.6%22%3E%3C%2Fcircle%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2230%22%20width%3D%2210%22%20height%3D%224%22%20rx%3D%222%22%20fill%3D%22%23FFFFFF%22%20opacity%3D%220.55%22%3E%3C%2Frect%3E%0A%3C%2Fsvg%3E" width={24} height={24} alt="" />
+        <span style={{ fontSize: 20, fontWeight: 700, color: "#fff", letterSpacing: "-0.015em" }}>Polls</span>
+        <span style={{
+          background: "var(--indigo-600)", color: "#fff", borderRadius: 4,
+          padding: "2px 8px", fontSize: 10, fontWeight: 600, letterSpacing: "0.05em",
+        }}>ADMIN</span>
+      </div>
+
+      <nav style={{ flex: 1, padding: "16px 12px" }}>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 4 }}>
+          {ADMIN_NAV.map((item) => {
+            const isActive = item.key === active;
+            return (
+              <li key={item.key}>
+                <a
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); onNav?.(item.key); }}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 12,
+                    padding: "10px 12px", borderRadius: 8, fontSize: 14, fontWeight: 500,
+                    transition: "background-color 200ms ease, color 200ms ease",
+                    textDecoration: "none",
+                    background: isActive ? "var(--indigo-600)" : "transparent",
+                    color: isActive ? "#fff" : "var(--gray-300)",
+                  }}
+                  onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.background = "var(--gray-800)"; e.currentTarget.style.color = "#fff"; } }}
+                  onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--gray-300)"; } }}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      <div style={{ borderTop: "1px solid var(--gray-700)", padding: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+          <Avatar name={user?.name} size="sm" variant="dark" />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.name}</p>
+            <p style={{ margin: 0, fontSize: 12, color: "var(--gray-400)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.email}</p>
+          </div>
+        </div>
+        <button
+          onClick={onSignOut}
+          style={{
+            width: "100%", textAlign: "left", borderRadius: 8, padding: "8px 12px",
+            background: "transparent", border: 0, color: "var(--gray-400)", fontSize: 14, cursor: "pointer",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = "var(--gray-800)"; e.currentTarget.style.color = "#fff"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--gray-400)"; }}
+        >
+          Sign out
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+function AdminHeader({ title, subtitle, action }) {
+  return (
+    <div className="admin-header">
+      <div>
+        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: "var(--gray-900)" }}>{title}</h1>
+        {subtitle && <p style={{ margin: "2px 0 0", fontSize: 14, color: "var(--gray-500)" }}>{subtitle}</p>}
+      </div>
+      {action && <Button onClick={action.onClick}>{action.label}</Button>}
+    </div>
+  );
+}
+
+function AdminShell({ active, onNav, user, onSignOut, title, subtitle, action, children }) {
+  return (
+    <div className="admin-shell">
+      <AdminSidebar active={active} onNav={onNav} user={user} onSignOut={onSignOut} />
+      <div className="admin-content">
+        <AdminHeader title={title} subtitle={subtitle} action={action} />
+        <div style={{ padding: 24, flex: 1 }}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function AdminDashboard({ stats, recentPolls }) {
+  return (
+    <>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+        <StatCard
+          title="Total Users" value={stats.users.toLocaleString()} icon="users" tone="indigo"
+          description="vs last week"
+          trend={{ value: "12.4%", positive: true }}
+          sparkline={[42, 48, 51, 49, 58, 62, 68, 71, 79, 82, 88, 96]}
+        />
+        <StatCard
+          title="Total Polls" value={stats.polls.toLocaleString()} icon="polls" tone="blue"
+          description="vs last week"
+          trend={{ value: "8.1%", positive: true }}
+          sparkline={[12, 15, 18, 17, 22, 26, 28, 33, 31, 37, 42, 48]}
+        />
+        <StatCard
+          title="Active Polls" value={stats.active.toLocaleString()} icon="check" tone="green"
+          description="accepting responses"
+          trend={{ value: "3.2%", positive: false }}
+          sparkline={[88, 92, 95, 97, 94, 96, 91, 89, 92, 90, 88, 84]}
+        />
+      </div>
+
+      <div style={{ marginTop: 32 }}>
+        <h2 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 600, color: "var(--gray-900)" }}>Recent Polls</h2>
+        <div className="table-wrap">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Title</th><th>Owner</th><th>Visibility</th><th>Responses</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentPolls.map((p) => (
+                <tr key={p.id}>
+                  <td>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: "var(--gray-900)" }}>{p.title}</p>
+                    <p style={{ margin: 0, fontSize: 12, color: "var(--gray-500)" }}>{p.slug}</p>
+                  </td>
+                  <td>{p.owner}</td>
+                  <td><Badge variant={p.visibility === "PUBLIC" ? "success" : "default"}>{p.visibility}</Badge></td>
+                  <td>{p.responseCount}</td>
+                  <td><Badge variant={p.isActive ? "success" : "danger"}>{p.isActive ? "Active" : "Inactive"}</Badge></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function AdminPollsTable({ polls, search, onEdit, onDelete, onToggleActive, onAnalytics }) {
+  const [sel, setSel] = React.useState([]);
+  const [confirmDel, setConfirmDel] = React.useState(null);
+  const [editPoll, setEditPoll] = React.useState(null);
+  const [analyticsPoll, setAnalyticsPoll] = React.useState(null);
+
+  const chartIcon = (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
+      <line x1="18" y1="20" x2="18" y2="10"/>
+      <line x1="12" y1="20" x2="12" y2="4"/>
+      <line x1="6" y1="20" x2="6" y2="14"/>
+    </svg>
+  );
+
+  const allIds = polls.map((p) => p.id);
+  const allSelected = allIds.length > 0 && allIds.every((id) => sel.includes(id));
+  const toggleAll = () => setSel(allSelected ? [] : allIds);
+  const toggleOne = (id) => setSel((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id]);
+
+  return (
+    <>
+      <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
+        <p className="text-sm text-gray-500" style={{ margin: 0 }}>
+          {sel.length > 0 ? `${sel.length} selected` : `${polls.length} polls`}
+        </p>
+        <Button variant="secondary" size="sm">Export CSV</Button>
+      </div>
+
+      {sel.length > 0 && (
+        <div className="card card-sm" style={{
+          marginBottom: 12, background: "var(--indigo-50)", border: "1px solid var(--indigo-100)",
+          padding: 14, display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}>
+          <span className="text-sm" style={{ color: "var(--indigo-700)", fontWeight: 500 }}>
+            {sel.length} {sel.length === 1 ? "poll" : "polls"} selected
+          </span>
+          <div className="flex gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setSel([])}>Clear</Button>
+            <Button variant="danger" size="sm">Delete selected</Button>
+          </div>
+        </div>
+      )}
+
+      <div className="table-wrap">
+        <table className="table">
+          <thead>
+            <tr>
+              <th style={{ width: 40 }}>
+                <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ accentColor: "var(--indigo-600)" }} />
+              </th>
+              <th>Poll</th><th>Visibility</th><th>Status</th><th>Responses</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {polls.map((p) => {
+              const isSel = sel.includes(p.id);
+              return (
+                <tr key={p.id} className={isSel ? "is-selected" : ""}>
+                  <td>
+                    <input type="checkbox" checked={isSel} onChange={() => toggleOne(p.id)} style={{ accentColor: "var(--indigo-600)" }} />
+                  </td>
+                  <td>
+                    <div>
+                      <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: "var(--gray-900)" }}>{p.title}</p>
+                      <p style={{ margin: 0, fontSize: 12, color: "var(--gray-500)" }}>/{p.slug}</p>
+                    </div>
+                  </td>
+                  <td><Badge variant={p.visibility === "PUBLIC" ? "success" : "default"}>{p.visibility}</Badge></td>
+                  <td><Badge variant={p.isActive ? "info" : "danger"}>{p.isActive ? "Active" : "Inactive"}</Badge></td>
+                  <td>{p.responseCount}</td>
+                  <td>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button className="btn btn-row" onClick={() => setAnalyticsPoll(p)} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                        {chartIcon}<span>Analytics</span>
+                      </button>
+                      <button className="btn btn-soft-primary" onClick={() => setEditPoll(p)}>Edit</button>
+                      <button className="btn btn-soft-danger" onClick={() => setConfirmDel(p)}>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {confirmDel && (
+        <ConfirmDialog
+          title="Delete poll?"
+          body={<>Are you sure you want to delete <b>{confirmDel.title}</b>? This will remove all responses and cannot be undone.</>}
+          confirmLabel="Delete"
+          onCancel={() => setConfirmDel(null)}
+          onConfirm={() => { onDelete?.(confirmDel); setConfirmDel(null); }}
+        />
+      )}
+      {editPoll && (
+        <PollCreateModal onClose={() => setEditPoll(null)} />
+      )}
+      {analyticsPoll && (
+        <AnalyticsModal poll={analyticsPoll} onClose={() => setAnalyticsPoll(null)} />
+      )}
+    </>
+  );
+}
+
+function AdminUsersTable({ users }) {
+  const [sel, setSel] = React.useState([]);
+  const [confirmDel, setConfirmDel] = React.useState(null);
+  const [editUser, setEditUser] = React.useState(null);
+  const allIds = users.map((u) => u.id);
+  const allSelected = allIds.length > 0 && allIds.every((id) => sel.includes(id));
+  const toggleAll = () => setSel(allSelected ? [] : allIds);
+  const toggleOne = (id) => setSel((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id]);
+
+  return (
+    <>
+      <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
+        <p className="text-sm text-gray-500" style={{ margin: 0 }}>
+          {sel.length > 0 ? `${sel.length} selected` : `${users.length} users`}
+        </p>
+        <Button variant="secondary" size="sm">Export CSV</Button>
+      </div>
+
+      {sel.length > 0 && (
+        <div className="card card-sm" style={{
+          marginBottom: 12, background: "var(--indigo-50)", border: "1px solid var(--indigo-100)",
+          padding: 14, display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}>
+          <span className="text-sm" style={{ color: "var(--indigo-700)", fontWeight: 500 }}>
+            {sel.length} {sel.length === 1 ? "user" : "users"} selected
+          </span>
+          <div className="flex gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setSel([])}>Clear</Button>
+            <Button variant="danger" size="sm">Delete selected</Button>
+          </div>
+        </div>
+      )}
+
+      <div className="table-wrap">
+        <table className="table">
+          <thead>
+            <tr>
+              <th style={{ width: 40 }}>
+                <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ accentColor: "var(--indigo-600)" }} />
+              </th>
+              <th>User</th><th>Role</th><th>Joined</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((u) => {
+              const isSel = sel.includes(u.id);
+              return (
+                <tr key={u.id} className={isSel ? "is-selected" : ""}>
+                  <td>
+                    <input type="checkbox" checked={isSel} onChange={() => toggleOne(u.id)} style={{ accentColor: "var(--indigo-600)" }} />
+                  </td>
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <Avatar name={u.name} />
+                      <div>
+                        <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: "var(--gray-900)" }}>{u.name}</p>
+                        <p style={{ margin: 0, fontSize: 12, color: "var(--gray-500)" }}>{u.email}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td><Badge variant={u.role === "ADMIN" ? "info" : "default"}>{u.role}</Badge></td>
+                  <td>{u.joined}</td>
+                  <td>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button className="btn btn-soft-primary" onClick={() => setEditUser(u)}>Edit</button>
+                      <button className="btn btn-soft-danger" onClick={() => setConfirmDel(u)}>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {confirmDel && (
+        <ConfirmDialog
+          title="Delete user?"
+          body={<>Are you sure you want to delete <b>{confirmDel.name}</b>? This action cannot be undone.</>}
+          confirmLabel="Delete"
+          onCancel={() => setConfirmDel(null)}
+          onConfirm={() => setConfirmDel(null)}
+        />
+      )}
+      {editUser && (
+        <UserEditModal user={editUser} onClose={() => setEditUser(null)} />
+      )}
+    </>
+  );
+}
+
+/* Analytics — total + per-question breakdowns */
+function AnalyticsView({ totalResponses, questions, regions }) {
+  return (
+    <>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 16 }}>
+        <div className="card card-md">
+          <p className="text-sm font-medium text-gray-500" style={{ margin: 0 }}>Total responses</p>
+          <p style={{ margin: "4px 0 0", fontSize: 36, fontWeight: 700, color: "var(--gray-900)", lineHeight: 1 }}>{totalResponses}</p>
+          <p className="text-xs text-gray-500" style={{ margin: "10px 0 0" }}>+12 in the last 7 days</p>
+        </div>
+        {regions && regions.length > 0 && (
+          <RespondentAreasCard regions={regions} total={totalResponses} />
+        )}
+      </div>
+
+      <div style={{ marginTop: 24 }}>
+        <h2 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 600, color: "var(--gray-900)" }}>Question breakdown</h2>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {questions.map((q) => (
+            <QuestionAnalyticsCard key={q.id} q={q} />
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function RespondentAreasCard({ regions, total }) {
+  const size = 132, stroke = 22, r = (size - stroke) / 2, C = 2 * Math.PI * r;
+  let offset = 0;
+  const segments = regions.map((reg) => {
+    const len = (reg.pct / 100) * C;
+    const seg = { ...reg, dasharray: `${len} ${C - len}`, dashoffset: -offset };
+    offset += len;
+    return seg;
+  });
+  const top = regions[0];
+  return (
+    <div className="card card-md">
+      <div className="flex" style={{ alignItems: "flex-start", justifyContent: "space-between", marginBottom: 12 }}>
+        <div>
+          <p className="text-sm font-medium text-gray-500" style={{ margin: 0 }}>Respondent areas</p>
+          <p className="text-xs text-gray-500" style={{ margin: "2px 0 0" }}>Distribution by region</p>
+        </div>
+        <Badge variant="default">{regions.length} regions</Badge>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+        <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
+          <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }}>
+            <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--gray-100)" strokeWidth={stroke} />
+            {segments.map((s) => (
+              <circle key={s.id} cx={size/2} cy={size/2} r={r} fill="none"
+                stroke={s.color} strokeWidth={stroke}
+                strokeDasharray={s.dasharray} strokeDashoffset={s.dashoffset}
+                strokeLinecap="butt" />
+            ))}
+          </svg>
+          <div style={{
+            position: "absolute", inset: 0, display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center", textAlign: "center",
+          }}>
+            <span style={{ fontSize: 11, color: "var(--gray-500)", textTransform: "uppercase", letterSpacing: ".06em" }}>Top</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--gray-900)", marginTop: 1 }}>{top?.name}</span>
+            <span style={{ fontSize: 12, color: "var(--gray-500)", marginTop: 1 }}>{top?.pct.toFixed(0)}%</span>
+          </div>
+        </div>
+        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: 16, rowGap: 8 }}>
+          {regions.map((reg) => (
+            <div key={reg.id} className="flex items-center" style={{ gap: 8, minWidth: 0 }}>
+              <span style={{ width: 8, height: 8, borderRadius: 9999, background: reg.color, flexShrink: 0 }} />
+              <span style={{ fontSize: 13, color: "var(--gray-700)", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{reg.name}</span>
+              <span style={{ fontSize: 12, color: "var(--gray-500)", fontVariantNumeric: "tabular-nums" }}>{reg.pct.toFixed(1)}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function QuestionAnalyticsCard({ q }) {
+  if (q.type === "text") return <FreeTextAnalyticsCard q={q} />;
+  return (
+    <div className="card card-sm">
+      <div className="flex" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+        <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "var(--gray-900)" }}>{q.text}</h3>
+        <Badge variant="default">{q.total} {q.total === 1 ? "answer" : "answers"}</Badge>
+      </div>
+      <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+        {q.options.map((opt) => (
+          <div key={opt.id}>
+            <div className="flex" style={{ justifyContent: "space-between", fontSize: 12, color: "var(--gray-700)", marginBottom: 4 }}>
+              <span>{opt.text}</span>
+              <span style={{ fontWeight: 500 }}>{opt.count} ({opt.pct.toFixed(1)}%)</span>
+            </div>
+            <div style={{ height: 8, background: "var(--gray-100)", borderRadius: 9999, overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${Math.min(opt.pct, 100)}%`, background: "var(--indigo-500)" }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FreeTextAnalyticsCard({ q }) {
+  const [analysis, setAnalysis] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+  const [expanded, setExpanded] = React.useState(false);
+
+  const visible = expanded ? q.answers : q.answers.slice(0, 3);
+
+  const sparkleIcon = (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
+      <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" />
+      <path d="M12 8a4 4 0 0 0 0 8 4 4 0 0 0 0-8z" />
+    </svg>
+  );
+
+  async function analyze() {
+    setLoading(true);
+    setError(null);
+    setAnalysis(null);
+    try {
+      const prompt = `You are analyzing open-text responses to a survey question. Return STRICT JSON of the shape:
+{
+  "summary": string (1-2 sentences),
+  "sentiment": { "positive": number, "neutral": number, "negative": number } (percentages, sum 100),
+  "themes": [ { "label": string, "count": number, "quote": string } ] (3-5 themes, quote is a short verbatim from the input)
+}
+Do not include any prose outside the JSON.
+
+Question: ${q.text}
+
+Responses:
+${q.answers.map((a, i) => `${i + 1}. ${a}`).join("\n")}`;
+      const raw = await window.claude.complete(prompt);
+      const jsonStr = raw.match(/\{[\s\S]*\}/)?.[0] || raw;
+      const parsed = JSON.parse(jsonStr);
+      setAnalysis(parsed);
+    } catch (e) {
+      setError("Could not analyze responses. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="card card-sm">
+      <div className="flex" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "var(--gray-900)" }}>{q.text}</h3>
+          <p className="text-xs text-gray-500" style={{ margin: "4px 0 0" }}>Free-text · {q.total} {q.total === 1 ? "response" : "responses"}</p>
+        </div>
+        <Button size="sm" variant={analysis ? "secondary" : "primary"}
+          onClick={analyze} isLoading={loading}
+          style={{ display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+          {!loading && sparkleIcon}<span>{analysis ? "Re-analyze" : "Analyze with AI"}</span>
+        </Button>
+      </div>
+
+      {analysis && (
+        <div style={{
+          marginTop: 14, padding: 14,
+          background: "linear-gradient(180deg, var(--indigo-50), #fff)",
+          border: "1px solid var(--indigo-100)", borderRadius: 10,
+        }}>
+          <div className="flex items-center" style={{ gap: 6, marginBottom: 8 }}>
+            <span style={{ color: "var(--indigo-600)" }}>{sparkleIcon}</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: "var(--indigo-700)", textTransform: "uppercase", letterSpacing: ".06em" }}>AI summary</span>
+          </div>
+          <p style={{ margin: 0, fontSize: 13, color: "var(--gray-800)", lineHeight: 1.55 }}>{analysis.summary}</p>
+
+          {analysis.sentiment && (
+            <div style={{ marginTop: 12 }}>
+              <p className="text-xs text-gray-500" style={{ margin: "0 0 6px" }}>Sentiment</p>
+              <div style={{ display: "flex", height: 8, borderRadius: 9999, overflow: "hidden", background: "var(--gray-100)" }}>
+                <div style={{ width: `${analysis.sentiment.positive}%`, background: "#10B981" }} title={`Positive ${analysis.sentiment.positive}%`} />
+                <div style={{ width: `${analysis.sentiment.neutral}%`,  background: "#9CA3AF" }} title={`Neutral ${analysis.sentiment.neutral}%`} />
+                <div style={{ width: `${analysis.sentiment.negative}%`, background: "#EF4444" }} title={`Negative ${analysis.sentiment.negative}%`} />
+              </div>
+              <div className="flex" style={{ gap: 12, marginTop: 6, fontSize: 12, color: "var(--gray-600)" }}>
+                <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 9999, background: "#10B981", marginRight: 5 }} />Positive {analysis.sentiment.positive}%</span>
+                <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 9999, background: "#9CA3AF", marginRight: 5 }} />Neutral {analysis.sentiment.neutral}%</span>
+                <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 9999, background: "#EF4444", marginRight: 5 }} />Negative {analysis.sentiment.negative}%</span>
+              </div>
+            </div>
+          )}
+
+          {Array.isArray(analysis.themes) && analysis.themes.length > 0 && (
+            <div style={{ marginTop: 14 }}>
+              <p className="text-xs text-gray-500" style={{ margin: "0 0 8px" }}>Top themes</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {analysis.themes.map((t, i) => (
+                  <div key={i} style={{ background: "#fff", border: "1px solid var(--gray-200)", borderRadius: 8, padding: "10px 12px" }}>
+                    <div className="flex items-center" style={{ gap: 8, justifyContent: "space-between" }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "var(--gray-900)" }}>{t.label}</span>
+                      <Badge variant="info">{t.count}</Badge>
+                    </div>
+                    {t.quote && (
+                      <p style={{ margin: "6px 0 0", fontSize: 12, color: "var(--gray-600)", fontStyle: "italic", lineHeight: 1.5 }}>
+                        “{t.quote}”
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {error && (
+        <div style={{ marginTop: 12, padding: "10px 12px", background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 8, fontSize: 13, color: "#991B1B" }}>
+          {error}
+        </div>
+      )}
+
+      <div style={{ marginTop: 14 }}>
+        <p className="text-xs text-gray-500" style={{ margin: "0 0 8px" }}>Recent responses</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {visible.map((a, i) => (
+            <div key={i} style={{
+              padding: "10px 12px", background: "var(--gray-50)",
+              border: "1px solid var(--gray-200)", borderRadius: 8,
+              fontSize: 13, color: "var(--gray-700)", lineHeight: 1.55,
+            }}>“{a}”</div>
+          ))}
+        </div>
+        {q.answers.length > 3 && (
+          <button className="btn btn-row" style={{ marginTop: 8 }} onClick={() => setExpanded((v) => !v)}>
+            {expanded ? "Show fewer" : `Show all ${q.answers.length}`}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AnalyticsModal({ poll, onClose }) {
+  const data = window.ANALYTICS_DEMO || { totalResponses: 0, questions: [] };
+  return (
+    <Modal open={true} onClose={onClose} size="xl"
+      title="Analytics"
+      subtitle={poll?.title ? <>For <b>{poll.title}</b> · /{poll.slug}</> : "Answer distribution"}
+      footer={
+        <>
+          <div style={{ fontSize: 13, color: "var(--gray-500)", marginRight: "auto" }}>
+            {data.totalResponses} responses · last updated just now
+          </div>
+          <Button variant="secondary" onClick={onClose}>Export CSV</Button>
+          <Button onClick={onClose}>Done</Button>
+        </>
+      }>
+      <div style={{ background: "var(--gray-50)", margin: -20, padding: "20px 24px" }}>
+        <div style={{ maxWidth: 880, margin: "0 auto" }}>
+          <AnalyticsView totalResponses={data.totalResponses} questions={data.questions} regions={data.regions} />
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+Object.assign(window, { AnalyticsModal });
+
+Object.assign(window, {
+  AdminSidebar, AdminHeader, AdminShell, AdminDashboard,
+  AdminUsersTable, AnalyticsView, QuestionAnalyticsCard,
+});
+
+  </script>
+
+  <script type="text/babel">
+/* PollCreateScreen — uses Toggle, Dropdown, MultiSelect, KebabMenu, IconButton, PillButton
+   from the Polls Design System. */
+
+const { useState: useStateC, useRef: useRefC, useEffect: useEffectC } = React;
+
+const I = {
+  Pencil:   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" /></svg>,
+  Bookmark: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" /></svg>,
+  Eye:      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="15" height="15"><path d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178ZM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>,
+  Share:    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><path d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" /></svg>,
+  Plus:     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><path d="M12 4.5v15m7.5-7.5h-15" /></svg>,
+  Image:    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="15" height="15"><path d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>,
+  Copy:     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" /></svg>,
+  Branch:   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="15" height="15"><path d="M6.115 5.19 8.998 8.07A5.98 5.98 0 0 1 12 7.069c2.31 0 4.397.99 5.85 2.572a.75.75 0 0 0 1.1-1.02 8.485 8.485 0 0 0-6.95-2.802L8.999 3.07A6 6 0 0 0 6 8.069c0 1.658.671 3.158 1.757 4.244l-1.06 1.06A7.5 7.5 0 0 1 4.5 8.07a7.5 7.5 0 0 1 1.615-4.88ZM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" /></svg>,
+  X:        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><path d="M6 18 18 6M6 6l12 12" /></svg>,
+  Drag:     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>,
+  Trash:    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><path d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>,
+  Check:    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="10" height="10"><path d="M20 6 9 17l-5-5" /></svg>,
+  Arrow:    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><path d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" /></svg>,
+  ChevDown: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13"><path d="m6 9 6 6 6-6" /></svg>,
+  Radio:    <span style={{ width: 13, height: 13, borderRadius: 9999, border: "2px solid currentColor", display: "inline-block", position: "relative" }}><span style={{ position: "absolute", inset: 2, borderRadius: 9999, background: "currentColor" }} /></span>,
+  Square:   <span style={{ width: 13, height: 13, borderRadius: 3, border: "2px solid currentColor", display: "inline-block" }} />,
+  Lines:    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13"><path d="M3.75 6.75h16.5M3.75 12h10.5m-10.5 5.25h16.5" /></svg>,
+};
+
+const TYPE_OPTIONS = [
+  { value: "SINGLE_CHOICE",   label: "Single choice",   icon: I.Radio  },
+  { value: "MULTIPLE_CHOICE", label: "Multiple choice", icon: I.Square },
+  { value: "TEXT",            label: "Free text",       icon: I.Lines  },
+];
+
+function AutoTextarea({ value, onChange, placeholder, style }) {
+  const ref = useRefC(null);
+  useEffectC(() => {
+    if (ref.current) {
+      ref.current.style.height = "auto";
+      ref.current.style.height = ref.current.scrollHeight + "px";
+    }
+  }, [value]);
+  return (
+    <textarea ref={ref} value={value} placeholder={placeholder} rows={1}
+      onChange={(e) => onChange(e.target.value)}
+      style={{
+        width: "100%", border: 0, outline: 0, resize: "none",
+        background: "transparent", padding: 0, fontFamily: "inherit",
+        color: "var(--gray-900)", lineHeight: 1.4, overflow: "hidden",
+        ...style,
+      }} />
+  );
+}
+
+function OptionRow({ option, isMulti, onChange, onRemove, canRemove }) {
+  const [focus, setFocus] = useStateC(false);
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 10,
+      padding: "6px 8px", marginLeft: -8, borderRadius: 8,
+      background: focus ? "var(--gray-50)" : "transparent",
+      transition: "background-color 150ms ease",
+    }}>
+      <span style={{ color: "var(--gray-300)", display: "inline-flex", cursor: "grab" }} title="Drag to reorder">{I.Drag}</span>
+      <span style={{
+        width: 16, height: 16, border: "2px solid var(--gray-300)",
+        borderRadius: isMulti ? 4 : 9999, flexShrink: 0,
+      }} />
+      <input value={option.text}
+        onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
+        onChange={(e) => onChange({ text: e.target.value })}
+        placeholder="Option label"
+        style={{
+          flex: 1, border: 0, outline: 0, background: "transparent",
+          padding: "4px 0", fontSize: 14, color: "var(--gray-900)", fontFamily: "inherit",
+        }} />
+      {canRemove && (
+        <IconButton size="sm" label="Remove option" onClick={onRemove} icon={I.X}
+          style={{ opacity: focus ? 1 : 0.4, transition: "opacity 150ms ease" }} />
+      )}
+    </div>
+  );
+}
+
+function LogicRow({ logic, allQuestions, onChange, onRemove }) {
+  const source = allQuestions.find((q) => q.id === logic.sourceQid) || allQuestions[0];
+  const sourceOptions = (source?.options || []).map((o) => ({
+    value: o.id, label: o.text || "Untitled option",
+  }));
+  return (
+    <div style={{
+      margin: "20px 24px 0", padding: 16,
+      background: "var(--indigo-50)", border: "1px solid var(--indigo-100)",
+      borderRadius: 10,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8,
+                      color: "var(--indigo-700)", fontWeight: 600, fontSize: 13 }}>
+          {I.Branch}
+          Show this question if
+        </div>
+        <IconButton size="sm" variant="indigo" label="Remove logic" onClick={onRemove} icon={I.X} />
+      </div>
+      <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+        <Dropdown width={240} value={logic.sourceQid}
+          onChange={(v) => onChange({ sourceQid: v, values: [] })}
+          options={allQuestions.length
+            ? allQuestions.map((q, i) => ({
+                value: q.id, label: `ID ${i + 1}: ${q.text || "Untitled question"}`,
+              }))
+            : [{ value: "", label: "No eligible question" }]
+          } />
+        <Dropdown width={160} value={logic.op}
+          onChange={(v) => onChange({ op: v })}
+          options={[
+            { value: "EQUALS_ANY",     label: "equals any of" },
+            { value: "EQUALS_ALL",     label: "equals all of" },
+            { value: "NOT_EQUALS_ANY", label: "is not" },
+          ]} />
+        <MultiSelect width={220} options={sourceOptions}
+          value={logic.values} onChange={(values) => onChange({ values })}
+          placeholder="Select answer(s)" />
+      </div>
+    </div>
+  );
+}
+
+function QuestionCard({ q, index, allPrior, onChange, onDelete, onDuplicate }) {
+  const set = (patch) => onChange({ ...q, ...patch });
+  const setOption = (oid, patch) => set({ options: q.options.map((o) => o.id === oid ? { ...o, ...patch } : o) });
+  const addOption = () => set({ options: [...(q.options || []), { id: `o${Date.now()}`, text: "" }] });
+  const removeOption = (oid) => set({ options: q.options.filter((o) => o.id !== oid) });
+  const showOptions = q.type !== "TEXT";
+
+  return (
+    <div className="card card-md" style={{ padding: 0 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 24px 0" }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6,
+                      color: "var(--gray-400)", fontSize: 13, fontWeight: 500 }}>
+          {I.Copy}
+          <span>ID {index + 1}</span>
+        </div>
+        <KebabMenu items={[
+          { icon: I.Copy,  label: "Duplicate", onClick: onDuplicate },
+          { icon: I.Trash, label: "Delete",    onClick: onDelete, danger: true },
+        ]} />
+      </div>
+
+      <div style={{ padding: "8px 24px 0", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <Dropdown value={q.type} options={TYPE_OPTIONS} onChange={(v) => set({ type: v })} width={190} />
+      </div>
+
+      {showOptions && (
+        <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+          <Toggle checked={!!q.shuffle}  onChange={(v) => set({ shuffle: v })}  label="Shuffle answers" />
+          <Toggle checked={!!q.required} onChange={(v) => set({ required: v })} label="Required" />
+        </div>
+      )}
+
+      <div style={{ padding: "20px 24px 0" }}>
+        <AutoTextarea value={q.text} onChange={(v) => set({ text: v })}
+          placeholder="Question text"
+          style={{ fontSize: 16, fontWeight: 600, color: "var(--gray-900)" }} />
+      </div>
+
+      {showOptions && (
+        <div style={{ padding: "16px 24px 0", display: "flex", flexDirection: "column", gap: 4 }}>
+          {q.options.map((o) => (
+            <OptionRow key={o.id} option={o}
+              isMulti={q.type === "MULTIPLE_CHOICE"}
+              onChange={(patch) => setOption(o.id, patch)}
+              onRemove={() => removeOption(o.id)}
+              canRemove={q.options.length > 1} />
+          ))}
+        </div>
+      )}
+
+      {q.type === "TEXT" && (
+        <div style={{ padding: "12px 24px 0" }}>
+          <div style={{
+            padding: 14, border: "1px dashed var(--gray-300)", borderRadius: 8,
+            background: "var(--gray-50)", color: "var(--gray-500)", fontSize: 13,
+          }}>
+            Respondents will type a free-text answer. No options to configure.
+          </div>
+        </div>
+      )}
+
+      {showOptions && (
+        <div style={{ padding: "12px 24px 0", display: "flex", alignItems: "center", gap: 12,
+                      fontSize: 14, color: "var(--indigo-600)" }}>
+          <button onClick={addOption} style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            background: "transparent", border: 0, padding: 0, cursor: "pointer",
+            color: "var(--indigo-600)", fontWeight: 500, fontSize: 14, fontFamily: "inherit",
+          }}>
+            {I.Plus}
+            Add option
+          </button>
+        </div>
+      )}
+
+      <div style={{ height: 24 }} />
+    </div>
+  );
+}
+
+function HeaderCard({ title, onTitleChange, kind, onPreview, onShare, onBookmark, bookmarked }) {
+  const [editing, setEditing] = useStateC(false);
+  const inputRef = useRefC(null);
+  useEffectC(() => { if (editing && inputRef.current) inputRef.current.select(); }, [editing]);
+  return (
+    <div className="card card-md">
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <Badge variant="default">{kind}</Badge>
+        <span style={{
+          display: "inline-flex", alignItems: "center", padding: "2px 10px", borderRadius: 9999,
+          fontSize: 12, fontWeight: 500,
+          background: "var(--indigo-100)", color: "var(--indigo-700)",
+        }}>Draft</span>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12 }}>
+        {editing ? (
+          <input ref={inputRef} value={title}
+            onChange={(e) => onTitleChange(e.target.value)}
+            onBlur={() => setEditing(false)}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") setEditing(false); }}
+            style={{
+              flex: 1, border: "1px solid var(--indigo-300)", outline: 0,
+              padding: "4px 10px", borderRadius: 6, background: "var(--indigo-50)",
+              fontSize: 26, fontWeight: 700, color: "var(--gray-900)", fontFamily: "inherit",
+              letterSpacing: "-0.01em", minWidth: 0,
+            }} />
+        ) : (
+          <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700, color: "var(--gray-900)", letterSpacing: "-0.01em" }}>
+            {title || "Untitled poll"}
+          </h1>
+        )}
+        <IconButton size="sm" label="Edit title" onClick={() => setEditing(true)} icon={I.Pencil} />
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
+        <IconButton variant={bookmarked ? "indigo" : "soft"}
+          label="Bookmark" onClick={onBookmark} icon={I.Bookmark} />
+        <PillButton variant="secondary" size="sm" onClick={onPreview}>
+          {I.Eye}<span>Preview poll</span>
+        </PillButton>
+        <PillButton variant="secondary" size="sm" onClick={onShare}>
+          {I.Share}<span>Share test link</span>
+        </PillButton>
+        <KebabMenu items={[
+          { icon: I.Copy,  label: "Duplicate poll" },
+          { icon: I.Arrow, label: "Export questions" },
+          "divider",
+          { icon: I.Trash, label: "Delete poll", danger: true },
+        ]} />
+      </div>
+    </div>
+  );
+}
+
+function AddQuestionButton({ onAdd }) {
+  return (
+    <button onClick={onAdd} style={{
+      width: "100%", padding: "14px 24px",
+      background: "#fff", border: "1.5px dashed var(--gray-300)",
+      borderRadius: 12, cursor: "pointer",
+      color: "var(--gray-500)", fontSize: 14, fontWeight: 500,
+      display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+      transition: "border-color 200ms ease, color 200ms ease, background-color 200ms ease",
+      fontFamily: "inherit",
+    }}
+    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--indigo-400)";
+                           e.currentTarget.style.color = "var(--indigo-700)";
+                           e.currentTarget.style.background = "var(--indigo-50)"; }}
+    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--gray-300)";
+                           e.currentTarget.style.color = "var(--gray-500)";
+                           e.currentTarget.style.background = "#fff"; }}>
+      {I.Plus}
+      Add question
+    </button>
+  );
+}
+
+function PublishBar({ onSaveDraft, onPublish }) {
+  return (
+    <div style={{
+      position: "sticky", bottom: 0, marginTop: 16, zIndex: 10,
+      background: "rgb(249 250 251 / 0.92)",
+      backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+      borderTop: "1px solid var(--gray-200)",
+      padding: "14px 0", margin: "16px -16px 0",
+    }}>
+      <div style={{ maxWidth: 880, margin: "0 auto", padding: "0 16px",
+                    display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+        <div style={{ fontSize: 13, color: "var(--gray-500)" }}>
+          Changes saved 2s ago · <span style={{ color: "var(--gray-700)" }}>Draft</span>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button variant="secondary" onClick={onSaveDraft}>Save draft</Button>
+          <Button onClick={onPublish}>Publish poll</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PollCreateScreen({ onNav, hidePublishBar = false }) {
+  const [title, setTitle] = useStateC("Poll from 3/30/2024");
+  const [bookmarked, setBookmarked] = useStateC(false);
+  const [questions, setQuestions] = useStateC([
+    {
+      id: "q1", type: "SINGLE_CHOICE", text: "Test question",
+      shuffle: false, required: true,
+      options: [{ id: "o1", text: "Yes" }, { id: "o2", text: "No" }],
+    },
+    {
+      id: "q2", type: "MULTIPLE_CHOICE", text: "",
+      shuffle: false, required: false,
+      options: [{ id: "o3", text: "" }, { id: "o4", text: "" }],
+    },
+  ]);
+
+  const update = (id, next) => setQuestions((qs) => qs.map((q) => q.id === id ? next : q));
+  const remove = (id) => setQuestions((qs) => qs.filter((q) => q.id !== id));
+  const duplicate = (id) => setQuestions((qs) => {
+    const i = qs.findIndex((q) => q.id === id);
+    if (i < 0) return qs;
+    const copy = JSON.parse(JSON.stringify(qs[i]));
+    copy.id = `q${Date.now()}`;
+    copy.options = (copy.options || []).map((o, k) => ({ ...o, id: `o${Date.now()}-${k}` }));
+    return [...qs.slice(0, i + 1), copy, ...qs.slice(i + 1)];
+  });
+  const add = () => setQuestions((qs) => [
+    ...qs,
+    {
+      id: `q${Date.now()}`, type: "SINGLE_CHOICE", text: "",
+      shuffle: false, required: false,
+      options: [
+        { id: `o${Date.now()}-1`, text: "" },
+        { id: `o${Date.now()}-2`, text: "" },
+      ],
+    },
+  ]);
+
+  return (
+    <div style={{ maxWidth: 880, margin: "0 auto" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <HeaderCard
+            title={title} onTitleChange={setTitle} kind="Simple poll"
+            bookmarked={bookmarked} onBookmark={() => setBookmarked((b) => !b)}
+            onPreview={() => {}} onShare={() => {}} />
+
+          {questions.map((q, i) => (
+            <QuestionCard key={q.id} q={q} index={i}
+              allPrior={questions.slice(0, i)}
+              onChange={(next) => update(q.id, next)}
+              onDelete={() => remove(q.id)}
+              onDuplicate={() => duplicate(q.id)} />
+          ))}
+
+          <AddQuestionButton onAdd={add} />
+        </div>
+
+      {!hidePublishBar && (
+        <PublishBar onSaveDraft={() => {}} onPublish={() => onNav && onNav("dashboard")} />
+      )}
+    </div>
+  );
+}
+
+function PollCreateModal({ onClose }) {
+  return (
+    <Modal open={true} onClose={onClose} size="xl"
+      title="New poll" subtitle="Build your poll and publish when ready."
+      footer={
+        <>
+          <div style={{ fontSize: 13, color: "var(--gray-500)", marginRight: "auto" }}>
+            Changes saved 2s ago · <span style={{ color: "var(--gray-700)" }}>Draft</span>
+          </div>
+          <Button variant="secondary" onClick={onClose}>Save draft</Button>
+          <Button onClick={onClose}>Publish poll</Button>
+        </>
+      }>
+      <div style={{ background: "var(--gray-50)", margin: -20, padding: "20px 24px" }}>
+        <div style={{ maxWidth: 880, margin: "0 auto" }}>
+          <PollCreateScreen onNav={(r) => { if (r === "dashboard") onClose(); }} hidePublishBar />
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function UserEditScreen({ user, onSave, hideSaveBar = false }) {
+  const [name, setName]   = React.useState(user?.name  || "");
+  const [email, setEmail] = React.useState(user?.email || "");
+  const [role, setRole]   = React.useState(user?.role  || "USER");
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div className="card card-md" style={{ display: "flex", alignItems: "center", gap: 14 }}>
+        <Avatar name={name || "?"} />
+        <div>
+          <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "var(--gray-900)" }}>{name || "Untitled user"}</p>
+          <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--gray-500)" }}>Joined {user?.joined || "—"}</p>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <Input label="Full name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Alex Petrov" />
+        <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" />
+        <div>
+          <label className="label">Role</label>
+          <select className="select" value={role} onChange={(e) => setRole(e.target.value)}>
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+          <p className="text-sm text-gray-500" style={{ margin: "6px 0 0" }}>
+            Admins can manage other users and view all polls.
+          </p>
+        </div>
+      </div>
+
+      {!hideSaveBar && (
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+          <Button onClick={() => onSave && onSave({ name, email, role })}>Save changes</Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function UserEditModal({ user, onClose }) {
+  return (
+    <Modal open={true} onClose={onClose} size="lg"
+      title="Edit user" subtitle={user?.email || "Update profile and access."}
+      footer={
+        <>
+          <div style={{ fontSize: 13, color: "var(--gray-500)", marginRight: "auto" }}>
+            Editing <span style={{ color: "var(--gray-700)" }}>{user?.name}</span>
+          </div>
+          <Button variant="secondary" onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>Save changes</Button>
+        </>
+      }>
+      <div style={{ background: "var(--gray-50)", margin: -20, padding: "20px 24px" }}>
+        <div style={{ maxWidth: 560, margin: "0 auto" }}>
+          <UserEditScreen user={user} onSave={() => onClose && onClose()} hideSaveBar />
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+Object.assign(window, { PollCreateScreen, PollCreateModal, UserEditScreen, UserEditModal });
+
+  </script>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const DEMO_USER = { name: "Alex Petrov", email: "alex@polls.app", role: "ADMIN" };
+    const INITIAL_POLLS = [
+      { id: "1", slug: "q4-team-survey", title: "Q4 team survey",
+        visibility: "PUBLIC", isActive: true, responseCount: 47,
+        expiresAt: "Dec 31, 2025" },
+      { id: "2", slug: "lunch-spot-vote", title: "Where should we go for lunch?",
+        visibility: "PUBLIC", isActive: true, responseCount: 12, expiresAt: null },
+      { id: "3", slug: "design-review",   title: "Design review — homepage v3",
+        visibility: "PRIVATE", isActive: false, responseCount: 8, expiresAt: null },
+    ];
+    const DEMO_POLL_FORM = {
+      title: "Q4 team survey",
+      description: "Quick pulse-check on team health this quarter. Takes ~2 minutes.",
+      questions: [
+        { id: "q1", type: "SINGLE_CHOICE", isRequired: true,
+          text: "How would you rate your overall workload?",
+          options: [
+            { id: "o1", text: "Light" }, { id: "o2", text: "Just right" },
+            { id: "o3", text: "Heavy" }, { id: "o4", text: "Overwhelming" },
+          ]},
+        { id: "q2", type: "MULTIPLE_CHOICE", isRequired: false,
+          text: "Which areas would you like more support in? (select all that apply)",
+          options: [
+            { id: "p1", text: "Career growth"   }, { id: "p2", text: "Technical mentorship" },
+            { id: "p3", text: "Cross-team work" }, { id: "p4", text: "Process & tooling" },
+          ]},
+        { id: "q3", type: "TEXT", isRequired: false,
+          text: "Anything else you want leadership to know?" },
+      ],
+    };
+    const ADMIN_STATS = { users: 1284, polls: 312, active: 184 };
+    const ADMIN_RECENT_POLLS = [
+      { id:"a", slug:"q4-team-survey",   title:"Q4 team survey",     owner:"Alex Petrov",  visibility:"PUBLIC",  responseCount:47, isActive:true  },
+      { id:"b", slug:"lunch-spot-vote",  title:"Where should we go for lunch?", owner:"Jordan Kim", visibility:"PUBLIC", responseCount:12, isActive:true  },
+      { id:"c", slug:"design-review",    title:"Design review — homepage v3", owner:"Sam Müller", visibility:"PRIVATE", responseCount:8,  isActive:false },
+      { id:"d", slug:"onboarding-test",  title:"Onboarding flow test",     owner:"Lin Zhao",     visibility:"PUBLIC",  responseCount:33, isActive:true  },
+    ];
+    const ADMIN_USERS = [
+      { id:"u1", name:"Alex Petrov",  email:"alex@polls.app",         role:"ADMIN", joined:"Jan 4, 2024"  },
+      { id:"u2", name:"Jordan Kim",   email:"jordan.kim@example.com", role:"USER",  joined:"Mar 17, 2024" },
+      { id:"u3", name:"Sam Müller",   email:"sam@firma.de",           role:"USER",  joined:"Apr 2, 2024"  },
+      { id:"u4", name:"Lin Zhao",     email:"lin@zh.ao",              role:"USER",  joined:"Jun 11, 2024" },
+      { id:"u5", name:"Priya Shah",   email:"priya@shah.dev",         role:"ADMIN", joined:"Aug 30, 2024" },
+    ];
+    const ADMIN_ANALYTICS = {
+      totalResponses: 47,
+      questions: [
+        { id:"q1", text:"How would you rate your overall workload?", total:47, options:[
+          { id:"o1", text:"Light",        count:6,  pct:12.8 },
+          { id:"o2", text:"Just right",   count:24, pct:51.1 },
+          { id:"o3", text:"Heavy",        count:13, pct:27.7 },
+          { id:"o4", text:"Overwhelming", count:4,  pct:8.5  },
+        ]},
+        { id:"q2", text:"Which areas would you like more support in?", total:39, options:[
+          { id:"p1", text:"Career growth",        count:22, pct:56.4 },
+          { id:"p2", text:"Technical mentorship", count:18, pct:46.2 },
+          { id:"p3", text:"Cross-team work",      count:9,  pct:23.1 },
+          { id:"p4", text:"Process & tooling",    count:14, pct:35.9 },
+        ]},
+      ],
+    };
+
+    function Toast({ msg }) {
+      if (!msg) return null;
+      return (
+        <div style={{
+          position: "fixed", top: 16, right: 16, zIndex: 60,
+          background: "#fff", border: "1px solid var(--gray-200)", borderRadius: 8,
+          padding: "10px 16px", fontSize: 14, color: "var(--gray-900)",
+          boxShadow: "0 10px 25px -5px rgb(0 0 0 / 0.1)",
+        }}>{msg}</div>
+      );
+    }
+
+    function App() {
+      const [route, setRoute] = useState("landing");
+      const [dashTab, setDashTab] = useState("polls");
+      const [openCreateModal, setOpenCreateModal] = useState(false);
+      const [polls, setPolls] = useState(INITIAL_POLLS);
+      const [submitted, setSubmitted] = useState(false);
+      const [confirmDel, setConfirmDel] = useState(null);
+      const [toast, setToast] = useState(null);
+
+      const showToast = (m) => { setToast(m); setTimeout(() => setToast(null), 2200); };
+
+      function handleDelete(poll) {
+        setPolls((p) => p.filter((x) => x.id !== poll.id));
+        setConfirmDel(null);
+        showToast("Poll deleted");
+      }
+      function handleToggleActive(poll) {
+        setPolls((p) => p.map((x) => x.id === poll.id ? { ...x, isActive: !x.isActive } : x));
+      }
+
+      if (route === "landing")  return <><LandingScreen onNav={setRoute} /><FloatingNav route={route} setRoute={setRoute} /><Toast msg={toast} /></>;
+      if (route === "login")    return <><LoginScreen   onNav={setRoute} onSubmit={() => setRoute("dashboard")} /><FloatingNav route={route} setRoute={setRoute} /><Toast msg={toast} /></>;
+      if (route === "register") return <><RegisterScreen onNav={setRoute} onSubmit={() => setRoute("dashboard")} /><FloatingNav route={route} setRoute={setRoute} /><Toast msg={toast} /></>;
+      if (route === "create") {
+        setRoute("dashboard");
+        setOpenCreateModal(true);
+        return null;
+      }
+
+      if (route === "poll") {
+        return (
+          <>
+            <PollScreen poll={DEMO_POLL_FORM} submitted={submitted} onSubmit={() => setSubmitted(true)} />
+            <FloatingNav route={route} setRoute={setRoute} />
+            <Toast msg={toast} />
+          </>
+        );
+      }
+      if (route === "analytics") {
+        // Standalone analytics route → redirect to dashboard analytics tab.
+        setDashTab("analytics");
+        setRoute("dashboard");
+        return null;
+      }
+      if (route === "dashboard") {
+        return (
+          <>
+            <DashboardScreen
+              user={DEMO_USER} polls={polls}
+              initialTab={dashTab}
+              onCreate={() => setOpenCreateModal(true)}
+              onEdit={() => showToast("Edit modal — not implemented in kit")}
+              onDelete={(p) => setConfirmDel(p)}
+              onToggleActive={handleToggleActive}
+              onCopyLink={(p) => showToast(`Copied: /${p.slug}`)}
+              onAnalytics={() => { setDashTab("analytics"); }}
+              onSignOut={() => setRoute("landing")}
+            />
+            <FloatingNav route={route} setRoute={(r) => {
+              if (r === "admin")  { setDashTab("all-users"); setRoute("dashboard"); }
+              else if (r === "create") { setOpenCreateModal(true); }
+              else { setDashTab("polls"); setRoute(r); }
+            }} />
+            {openCreateModal && <PollCreateModal onClose={() => setOpenCreateModal(false)} />}
+            {confirmDel && (
+              <ConfirmDialog
+                title="Delete poll?"
+                body={<>Are you sure you want to delete <b>{confirmDel.title}</b>? This action cannot be undone.</>}
+                confirmLabel="Delete"
+                onCancel={() => setConfirmDel(null)}
+                onConfirm={() => handleDelete(confirmDel)}
+              />
+            )}
+            <Toast msg={toast} />
+          </>
+        );
+      }
+      if (route === "admin") {
+        // Admin route is now a redirect into the unified dashboard at the staff tab.
+        setDashTab("all-users");
+        setRoute("dashboard");
+        return null;
+      }
+      return null;
+    }
+
+    function FloatingNav({ route, setRoute }) {
+      const items = [
+        ["landing","Landing"], ["login","Login"], ["register","Register"],
+        ["dashboard","Dashboard"], ["create","Create"], ["poll","Poll"],
+        ["admin","Staff"],
+      ];
+      return (
+        <div style={{
+          position: "fixed", bottom: 16, left: "50%", transform: "translateX(-50%)",
+          background: "#111827", color: "#fff", borderRadius: 9999,
+          padding: 4, display: "flex", gap: 2, boxShadow: "0 10px 25px -5px rgb(0 0 0 / 0.3)",
+          zIndex: 40, fontSize: 12,
+        }}>
+          {items.map(([k, label]) => (
+            <button key={k} onClick={() => setRoute(k)}
+              style={{
+                padding: "6px 12px", borderRadius: 9999, border: 0, cursor: "pointer",
+                background: route === k ? "var(--indigo-600)" : "transparent",
+                color: route === k ? "#fff" : "#d1d5db", fontWeight: 500, fontSize: 12,
+              }}
+            >{label}</button>
+          ))}
+        </div>
+      );
+    }
+
+    function SystemPlaceholder() {
+      return (
+        <div className="card card-md">
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>System health</h2>
+          <p style={{ margin: "8px 0 0", fontSize: 14, color: "var(--gray-600)" }}>
+            Real implementation polls <code>GET /api/v1/admin/system</code> for DB / queue / uptime.
+            Not recreated in the kit.
+          </p>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
