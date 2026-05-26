@@ -231,14 +231,23 @@ describe('PollsService.delete', () => {
     svc = mod.get(PollsService);
   });
 
-  it('deletes the poll when owned', async () => {
-    prisma.poll.deleteMany.mockResolvedValueOnce({ count: 1 } as any);
+  it('deletes the poll in ordered cleanup when owned', async () => {
+    prisma.poll.findFirst.mockResolvedValueOnce({ id: 'p1' } as any);
+    prisma.$transaction.mockResolvedValueOnce([] as any);
     await svc.delete('u1', 'p1');
-    expect(prisma.poll.deleteMany).toHaveBeenCalledWith({ where: { id: 'p1', ownerId: 'u1' } });
+    expect(prisma.poll.findFirst).toHaveBeenCalledWith({
+      where: { id: 'p1', ownerId: 'u1' },
+      select: { id: true },
+    });
+    // 6-step transaction: answerOption → answer → response → option → question → poll
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+    const txArg = (prisma.$transaction as any).mock.calls[0][0] as unknown[];
+    expect(txArg).toHaveLength(6);
   });
-  it('throws NOT_FOUND when nothing deleted', async () => {
-    prisma.poll.deleteMany.mockResolvedValueOnce({ count: 0 } as any);
+  it('throws NOT_FOUND when poll missing or not owned', async () => {
+    prisma.poll.findFirst.mockResolvedValueOnce(null);
     await expect(svc.delete('u1', 'p1')).rejects.toThrow(/NOT_FOUND|Not Found/);
+    expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 });
 

@@ -138,8 +138,23 @@ export class PollsService {
   }
 
   async delete(ownerId: string, id: string) {
-    const r = await this.prisma.poll.deleteMany({ where: { id, ownerId } });
-    if (r.count === 0) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
+    const exists = await this.prisma.poll.findFirst({
+      where: { id, ownerId },
+      select: { id: true },
+    });
+    if (!exists) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
+
+    // Ordered cleanup so the Restrict FKs on Answer→Question and AnswerOption→Option
+    // are satisfied. Poll's own cascade can't be relied on because Postgres may evaluate
+    // Question deletion before the Response→Answer cascade has drained the references.
+    await this.prisma.$transaction([
+      this.prisma.answerOption.deleteMany({ where: { answer: { response: { pollId: id } } } }),
+      this.prisma.answer.deleteMany({ where: { response: { pollId: id } } }),
+      this.prisma.response.deleteMany({ where: { pollId: id } }),
+      this.prisma.option.deleteMany({ where: { question: { pollId: id } } }),
+      this.prisma.question.deleteMany({ where: { pollId: id } }),
+      this.prisma.poll.delete({ where: { id } }),
+    ]);
   }
 
   async toggleActive(ownerId: string, id: string, isActive: boolean) {
