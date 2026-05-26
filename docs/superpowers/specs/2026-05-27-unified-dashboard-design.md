@@ -89,7 +89,7 @@ The strip is not rendered if only one tab is visible (i.e. non-admin).
 
 - `frontend/src/layouts/AdminLayout/` — directory, including the dark sidebar.
 - `frontend/src/routes/admin/` — directory; contents move under `routes/dashboard/`.
-- The "Admin Panel" link/button block in `DashboardScreen.tsx` (added in commit d6f87eb).
+- The "Admin Panel" link in `frontend/src/layouts/MainLayout/Header.tsx` (added in commit d6f87eb, lines 18-25).
 
 ### Redirects
 
