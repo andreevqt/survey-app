@@ -37,4 +37,7 @@ async function bootstrap() {
   const app = await buildApp();
   await app.listen(Number(process.env.PORT ?? 3000));
 }
-bootstrap();
+
+if (require.main === module) {
+  bootstrap();
+}
