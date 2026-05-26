@@ -50,6 +50,36 @@ export class AuthService {
     };
   }
 
+  async refresh(args: { userId: string; jti: string }): Promise<AuthResult> {
+    const row = await this.findRefreshRow(args.userId, args.jti);
+    if (!row) {
+      throw new UnauthorizedException({ code: 'REFRESH_INVALID' });
+    }
+    await this.prisma.refreshToken.delete({ where: { id: row.id } });
+    const user = await this.prisma.user.findUnique({ where: { id: args.userId } });
+    if (!user) {
+      throw new UnauthorizedException({ code: 'REFRESH_INVALID' });
+    }
+    const tokens = await this.issueTokens(user.id, user.role);
+    return {
+      user: { id: user.id, email: user.email, name: user.name, role: user.role },
+      tokens,
+    };
+  }
+
+  async logout(args: { userId: string; jti: string }): Promise<void> {
+    const row = await this.findRefreshRow(args.userId, args.jti);
+    if (row) await this.prisma.refreshToken.delete({ where: { id: row.id } });
+  }
+
+  private async findRefreshRow(userId: string, jti: string) {
+    const rows = await this.prisma.refreshToken.findMany({ where: { userId } });
+    for (const r of rows) {
+      if (await this.tokens.compareJti(jti, r.jtiHash)) return r;
+    }
+    return null;
+  }
+
   private async issueTokens(userId: string, role: 'USER' | 'ADMIN'): Promise<IssuedTokens> {
     const accessToken = await this.tokens.signAccessToken({ sub: userId, role });
     const { token: refreshToken, jti } = await this.tokens.signRefreshToken({ sub: userId });

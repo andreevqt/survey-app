@@ -105,3 +105,74 @@ describe('AuthService.login', () => {
       .rejects.toThrow(/UNAUTHENTICATED|Unauthorized/);
   });
 });
+
+describe('AuthService.refresh (rotation)', () => {
+  let svc: AuthService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      imports: [JwtModule.register({})],
+      providers: [
+        AuthService, TokensService,
+        { provide: PrismaService, useValue: prisma },
+      ],
+    }).compile();
+    svc = mod.get(AuthService);
+  });
+
+  it('rotates: deletes the old refresh row, issues a new pair', async () => {
+    const hash = await bcrypt.hash('jti-1', 10);
+    prisma.refreshToken.findMany.mockResolvedValueOnce([
+      { id: 't1', userId: 'u1', jtiHash: hash, expiresAt: new Date(Date.now() + 10000), createdAt: new Date() } as any,
+    ]);
+    prisma.user.findUnique.mockResolvedValueOnce({
+      id: 'u1', email: 'a@b.com', name: 'A', role: Role.USER, passwordHash: 'x',
+      createdAt: new Date(), updatedAt: new Date(),
+    } as any);
+    prisma.refreshToken.delete.mockResolvedValueOnce({} as any);
+    prisma.refreshToken.create.mockResolvedValueOnce({} as any);
+
+    const r = await svc.refresh({ userId: 'u1', jti: 'jti-1' });
+    expect(prisma.refreshToken.delete).toHaveBeenCalledWith({ where: { id: 't1' } });
+    expect(r.tokens.accessToken).toEqual(expect.any(String));
+    expect(r.tokens.refreshToken).toEqual(expect.any(String));
+  });
+
+  it('rejects when no matching jti row exists', async () => {
+    prisma.refreshToken.findMany.mockResolvedValueOnce([]);
+    await expect(svc.refresh({ userId: 'u1', jti: 'nope' }))
+      .rejects.toThrow(/REFRESH_INVALID|Unauthorized/);
+  });
+});
+
+describe('AuthService.logout', () => {
+  let svc: AuthService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      imports: [JwtModule.register({})],
+      providers: [AuthService, TokensService, { provide: PrismaService, useValue: prisma }],
+    }).compile();
+    svc = mod.get(AuthService);
+  });
+
+  it('deletes the matching refresh row by jti hash', async () => {
+    const hash = await bcrypt.hash('jti-1', 10);
+    prisma.refreshToken.findMany.mockResolvedValueOnce([
+      { id: 't1', userId: 'u1', jtiHash: hash, expiresAt: new Date(Date.now() + 10000), createdAt: new Date() } as any,
+    ]);
+    prisma.refreshToken.delete.mockResolvedValueOnce({} as any);
+    await svc.logout({ userId: 'u1', jti: 'jti-1' });
+    expect(prisma.refreshToken.delete).toHaveBeenCalledWith({ where: { id: 't1' } });
+  });
+
+  it('is a no-op when no matching row', async () => {
+    prisma.refreshToken.findMany.mockResolvedValueOnce([]);
+    await expect(svc.logout({ userId: 'u1', jti: 'x' })).resolves.toBeUndefined();
+    expect(prisma.refreshToken.delete).not.toHaveBeenCalled();
+  });
+});
