@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { PollsModule } from './polls/polls.module';
+import { ResponsesModule } from './responses/responses.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { PollsModule } from './polls/polls.module';
     PrismaModule,
     AuthModule,
     PollsModule,
+    ResponsesModule,
   ],
   controllers: [AppController],
 })
