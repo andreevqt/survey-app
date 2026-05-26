@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { QuestionType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SlugService } from './slug.service';
 import { CreatePollDto } from './dto/create-poll.dto';
+import { UpdatePollDto } from './dto/update-poll.dto';
 
 @Injectable()
 export class PollsService {
@@ -76,6 +77,82 @@ export class PollsService {
     });
     if (!p) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
     return this.toDetail(p);
+  }
+
+  async update(ownerId: string, id: string, dto: UpdatePollDto) {
+    const existing = await this.prisma.poll.findFirst({
+      where: { id, ownerId },
+      include: {
+        questions: { include: { options: { orderBy: { order: 'asc' } } }, orderBy: { order: 'asc' } },
+        _count: { select: { responses: true } },
+      },
+    });
+    if (!existing) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
+
+    const hasResponses = existing._count.responses > 0;
+
+    if (hasResponses) {
+      if (this.structuralDiff(existing, dto)) {
+        throw new ConflictException({
+          code: 'POLL_LOCKED_HAS_RESPONSES',
+          message: 'POLL_LOCKED_HAS_RESPONSES: Questions and options cannot change after a poll has responses',
+        });
+      }
+      // metadata-only update
+      await this.prisma.poll.update({
+        where: { id },
+        data: {
+          title: dto.title,
+          description: dto.description ?? null,
+          visibility: dto.visibility,
+          isActive: dto.isActive,
+          expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null,
+        },
+      });
+    } else {
+      // full rewrite — delete questions (cascades to options), recreate from dto
+      this.validateQuestions(dto.questions);
+      await this.prisma.$transaction([
+        this.prisma.question.deleteMany({ where: { pollId: id } }),
+        this.prisma.poll.update({
+          where: { id },
+          data: {
+            title: dto.title,
+            description: dto.description ?? null,
+            visibility: dto.visibility,
+            isActive: dto.isActive,
+            expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null,
+            questions: {
+              create: dto.questions.map((q, qi) => ({
+                order: qi, type: q.type, text: q.text, isRequired: q.isRequired,
+                ...(q.type === QuestionType.TEXT ? {} : {
+                  options: { create: (q.options ?? []).map((o, oi) => ({ order: oi, text: o.text })) },
+                }),
+              })),
+            },
+          },
+        }),
+      ]);
+    }
+    return this.findOne(ownerId, id);
+  }
+
+  private structuralDiff(existing: any, dto: UpdatePollDto): boolean {
+    if (existing.questions.length !== dto.questions.length) return true;
+    for (let i = 0; i < existing.questions.length; i++) {
+      const a = existing.questions[i];
+      const b = dto.questions[i];
+      if (a.type !== b.type) return true;
+      if (a.text !== b.text) return true;
+      if (a.isRequired !== b.isRequired) return true;
+      const aOpts = a.options ?? [];
+      const bOpts = b.options ?? [];
+      if (aOpts.length !== bOpts.length) return true;
+      for (let j = 0; j < aOpts.length; j++) {
+        if (aOpts[j].text !== bOpts[j].text) return true;
+      }
+    }
+    return false;
   }
 
   private toSummary(r: any) {
