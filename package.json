@@ -1,0 +1,23 @@
+{
+  "name": "survey-app",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["backend", "frontend"],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,magenta \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm --workspace backend run start:dev",
+    "dev:frontend": "npm --workspace frontend run dev",
+    "build": "npm --workspace backend run build && npm --workspace frontend run build",
+    "test": "npm --workspace backend test && npm --workspace frontend test",
+    "test:e2e": "npm --workspace frontend run test:e2e",
+    "check:ts": "npm --workspace backend run check:ts && npm --workspace frontend run check:ts",
+    "lint": "npm --workspace backend run lint && npm --workspace frontend run lint",
+    "db:migrate": "npm --workspace backend run db:migrate",
+    "db:seed": "npm --workspace backend run db:seed",
+    "gen:api": "npm --workspace backend run spec:export && openapi-typescript ./openapi.json -o ./frontend/src/api/schema.ts"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "openapi-typescript": "^7.4.0"
+  }
+}
