@@ -6,6 +6,7 @@ import { RegisterScreen } from './routes/auth/RegisterScreen';
 import { DashboardScreen } from './routes/dashboard/DashboardScreen';
 import { RequireAuth } from './auth/RequireAuth';
 import { PollFormScreen } from './routes/polls/PollFormScreen';
+import { PollScreen } from './routes/poll/PollScreen';
 
 export const router = createBrowserRouter([
   {
@@ -14,6 +15,7 @@ export const router = createBrowserRouter([
       { path: '/', element: <LandingScreen /> },
       { path: '/login', element: <LoginScreen /> },
       { path: '/register', element: <RegisterScreen /> },
+      { path: '/p/:slug', element: <PollScreen /> },
       { path: '/dashboard', element: <RequireAuth><DashboardScreen /></RequireAuth> },
       { path: '/polls/new', element: <RequireAuth><PollFormScreen /></RequireAuth> },
       { path: '/polls/:id/edit', element: <RequireAuth><PollFormScreen /></RequireAuth> },
