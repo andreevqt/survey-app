@@ -20,7 +20,7 @@ function InnerAuthProvider({ children }: { children: ReactNode }) {
   const meQuery = useQuery({
     queryKey: ['auth', 'me'],
     queryFn: async () => {
-      const r = await apiClient.GET('/auth/me' as any, {} as any);
+      const r = await apiClient.GET('/auth/me');
       if (!r.response.ok) return null;
       return (r.data as AuthUser) ?? null;
     },

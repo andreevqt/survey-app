@@ -7,7 +7,8 @@ import { AppModule } from './app.module';
 
 async function main() {
   const app = await NestFactory.create(AppModule, { logger: false });
-  app.setGlobalPrefix('api/v1');
+  // Intentionally NOT calling setGlobalPrefix — the frontend client adds /api/v1 via baseUrl,
+  // so paths in openapi.json should be unprefixed (`/auth/login`, not `/api/v1/auth/login`).
   const config = new DocumentBuilder()
     .setTitle('Survey App API')
     .setVersion('0.1.0')

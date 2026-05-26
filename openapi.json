@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api/v1/health": {
+    "/health": {
       "get": {
         "operationId": "AppController_health",
         "parameters": [],
@@ -12,7 +12,7 @@
         }
       }
     },
-    "/api/v1/auth/register": {
+    "/auth/register": {
       "post": {
         "operationId": "AuthController_register",
         "parameters": [],
@@ -43,7 +43,7 @@
         ]
       }
     },
-    "/api/v1/auth/login": {
+    "/auth/login": {
       "post": {
         "operationId": "AuthController_login",
         "parameters": [],
@@ -74,7 +74,7 @@
         ]
       }
     },
-    "/api/v1/auth/refresh": {
+    "/auth/refresh": {
       "post": {
         "operationId": "AuthController_refresh",
         "parameters": [],
@@ -95,7 +95,7 @@
         ]
       }
     },
-    "/api/v1/auth/logout": {
+    "/auth/logout": {
       "post": {
         "operationId": "AuthController_logout",
         "parameters": [],
@@ -109,7 +109,7 @@
         ]
       }
     },
-    "/api/v1/auth/me": {
+    "/auth/me": {
       "get": {
         "operationId": "AuthController_me",
         "parameters": [],
