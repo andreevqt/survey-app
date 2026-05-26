@@ -5,6 +5,76 @@ import { SlugService } from './slug.service';
 import { PollsService } from './polls.service';
 import { QuestionType, Visibility } from '@prisma/client';
 
+describe('PollsService.findMine', () => {
+  let svc: PollsService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [
+        PollsService,
+        { provide: PrismaService, useValue: prisma },
+        { provide: SlugService, useValue: mockDeep<SlugService>() },
+      ],
+    }).compile();
+    svc = mod.get(PollsService);
+  });
+
+  it('returns owner polls paginated newest-first with response counts', async () => {
+    prisma.$transaction.mockResolvedValueOnce([
+      [
+        { id: 'p2', slug: 's2', title: 'B', description: null, visibility: 'PRIVATE',
+          isActive: true, expiresAt: null, createdAt: new Date(), _count: { responses: 3 } },
+        { id: 'p1', slug: 's1', title: 'A', description: 'd', visibility: 'PUBLIC',
+          isActive: false, expiresAt: null, createdAt: new Date(), _count: { responses: 0 } },
+      ],
+      2,
+    ] as any);
+
+    const r = await svc.findMine('u1', { page: 1, pageSize: 20 });
+    expect(r.total).toBe(2);
+    expect(r.items[0].id).toBe('p2');
+    expect(r.items[0].responseCount).toBe(3);
+    expect(r.items[1].responseCount).toBe(0);
+  });
+});
+
+describe('PollsService.findOne (owner-scoped)', () => {
+  let svc: PollsService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [
+        PollsService,
+        { provide: PrismaService, useValue: prisma },
+        { provide: SlugService, useValue: mockDeep<SlugService>() },
+      ],
+    }).compile();
+    svc = mod.get(PollsService);
+  });
+
+  it('returns the poll with questions, options, responseCount for the owner', async () => {
+    prisma.poll.findFirst.mockResolvedValueOnce({
+      id: 'p1', slug: 's', ownerId: 'u1', title: 'T', description: null,
+      visibility: 'PRIVATE', isActive: true, expiresAt: null,
+      createdAt: new Date(), updatedAt: new Date(),
+      questions: [], _count: { responses: 5 },
+    } as any);
+
+    const p = await svc.findOne('u1', 'p1');
+    expect(p.id).toBe('p1');
+    expect(p.responseCount).toBe(5);
+  });
+
+  it('throws 404 when poll is not owned by the user', async () => {
+    prisma.poll.findFirst.mockResolvedValueOnce(null);
+    await expect(svc.findOne('u1', 'p1')).rejects.toThrow(/NOT_FOUND|Not Found/);
+  });
+});
+
 describe('PollsService.create', () => {
   let svc: PollsService;
   let prisma: DeepMockProxy<PrismaService>;

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { QuestionType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SlugService } from './slug.service';
@@ -41,6 +41,65 @@ export class PollsService {
       },
       include: { questions: { include: { options: true }, orderBy: { order: 'asc' } } },
     });
+  }
+
+  async findMine(ownerId: string, q: { page: number; pageSize: number }) {
+    const skip = (q.page - 1) * q.pageSize;
+    const [rows, total] = await this.prisma.$transaction([
+      this.prisma.poll.findMany({
+        where: { ownerId },
+        orderBy: { createdAt: 'desc' },
+        skip, take: q.pageSize,
+        select: {
+          id: true, slug: true, title: true, description: true,
+          visibility: true, isActive: true, expiresAt: true,
+          createdAt: true, _count: { select: { responses: true } },
+        },
+      }),
+      this.prisma.poll.count({ where: { ownerId } }),
+    ]);
+    return {
+      items: rows.map((r) => this.toSummary(r)),
+      total,
+      page: q.page,
+      pageSize: q.pageSize,
+    };
+  }
+
+  async findOne(ownerId: string, id: string) {
+    const p = await this.prisma.poll.findFirst({
+      where: { id, ownerId },
+      include: {
+        questions: { include: { options: { orderBy: { order: 'asc' } } }, orderBy: { order: 'asc' } },
+        _count: { select: { responses: true } },
+      },
+    });
+    if (!p) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
+    return this.toDetail(p);
+  }
+
+  private toSummary(r: any) {
+    return {
+      id: r.id,
+      slug: r.slug,
+      title: r.title,
+      description: r.description ?? undefined,
+      visibility: r.visibility,
+      isActive: r.isActive,
+      expiresAt: r.expiresAt ? r.expiresAt.toISOString() : undefined,
+      createdAt: r.createdAt.toISOString(),
+      responseCount: r._count.responses,
+    };
+  }
+
+  private toDetail(r: any) {
+    return {
+      ...this.toSummary(r),
+      questions: r.questions.map((q: any) => ({
+        id: q.id, order: q.order, type: q.type, text: q.text, isRequired: q.isRequired,
+        options: q.options.map((o: any) => ({ id: o.id, order: o.order, text: o.text })),
+      })),
+    };
   }
 
   private validateQuestions(qs: CreatePollDto['questions']) {
