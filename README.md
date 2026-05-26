@@ -3,7 +3,20 @@
 Full-stack polling platform. Monorepo with NestJS + Prisma backend and React + Vite frontend, orchestrated with Docker Compose.
 
 Spec: [`docs/superpowers/specs/2026-05-26-survey-app-design.md`](docs/superpowers/specs/2026-05-26-survey-app-design.md)
-Plan 1 (this one): [`docs/superpowers/plans/2026-05-26-foundation-and-auth.md`](docs/superpowers/plans/2026-05-26-foundation-and-auth.md)
+
+Implementation plans:
+- Plan 1 — Foundation + Auth: [`docs/superpowers/plans/2026-05-26-foundation-and-auth.md`](docs/superpowers/plans/2026-05-26-foundation-and-auth.md)
+- Plan 2 — Polls + Public Responses: [`docs/superpowers/plans/2026-05-26-polls-and-responses.md`](docs/superpowers/plans/2026-05-26-polls-and-responses.md)
+
+## What works today
+
+After Plan 1 + Plan 2:
+
+- Registration / login / logout / silent refresh (JWT access + refresh in `HttpOnly` cookies).
+- Owner dashboard at `/dashboard` — list of your polls with response counts, badges, Activate/Deactivate, Copy link, Edit, Delete.
+- Create / edit poll at `/polls/new` and `/polls/:id/edit` — single-choice, multiple-choice, and free-text questions; metadata (title, description, visibility, expires-at, active) and structure both editable until the first response lands.
+- Once any response exists, the poll's structure is **locked**: only metadata is editable. The form shows a banner and the structural fields are disabled. The backend re-enforces the same rule with `409 POLL_LOCKED_HAS_RESPONSES`.
+- Public poll page at `/p/:slug` — anonymous respondents answer once per browser. Cookie-based deduplication: the same browser submitting twice gets `409 ALREADY_RESPONDED`. Inactive or expired polls render read-only ("This poll has closed").
 
 ## Quickstart (Docker)
 
