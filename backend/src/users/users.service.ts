@@ -25,4 +25,29 @@ export class UsersService {
       pageSize: q.pageSize,
     };
   }
+
+  async changeRole(args: { adminId: string; userId: string; role: Role }) {
+    if (args.adminId === args.userId && args.role !== Role.ADMIN) {
+      throw new BadRequestException({
+        code: 'SELF_DEMOTION_FORBIDDEN',
+        message: 'Forbidden: you cannot demote yourself',
+      });
+    }
+    try {
+      const [updated] = await this.prisma.$transaction([
+        this.prisma.user.update({
+          where: { id: args.userId },
+          data: { role: args.role },
+          select: { id: true, email: true, name: true, role: true, createdAt: true },
+        }),
+        this.prisma.refreshToken.deleteMany({ where: { userId: args.userId } }),
+      ]);
+      return { ...updated, createdAt: (updated as any).createdAt.toISOString() };
+    } catch (e: any) {
+      if (e?.code === 'P2025') {
+        throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
+      }
+      throw e;
+    }
+  }
 }
