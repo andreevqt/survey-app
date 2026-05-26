@@ -11,7 +11,7 @@ export function createRefreshMiddleware(client: Client<any>, opts: Options): Mid
     if (refreshInFlight) return refreshInFlight;
     refreshInFlight = (async () => {
       try {
-        const r = await client.POST('/auth/refresh' as any);
+        const r = await client.POST('/auth/refresh' as any, {} as any);
         return r.response.ok;
       } catch {
         return false;
