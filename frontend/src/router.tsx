@@ -8,6 +8,9 @@ import { RequireAuth } from './auth/RequireAuth';
 import { PollFormScreen } from './routes/polls/PollFormScreen';
 import { PollScreen } from './routes/poll/PollScreen';
 import { OwnerAnalyticsScreen } from './routes/polls/analytics/OwnerAnalyticsScreen';
+import { AdminLayout } from './layouts/AdminLayout/AdminLayout';
+import { RequireAdmin } from './auth/RequireAdmin';
+import { UsersScreen } from './routes/admin/users/UsersScreen';
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +25,12 @@ export const router = createBrowserRouter([
       { path: '/polls/:id/edit', element: <RequireAuth><PollFormScreen /></RequireAuth> },
       { path: '/polls/:id/analytics', element: <RequireAuth><OwnerAnalyticsScreen /></RequireAuth> },
       { path: '*', element: <Navigate to="/" replace /> },
+    ],
+  },
+  {
+    element: <RequireAdmin><AdminLayout /></RequireAdmin>,
+    children: [
+      { path: '/admin/users', element: <UsersScreen /> },
     ],
   },
 ]);
