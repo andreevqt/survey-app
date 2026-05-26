@@ -215,3 +215,58 @@ describe('PollsService.update (edit-lock)', () => {
       .rejects.toThrow(/NOT_FOUND|Not Found/);
   });
 });
+
+describe('PollsService.delete', () => {
+  let svc: PollsService;
+  let prisma: DeepMockProxy<PrismaService>;
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [
+        PollsService,
+        { provide: PrismaService, useValue: prisma },
+        { provide: SlugService, useValue: mockDeep<SlugService>() },
+      ],
+    }).compile();
+    svc = mod.get(PollsService);
+  });
+
+  it('deletes the poll when owned', async () => {
+    prisma.poll.deleteMany.mockResolvedValueOnce({ count: 1 } as any);
+    await svc.delete('u1', 'p1');
+    expect(prisma.poll.deleteMany).toHaveBeenCalledWith({ where: { id: 'p1', ownerId: 'u1' } });
+  });
+  it('throws NOT_FOUND when nothing deleted', async () => {
+    prisma.poll.deleteMany.mockResolvedValueOnce({ count: 0 } as any);
+    await expect(svc.delete('u1', 'p1')).rejects.toThrow(/NOT_FOUND|Not Found/);
+  });
+});
+
+describe('PollsService.toggleActive', () => {
+  let svc: PollsService;
+  let prisma: DeepMockProxy<PrismaService>;
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [
+        PollsService,
+        { provide: PrismaService, useValue: prisma },
+        { provide: SlugService, useValue: mockDeep<SlugService>() },
+      ],
+    }).compile();
+    svc = mod.get(PollsService);
+  });
+
+  it('updates isActive when owned', async () => {
+    prisma.poll.updateMany.mockResolvedValueOnce({ count: 1 } as any);
+    await svc.toggleActive('u1', 'p1', false);
+    expect(prisma.poll.updateMany).toHaveBeenCalledWith({
+      where: { id: 'p1', ownerId: 'u1' },
+      data: { isActive: false },
+    });
+  });
+  it('throws NOT_FOUND when nothing updated', async () => {
+    prisma.poll.updateMany.mockResolvedValueOnce({ count: 0 } as any);
+    await expect(svc.toggleActive('u1', 'p1', true)).rejects.toThrow(/NOT_FOUND|Not Found/);
+  });
+});

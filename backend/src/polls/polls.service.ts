@@ -137,6 +137,19 @@ export class PollsService {
     return this.findOne(ownerId, id);
   }
 
+  async delete(ownerId: string, id: string) {
+    const r = await this.prisma.poll.deleteMany({ where: { id, ownerId } });
+    if (r.count === 0) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
+  }
+
+  async toggleActive(ownerId: string, id: string, isActive: boolean) {
+    const r = await this.prisma.poll.updateMany({
+      where: { id, ownerId },
+      data: { isActive },
+    });
+    if (r.count === 0) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
+  }
+
   private structuralDiff(existing: any, dto: UpdatePollDto): boolean {
     if (existing.questions.length !== dto.questions.length) return true;
     for (let i = 0; i < existing.questions.length; i++) {
