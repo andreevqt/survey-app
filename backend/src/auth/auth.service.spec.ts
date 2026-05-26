@@ -58,3 +58,50 @@ describe('AuthService.register', () => {
       .rejects.toBeInstanceOf(ConflictException);
   });
 });
+
+describe('AuthService.login', () => {
+  let svc: AuthService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      imports: [JwtModule.register({})],
+      providers: [
+        AuthService,
+        TokensService,
+        { provide: PrismaService, useValue: prisma },
+      ],
+    }).compile();
+    svc = mod.get(AuthService);
+  });
+
+  it('returns user + tokens on a valid password', async () => {
+    const hash = await bcrypt.hash('hunter22!', 4);
+    prisma.user.findUnique.mockResolvedValueOnce({
+      id: 'u1', email: 'a@b.com', name: 'A', role: Role.USER, passwordHash: hash,
+      createdAt: new Date(), updatedAt: new Date(),
+    } as any);
+    prisma.refreshToken.create.mockResolvedValueOnce({} as any);
+
+    const r = await svc.login({ email: 'a@b.com', password: 'hunter22!' });
+    expect(r.user.id).toBe('u1');
+    expect(r.tokens.accessToken).toEqual(expect.any(String));
+  });
+
+  it('rejects on unknown email', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce(null);
+    await expect(svc.login({ email: 'x@y.z', password: 'x' }))
+      .rejects.toThrow(/UNAUTHENTICATED|Unauthorized/);
+  });
+
+  it('rejects on wrong password', async () => {
+    const hash = await bcrypt.hash('correct', 4);
+    prisma.user.findUnique.mockResolvedValueOnce({
+      id: 'u1', email: 'a@b.com', name: 'A', role: Role.USER, passwordHash: hash,
+      createdAt: new Date(), updatedAt: new Date(),
+    } as any);
+    await expect(svc.login({ email: 'a@b.com', password: 'wrong' }))
+      .rejects.toThrow(/UNAUTHENTICATED|Unauthorized/);
+  });
+});

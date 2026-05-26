@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { TokensService } from './tokens.service';
@@ -26,6 +26,23 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: { email, name: args.name, passwordHash, role: 'USER' },
     });
+    const tokens = await this.issueTokens(user.id, user.role);
+    return {
+      user: { id: user.id, email: user.email, name: user.name, role: user.role },
+      tokens,
+    };
+  }
+
+  async login(args: { email: string; password: string }): Promise<AuthResult> {
+    const email = args.email.trim().toLowerCase();
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new UnauthorizedException({ code: 'UNAUTHENTICATED' });
+    }
+    const ok = await bcrypt.compare(args.password, user.passwordHash);
+    if (!ok) {
+      throw new UnauthorizedException({ code: 'UNAUTHENTICATED' });
+    }
     const tokens = await this.issueTokens(user.id, user.role);
     return {
       user: { id: user.id, email: user.email, name: user.name, role: user.role },
