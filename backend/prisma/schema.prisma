@@ -21,6 +21,7 @@ model User {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   refreshTokens RefreshToken[]
+  polls         Poll[]
 
   @@index([role])
 }
@@ -35,4 +36,96 @@ model RefreshToken {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  TEXT
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+}
+
+model Poll {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  ownerId     String
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  visibility  Visibility @default(PRIVATE)
+  isActive    Boolean    @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  questions   Question[]
+  responses   Response[]
+
+  @@index([ownerId])
+  @@index([createdAt])
+}
+
+model Question {
+  id         String       @id @default(cuid())
+  pollId     String
+  poll       Poll         @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  order      Int
+  type       QuestionType
+  text       String
+  isRequired Boolean      @default(false)
+  options    Option[]
+  answers    Answer[]
+
+  @@unique([pollId, order])
+  @@index([pollId])
+}
+
+model Option {
+  id            String         @id @default(cuid())
+  questionId    String
+  question      Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  order         Int
+  text          String
+  answerOptions AnswerOption[]
+
+  @@unique([questionId, order])
+  @@index([questionId])
+}
+
+model Response {
+  id               String   @id @default(cuid())
+  pollId           String
+  poll             Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  respondentCookie String
+  createdAt        DateTime @default(now())
+  answers          Answer[]
+
+  @@unique([pollId, respondentCookie])
+  @@index([pollId, createdAt])
+}
+
+model Answer {
+  id              String         @id @default(cuid())
+  responseId      String
+  response        Response       @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  questionId      String
+  question        Question       @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  textValue       String?
+  selectedOptions AnswerOption[]
+
+  @@unique([responseId, questionId])
+  @@index([questionId])
+}
+
+model AnswerOption {
+  answerId String
+  answer   Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  optionId String
+  option   Option @relation(fields: [optionId], references: [id], onDelete: Restrict)
+
+  @@id([answerId, optionId])
+  @@index([optionId])
 }
