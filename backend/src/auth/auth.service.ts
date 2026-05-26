@@ -72,6 +72,14 @@ export class AuthService {
     if (row) await this.prisma.refreshToken.delete({ where: { id: row.id } });
   }
 
+  async findUserById(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new UnauthorizedException({ code: 'UNAUTHENTICATED' });
+    }
+    return { id: user.id, email: user.email, name: user.name, role: user.role };
+  }
+
   private async findRefreshRow(userId: string, jti: string) {
     const rows = await this.prisma.refreshToken.findMany({ where: { userId } });
     for (const r of rows) {
