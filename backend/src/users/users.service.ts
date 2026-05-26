@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -49,5 +49,30 @@ export class UsersService {
       }
       throw e;
     }
+  }
+
+  async bulkDelete(args: { adminId: string; ids: string[] }) {
+    if (args.ids.includes(args.adminId)) {
+      throw new ForbiddenException({
+        code: 'SELF_DELETION_FORBIDDEN',
+        message: 'Forbidden: you cannot delete yourself',
+      });
+    }
+    const [totalAdmins, victims] = await Promise.all([
+      this.prisma.user.count({ where: { role: Role.ADMIN } }),
+      this.prisma.user.findMany({
+        where: { id: { in: args.ids } },
+        select: { id: true, role: true },
+      }),
+    ]);
+    const adminsAmongVictims = victims.filter((v) => v.role === Role.ADMIN).length;
+    if (adminsAmongVictims >= totalAdmins) {
+      throw new ForbiddenException({
+        code: 'LAST_ADMIN_FORBIDDEN',
+        message: 'Forbidden: cannot remove the last admin',
+      });
+    }
+    const r = await this.prisma.user.deleteMany({ where: { id: { in: args.ids } } });
+    return { count: r.count };
   }
 }

@@ -70,3 +70,42 @@ describe('UsersService.changeRole', () => {
       .rejects.toThrow(/SELF_DEMOTION_FORBIDDEN|Forbidden/);
   });
 });
+
+describe('UsersService.bulkDelete', () => {
+  let svc: UsersService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [UsersService, { provide: PrismaService, useValue: prisma }],
+    }).compile();
+    svc = mod.get(UsersService);
+  });
+
+  it('deletes the listed users and returns the count', async () => {
+    prisma.user.count.mockResolvedValueOnce(3); // total admins
+    prisma.user.findMany.mockResolvedValueOnce([
+      { id: 'u1', role: Role.USER },
+      { id: 'u2', role: Role.USER },
+    ] as any);
+    prisma.user.deleteMany.mockResolvedValueOnce({ count: 2 } as any);
+    const r = await svc.bulkDelete({ adminId: 'a1', ids: ['u1', 'u2'] });
+    expect(r.count).toBe(2);
+  });
+
+  it('rejects when ids include the current admin', async () => {
+    await expect(svc.bulkDelete({ adminId: 'a1', ids: ['a1', 'u1'] }))
+      .rejects.toThrow(/SELF_DELETION_FORBIDDEN|Forbidden/);
+  });
+
+  it('rejects when the operation would remove the last admin', async () => {
+    prisma.user.count.mockResolvedValueOnce(2); // total admins
+    prisma.user.findMany.mockResolvedValueOnce([
+      { id: 'u1', role: Role.ADMIN },
+      { id: 'u2', role: Role.ADMIN },
+    ] as any);
+    await expect(svc.bulkDelete({ adminId: 'a1', ids: ['u1', 'u2'] }))
+      .rejects.toThrow(/LAST_ADMIN_FORBIDDEN|Forbidden/);
+  });
+});
