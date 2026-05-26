@@ -378,6 +378,163 @@
           "public"
         ]
       }
+    },
+    "/polls/{id}/analytics": {
+      "get": {
+        "operationId": "AnalyticsController_getOwnerAnalytics",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerAnalyticsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/admin/analytics": {
+      "get": {
+        "operationId": "AnalyticsController_getSystemAnalytics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemAnalyticsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "operationId": "UsersController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserListResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin-users"
+        ]
+      }
+    },
+    "/admin/users/{id}/role": {
+      "patch": {
+        "operationId": "UsersController_changeRole",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSummaryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin-users"
+        ]
+      }
+    },
+    "/admin/users/bulk-delete": {
+      "post": {
+        "operationId": "UsersController_bulkDelete",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkDeleteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkDeleteResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin-users"
+        ]
+      }
+    },
+    "/admin/users/export.csv": {
+      "get": {
+        "operationId": "UsersController_exportCsv",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-users"
+        ]
+      }
     }
   },
   "info": {
@@ -863,6 +1020,223 @@
         },
         "required": [
           "submittedAt"
+        ]
+      },
+      "OptionAggregateDto": {
+        "type": "object",
+        "properties": {
+          "optionId": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "order": {
+            "type": "number"
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "optionId",
+          "text",
+          "order",
+          "count"
+        ]
+      },
+      "QuestionAggregateDto": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "order": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "SINGLE_CHOICE",
+              "MULTIPLE_CHOICE",
+              "TEXT"
+            ]
+          },
+          "answerCount": {
+            "type": "number"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OptionAggregateDto"
+            }
+          },
+          "textAnswerCount": {
+            "type": "number",
+            "description": "Number of distinct text answers, for TEXT questions only"
+          }
+        },
+        "required": [
+          "questionId",
+          "text",
+          "order",
+          "type",
+          "answerCount",
+          "options"
+        ]
+      },
+      "OwnerAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "pollId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "totalResponses": {
+            "type": "number"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionAggregateDto"
+            }
+          }
+        },
+        "required": [
+          "pollId",
+          "title",
+          "totalResponses",
+          "questions"
+        ]
+      },
+      "SystemAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "totalUsers": {
+            "type": "number"
+          },
+          "totalAdmins": {
+            "type": "number"
+          },
+          "totalPolls": {
+            "type": "number"
+          },
+          "activePolls": {
+            "type": "number"
+          },
+          "totalResponses": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "totalUsers",
+          "totalAdmins",
+          "totalPolls",
+          "activePolls",
+          "totalResponses"
+        ]
+      },
+      "UserSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "USER",
+              "ADMIN"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "role",
+          "createdAt"
+        ]
+      },
+      "UserListResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserSummaryDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "page": {
+            "type": "number"
+          },
+          "pageSize": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize"
+        ]
+      },
+      "ChangeRoleDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "USER",
+              "ADMIN"
+            ]
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "BulkDeleteDto": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "ids"
+        ]
+      },
+      "BulkDeleteResultDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "count"
         ]
       }
     }

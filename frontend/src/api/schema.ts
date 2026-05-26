@@ -180,6 +180,102 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polls/{id}/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AnalyticsController_getOwnerAnalytics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AnalyticsController_getSystemAnalytics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UsersController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{id}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["UsersController_changeRole"];
+        trace?: never;
+    };
+    "/admin/users/bulk-delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["UsersController_bulkDelete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/export.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UsersController_exportCsv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -313,6 +409,61 @@ export interface components {
         };
         SubmitResultDto: {
             submittedAt: string;
+        };
+        OptionAggregateDto: {
+            optionId: string;
+            text: string;
+            order: number;
+            count: number;
+        };
+        QuestionAggregateDto: {
+            questionId: string;
+            text: string;
+            order: number;
+            /** @enum {string} */
+            type: "SINGLE_CHOICE" | "MULTIPLE_CHOICE" | "TEXT";
+            answerCount: number;
+            options: components["schemas"]["OptionAggregateDto"][];
+            /** @description Number of distinct text answers, for TEXT questions only */
+            textAnswerCount?: number;
+        };
+        OwnerAnalyticsDto: {
+            pollId: string;
+            title: string;
+            totalResponses: number;
+            questions: components["schemas"]["QuestionAggregateDto"][];
+        };
+        SystemAnalyticsDto: {
+            totalUsers: number;
+            totalAdmins: number;
+            totalPolls: number;
+            activePolls: number;
+            totalResponses: number;
+        };
+        UserSummaryDto: {
+            id: string;
+            email: string;
+            name: string;
+            /** @enum {string} */
+            role: "USER" | "ADMIN";
+            /** Format: date-time */
+            createdAt: string;
+        };
+        UserListResponseDto: {
+            items: components["schemas"]["UserSummaryDto"][];
+            total: number;
+            page: number;
+            pageSize: number;
+        };
+        ChangeRoleDto: {
+            /** @enum {string} */
+            role: "USER" | "ADMIN";
+        };
+        BulkDeleteDto: {
+            ids: string[];
+        };
+        BulkDeleteResultDto: {
+            count: number;
         };
     };
     responses: never;
@@ -616,6 +767,130 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["SubmitResultDto"];
                 };
+            };
+        };
+    };
+    AnalyticsController_getOwnerAnalytics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerAnalyticsDto"];
+                };
+            };
+        };
+    };
+    AnalyticsController_getSystemAnalytics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SystemAnalyticsDto"];
+                };
+            };
+        };
+    };
+    UsersController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserListResponseDto"];
+                };
+            };
+        };
+    };
+    UsersController_changeRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeRoleDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserSummaryDto"];
+                };
+            };
+        };
+    };
+    UsersController_bulkDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkDeleteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkDeleteResultDto"];
+                };
+            };
+        };
+    };
+    UsersController_exportCsv: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
