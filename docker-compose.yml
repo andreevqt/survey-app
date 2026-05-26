@@ -1,0 +1,58 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: survey_app
+      POSTGRES_USER: polls
+      POSTGRES_PASSWORD: polls
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"          # host 5433 → container 5432 (host 5432 is the developer's local Postgres)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U polls -d survey_app"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+      target: dev
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed && npm run start:dev"
+    environment:
+      DATABASE_URL: postgresql://polls:polls@db:5432/survey_app
+      JWT_ACCESS_SECRET: dev-access-secret-change-me
+      JWT_REFRESH_SECRET: dev-refresh-secret-change-me
+      ADMIN_EMAIL: admin@polls.local
+      ADMIN_PASSWORD: admin
+      NODE_ENV: development
+      PORT: "3000"
+      FRONTEND_ORIGIN: http://localhost:5173
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+    command: npm run dev -- --host 0.0.0.0
+    environment:
+      VITE_API_BASE_URL: /api/v1
+      VITE_BACKEND_PROXY: http://backend:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  db-data:
