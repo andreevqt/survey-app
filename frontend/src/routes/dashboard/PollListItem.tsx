@@ -48,6 +48,9 @@ export function PollListItem({ poll, onDelete }: { poll: Poll; onDelete: (id: st
           >
             Copy link
           </Button>
+          <Button variant="secondary" size="sm" onClick={() => navigate(`/polls/${poll.id}/analytics`)}>
+            Analytics
+          </Button>
           <Button variant="secondary" size="sm" onClick={() => navigate(`/polls/${poll.id}/edit`)}>
             Edit
           </Button>

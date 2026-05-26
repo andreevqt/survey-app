@@ -7,6 +7,7 @@ import { DashboardScreen } from './routes/dashboard/DashboardScreen';
 import { RequireAuth } from './auth/RequireAuth';
 import { PollFormScreen } from './routes/polls/PollFormScreen';
 import { PollScreen } from './routes/poll/PollScreen';
+import { OwnerAnalyticsScreen } from './routes/polls/analytics/OwnerAnalyticsScreen';
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
       { path: '/dashboard', element: <RequireAuth><DashboardScreen /></RequireAuth> },
       { path: '/polls/new', element: <RequireAuth><PollFormScreen /></RequireAuth> },
       { path: '/polls/:id/edit', element: <RequireAuth><PollFormScreen /></RequireAuth> },
+      { path: '/polls/:id/analytics', element: <RequireAuth><OwnerAnalyticsScreen /></RequireAuth> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
