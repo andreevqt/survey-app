@@ -56,4 +56,16 @@ export class AnalyticsService {
       })),
     };
   }
+
+  async getSystemAnalytics() {
+    const [totalUsers, totalAdmins, totalPolls, activePolls, totalResponses] =
+      await this.prisma.$transaction([
+        this.prisma.user.count(),
+        this.prisma.user.count({ where: { role: 'ADMIN' } }),
+        this.prisma.poll.count(),
+        this.prisma.poll.count({ where: { isActive: true } }),
+        this.prisma.response.count(),
+      ]);
+    return { totalUsers, totalAdmins, totalPolls, activePolls, totalResponses };
+  }
 }

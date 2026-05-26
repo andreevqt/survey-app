@@ -75,3 +75,30 @@ describe('AnalyticsService.getOwnerAnalytics', () => {
     await expect(svc.getOwnerAnalytics('u1', 'p1')).rejects.toThrow(/NOT_FOUND|Not Found/);
   });
 });
+
+describe('AnalyticsService.getSystemAnalytics', () => {
+  let svc: AnalyticsService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [AnalyticsService, { provide: PrismaService, useValue: prisma }],
+    }).compile();
+    svc = mod.get(AnalyticsService);
+  });
+
+  it('aggregates user / poll / response totals', async () => {
+    prisma.$transaction.mockResolvedValueOnce([
+      42, 3, 17, 9, 233,
+    ] as any);
+    const r = await svc.getSystemAnalytics();
+    expect(r).toEqual({
+      totalUsers: 42,
+      totalAdmins: 3,
+      totalPolls: 17,
+      activePolls: 9,
+      totalResponses: 233,
+    });
+  });
+});
