@@ -7,16 +7,23 @@ Spec: [`docs/superpowers/specs/2026-05-26-survey-app-design.md`](docs/superpower
 Implementation plans:
 - Plan 1 — Foundation + Auth: [`docs/superpowers/plans/2026-05-26-foundation-and-auth.md`](docs/superpowers/plans/2026-05-26-foundation-and-auth.md)
 - Plan 2 — Polls + Public Responses: [`docs/superpowers/plans/2026-05-26-polls-and-responses.md`](docs/superpowers/plans/2026-05-26-polls-and-responses.md)
+- Plan 3 — Analytics + Admin: [`docs/superpowers/plans/2026-05-26-analytics-and-admin.md`](docs/superpowers/plans/2026-05-26-analytics-and-admin.md)
 
-## What works today
+## What works today (v1 surface complete)
 
-After Plan 1 + Plan 2:
+After Plans 1 + 2 + 3:
 
-- Registration / login / logout / silent refresh (JWT access + refresh in `HttpOnly` cookies).
-- Owner dashboard at `/dashboard` — list of your polls with response counts, badges, Activate/Deactivate, Copy link, Edit, Delete.
-- Create / edit poll at `/polls/new` and `/polls/:id/edit` — single-choice, multiple-choice, and free-text questions; metadata (title, description, visibility, expires-at, active) and structure both editable until the first response lands.
-- Once any response exists, the poll's structure is **locked**: only metadata is editable. The form shows a banner and the structural fields are disabled. The backend re-enforces the same rule with `409 POLL_LOCKED_HAS_RESPONSES`.
-- Public poll page at `/p/:slug` — anonymous respondents answer once per browser. Cookie-based deduplication: the same browser submitting twice gets `409 ALREADY_RESPONDED`. Inactive or expired polls render read-only ("This poll has closed").
+- **Auth.** Register, login, logout, silent refresh. JWT access + refresh tokens in `HttpOnly` cookies. Refresh rotation: single-use, revoked-on-use.
+- **Owner dashboard** at `/dashboard` — your polls with response counts, badges, Activate/Deactivate, Copy link, Analytics, Edit, Delete.
+- **Create / edit poll** at `/polls/new` and `/polls/:id/edit` — single-choice, multiple-choice, free-text questions. Metadata (title, description, visibility, `expiresAt`, active toggle) always editable. Questions and options also editable — **until the first response lands**.
+- **Edit-lock on responses.** Once any response exists, the poll's structure is locked. The form shows a banner and structural fields are disabled. The backend re-enforces with `409 POLL_LOCKED_HAS_RESPONSES`.
+- **Per-poll analytics** at `/polls/:id/analytics` — total responses, per-question breakdown with proportional progress bars for choice questions, count summary for text questions.
+- **Public poll page** at `/p/:slug` — anonymous respondents answer once per browser. Cookie-based deduplication: the same browser submitting twice gets `409 ALREADY_RESPONDED`. Inactive or expired polls render read-only ("This poll has closed").
+- **Admin Panel** for users with `role === 'ADMIN'`:
+  - `/admin/users` — paginated users table, per-row role select (USER ↔ ADMIN), bulk select + bulk delete, CSV export (`id,name,email,role,createdAt` with UTF-8 BOM and RFC-4180 escaping). Safety guards: an admin cannot delete themselves; the system refuses to wipe the last admin.
+  - `/admin/analytics` — system-wide aggregates (total users / admins, total polls / active polls, total responses).
+  - Role changes invalidate the affected user's refresh tokens — they must re-login with the new role.
+- **End-to-end coverage**: 27 backend e2e tests (auth, polls, responses, analytics, admin), 2 Playwright flows (`npm run test:e2e`): full lifecycle (register → create poll → anonymous submit → see in analytics) and admin promotion (admin promotes a user → that user sees the Admin Panel link after re-login).
 
 ## Quickstart (Docker)
 
@@ -54,7 +61,7 @@ npm run dev          # runs backend (:3000) + frontend (:5173) in parallel
 |---|---|
 | `npm run dev` | Backend + frontend in dev mode |
 | `npm test` | Jest (backend) + Vitest (frontend) |
-| `npm run test:e2e` | Playwright (added in Plan 3) |
+| `npm run test:e2e` | Playwright (runs against the live compose stack) |
 | `npm run check:ts` | TS check both workspaces |
 | `npm run lint` | ESLint both workspaces |
 | `npm run db:migrate` | `prisma migrate deploy` |
