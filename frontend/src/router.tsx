@@ -11,6 +11,7 @@ import { OwnerAnalyticsScreen } from './routes/polls/analytics/OwnerAnalyticsScr
 import { AdminLayout } from './layouts/AdminLayout/AdminLayout';
 import { RequireAdmin } from './auth/RequireAdmin';
 import { UsersScreen } from './routes/admin/users/UsersScreen';
+import { SystemAnalyticsScreen } from './routes/admin/analytics/SystemAnalyticsScreen';
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,7 @@ export const router = createBrowserRouter([
     element: <RequireAdmin><AdminLayout /></RequireAdmin>,
     children: [
       { path: '/admin/users', element: <UsersScreen /> },
+      { path: '/admin/analytics', element: <SystemAnalyticsScreen /> },
     ],
   },
 ]);
