@@ -22,7 +22,7 @@ export function MyPollsTab() {
           <p className="text-3xl">📋</p>
           <p className="mt-3 text-base font-semibold text-gray-900">No polls yet</p>
           <p className="mt-1 text-sm text-gray-500">Create your first poll to start collecting responses.</p>
-          <Link to="/polls/new"><Button className="mt-4">Create poll</Button></Link>
+          <Link to="/polls/new"><Button className="mt-4">Create Poll</Button></Link>
         </Card>
       ) : (
         <div className="flex flex-col gap-4">
