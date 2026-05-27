@@ -1,11 +1,8 @@
-const STATS = [
-  { value: '12,847', label: 'Polls launched this week' },
-  { value: '2.1M',   label: 'Responses collected' },
-  { value: '<200ms', label: 'Median response submit' },
-  { value: '0',      label: 'Tracking cookies set' },
-] as const;
+import { useLandingStats } from './hooks/useLandingStats';
 
 export function LandingStats() {
+  const { stats } = useLandingStats();
+
   return (
     <section className="bg-white">
       <div className="mx-auto max-w-[1180px] px-8 pb-16">
@@ -13,13 +10,13 @@ export function LandingStats() {
           className="grid gap-4 rounded-2xl bg-gray-900 px-6 py-8 text-white"
           style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}
         >
-          {STATS.map((s, i) => (
+          {stats.map((s, i) => (
             <div
               key={s.label}
               className="px-1 py-2 text-center"
               style={{
                 borderRight:
-                  i < STATS.length - 1 ? '1px solid var(--gray-700, #374151)' : 'none',
+                  i < stats.length - 1 ? '1px solid var(--gray-700, #374151)' : 'none',
               }}
             >
               <div

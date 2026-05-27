@@ -1,16 +1,7 @@
-import { useState } from 'react';
-import { useReducedMotion } from '../../lib/use-reduced-motion';
-
-const OPTIONS = [
-  { t: 'Tabs', pct: 64 },
-  { t: 'Spaces', pct: 31 },
-  { t: 'Either', pct: 5 },
-] as const;
+import { useLandingTryIt } from './hooks/useLandingTryIt';
 
 export function LandingTryIt() {
-  const [picked, setPicked] = useState<string | null>(null);
-  const reduced = useReducedMotion();
-  const max = Math.max(...OPTIONS.map((o) => o.pct));
+  const { picked, setPicked, reduced, max, options } = useLandingTryIt();
 
   return (
     <section className="border-y border-gray-200 bg-gray-50">
@@ -49,7 +40,7 @@ export function LandingTryIt() {
 
           {picked === null ? (
             <div className="flex flex-col gap-2">
-              {OPTIONS.map((o) => (
+              {options.map((o) => (
                 <button
                   key={o.t}
                   onClick={() => setPicked(o.t)}
@@ -64,7 +55,7 @@ export function LandingTryIt() {
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              {OPTIONS.map((o, i) => {
+              {options.map((o, i) => {
                 const isPicked = o.t === picked;
                 const leader = o.pct === max;
                 return (

@@ -1,9 +1,9 @@
-import { LandingNav } from './LandingNav';
-import { LandingHero } from './LandingHero';
-import { LandingTryIt } from './LandingTryIt';
-import { LandingFeatures } from './LandingFeatures';
-import { LandingStats } from './LandingStats';
-import { LandingCTA } from './LandingCTA';
+import { LandingNav } from '../LandingNav';
+import { LandingHero } from '../LandingHero';
+import { LandingTryIt } from '../LandingTryIt';
+import { LandingFeatures } from '../LandingFeatures';
+import { LandingStats } from '../LandingStats';
+import { LandingCTA } from '../LandingCTA';
 
 export function LandingScreen() {
   return (

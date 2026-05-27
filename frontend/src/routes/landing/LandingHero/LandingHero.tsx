@@ -1,13 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Button } from '../../components/primitives/Button';
-import { LiveResultsCard } from '../../components/marketing/LiveResultsCard';
-
-const TRUST_AVATARS = [
-  { initials: 'AP', bg: '#e0e7ff', fg: '#4338ca' },
-  { initials: 'JK', bg: '#dcfce7', fg: '#15803d' },
-  { initials: 'SM', bg: '#dbeafe', fg: '#1d4ed8' },
-  { initials: 'LZ', bg: '#fee2e2', fg: '#b91c1c' },
-] as const;
+import { Button } from '../../../components/primitives/Button';
+import { LiveResultsCard } from '../../../components/marketing/LiveResultsCard';
+import { TRUST_AVATARS } from './types';
 
 export function LandingHero() {
   return (

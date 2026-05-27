@@ -1,46 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useReducedMotion } from '../../lib/use-reduced-motion';
-
-const ROTATING_POLLS = [
-  {
-    q: 'How would you rate your overall workload?',
-    responses: 247,
-    options: [
-      { t: 'Light', pct: 12 },
-      { t: 'Just right', pct: 51 },
-      { t: 'Heavy', pct: 28 },
-      { t: 'Overwhelming', pct: 9 },
-    ],
-  },
-  {
-    q: 'Which framework do you reach for first?',
-    responses: 1842,
-    options: [
-      { t: 'React', pct: 58 },
-      { t: 'Vue', pct: 18 },
-      { t: 'Svelte', pct: 14 },
-      { t: 'Solid', pct: 10 },
-    ],
-  },
-  {
-    q: 'Where should we hold the offsite?',
-    responses: 38,
-    options: [
-      { t: 'Lisbon', pct: 42 },
-      { t: 'Berlin', pct: 26 },
-      { t: 'Mexico City', pct: 22 },
-      { t: 'Stay remote', pct: 10 },
-    ],
-  },
-] as const;
-
-type Props = {
-  rotate?: number;
-  opacity?: number;
-  zIndex?: number;
-  offset?: { x: number; y: number };
-  delay?: number;
-};
+import { useLiveResultsCard } from './hooks/useLiveResultsCard';
+import type { LiveResultsCardProps } from './types';
 
 export function LiveResultsCard({
   rotate = 0,
@@ -48,32 +7,8 @@ export function LiveResultsCard({
   zIndex = 1,
   offset = { x: 0, y: 0 },
   delay = 0,
-}: Props) {
-  const reduced = useReducedMotion();
-  const [idx, setIdx] = useState(0);
-  const [fill, setFill] = useState(reduced);
-
-  useEffect(() => {
-    if (reduced) return;
-    const start = setTimeout(() => setFill(true), 200 + delay);
-    return () => clearTimeout(start);
-  }, [idx, delay, reduced]);
-
-  useEffect(() => {
-    if (reduced) return;
-    let inner: ReturnType<typeof setTimeout> | undefined;
-    const interval = setInterval(() => {
-      setFill(false);
-      inner = setTimeout(() => setIdx((p) => (p + 1) % ROTATING_POLLS.length), 350);
-    }, 4500);
-    return () => {
-      clearInterval(interval);
-      if (inner) clearTimeout(inner);
-    };
-  }, [reduced]);
-
-  const poll = ROTATING_POLLS[idx];
-  const max = Math.max(...poll.options.map((o) => o.pct));
+}: LiveResultsCardProps) {
+  const { poll, max, fill, reduced, idx } = useLiveResultsCard(delay);
 
   return (
     <div

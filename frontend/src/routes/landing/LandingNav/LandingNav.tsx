@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Button } from '../../components/primitives/Button';
+import { Button } from '../../../components/primitives/Button';
 
 export function LandingNav() {
   return (
