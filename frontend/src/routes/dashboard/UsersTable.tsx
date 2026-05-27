@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { toast } from 'sonner';
-import type { components } from '../../../api/schema';
-import { Card } from '../../../components/primitives/Card';
-import { Badge } from '../../../components/primitives/Badge';
-import { Select } from '../../../components/primitives/Select';
-import { Avatar } from '../../../components/primitives/Avatar';
-import { useChangeUserRole } from '../../../api/mutations/admin';
-import { useAuth } from '../../../auth/useAuth';
+import type { components } from '../../api/schema';
+import { Card } from '../../components/primitives/Card';
+import { Badge } from '../../components/primitives/Badge';
+import { Select } from '../../components/primitives/Select';
+import { Avatar } from '../../components/primitives/Avatar';
+import { useChangeUserRole } from '../../api/mutations/admin';
+import { useAuth } from '../../auth/useAuth';
 
 type User = components['schemas']['UserSummaryDto'];
 
