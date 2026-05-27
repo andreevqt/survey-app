@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../client';
 
-export function useAdminUsers(args: { page?: number; pageSize?: number } = {}) {
+export function useAdminUsers(args: { page?: number; pageSize?: number; enabled?: boolean } = {}) {
   const page = args.page ?? 1;
   const pageSize = args.pageSize ?? 20;
   return useQuery({
+    enabled: args.enabled ?? true,
     queryKey: ['admin', 'users', { page, pageSize }],
     queryFn: async () => {
       const r = await apiClient.GET('/admin/users', {
