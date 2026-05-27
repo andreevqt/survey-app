@@ -15,14 +15,6 @@ export function Header() {
       <nav className="flex items-center gap-3">
         {user ? (
           <>
-            {user.role === 'ADMIN' && (
-              <Link
-                to="/admin/users"
-                className="text-sm font-medium text-indigo-700 hover:text-indigo-800"
-              >
-                Admin Panel
-              </Link>
-            )}
             <Link to="/dashboard" className="text-sm text-gray-700 hover:text-gray-900">Dashboard</Link>
             <Avatar name={user.name} size="sm" />
             <span className="text-sm text-gray-700">{user.name}</span>
