@@ -16,6 +16,6 @@ export class AdminPollsController {
     @Query('page') page = '1',
     @Query('pageSize') pageSize = '20',
   ): Promise<PollListResponseDto> {
-    return this.polls.listAll({ page: Number(page), pageSize: Number(pageSize) }) as any;
+    return this.polls.findAll({ page: Number(page), pageSize: Number(pageSize) }) as any;
   }
 }

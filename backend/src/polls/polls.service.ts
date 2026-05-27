@@ -67,7 +67,7 @@ export class PollsService {
     };
   }
 
-  async listAll(q: { page: number; pageSize: number }) {
+  async findAll(q: { page: number; pageSize: number }) {
     const skip = (q.page - 1) * q.pageSize;
     const [rows, total] = await this.prisma.$transaction([
       this.prisma.poll.findMany({
