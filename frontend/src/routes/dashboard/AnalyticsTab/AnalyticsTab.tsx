@@ -1,6 +1,6 @@
-import { Card } from '../../components/primitives/Card';
-import { Spinner } from '../../components/primitives/Spinner';
-import { useSystemAnalytics } from '../../api/queries/admin';
+import { Card } from '../../../components/primitives/Card';
+import { Spinner } from '../../../components/primitives/Spinner';
+import { useAnalyticsTab } from './hooks/useAnalyticsTab';
 
 function Stat({ title, value, hint }: { title: string; value: number; hint?: string }) {
   return (
@@ -13,18 +13,19 @@ function Stat({ title, value, hint }: { title: string; value: number; hint?: str
 }
 
 export function AnalyticsTab() {
-  const q = useSystemAnalytics();
+  const vm = useAnalyticsTab();
+
   return (
     <div className="mt-6">
-      {q.isLoading ? (
+      {vm.status === 'loading' ? (
         <div className="flex justify-center py-12"><Spinner size={28} /></div>
-      ) : q.isError || !q.data ? (
+      ) : vm.status === 'error' ? (
         <p className="text-sm text-red-600">Could not load system analytics.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Stat title="Total users" value={q.data.totalUsers} hint={`${q.data.totalAdmins} admin${q.data.totalAdmins === 1 ? '' : 's'}`} />
-          <Stat title="Total polls" value={q.data.totalPolls} hint={`${q.data.activePolls} active`} />
-          <Stat title="Total responses" value={q.data.totalResponses} />
+          <Stat title="Total users" value={vm.data!.totalUsers} hint={`${vm.data!.totalAdmins} admin${vm.data!.totalAdmins === 1 ? '' : 's'}`} />
+          <Stat title="Total polls" value={vm.data!.totalPolls} hint={`${vm.data!.activePolls} active`} />
+          <Stat title="Total responses" value={vm.data!.totalResponses} />
         </div>
       )}
     </div>

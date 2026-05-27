@@ -1,24 +1,12 @@
-import { useMemo } from 'react';
-import { toast } from 'sonner';
-import type { components } from '../../api/schema';
-import { Card } from '../../components/primitives/Card';
-import { Badge } from '../../components/primitives/Badge';
-import { Select } from '../../components/primitives/Select';
-import { Avatar } from '../../components/primitives/Avatar';
-import { useChangeUserRole } from '../../api/mutations/admin';
-import { useAuth } from '../../auth/useAuth';
+import { Card } from '../../../components/primitives/Card';
+import { Badge } from '../../../components/primitives/Badge';
+import { Select } from '../../../components/primitives/Select';
+import { Avatar } from '../../../components/primitives/Avatar';
+import type { UsersTableProps } from './types';
+import { useUsersTable } from './hooks/useUsersTable';
 
-type User = components['schemas']['UserSummaryDto'];
-
-export function UsersTable({ users, selected, onToggle, onToggleAll }: {
-  users: User[];
-  selected: string[];
-  onToggle: (id: string) => void;
-  onToggleAll: () => void;
-}) {
-  const allSelected = useMemo(() => users.length > 0 && users.every((u) => selected.includes(u.id)), [users, selected]);
-  const changeRole = useChangeUserRole();
-  const { user: me } = useAuth();
+export function UsersTable({ users, selected, onToggle, onToggleAll }: UsersTableProps) {
+  const vm = useUsersTable({ users, selected, onToggle, onToggleAll });
 
   return (
     <Card className="p-0 overflow-hidden">
@@ -29,7 +17,7 @@ export function UsersTable({ users, selected, onToggle, onToggleAll }: {
               <input
                 type="checkbox"
                 className="accent-indigo-600"
-                checked={allSelected}
+                checked={vm.allSelected}
                 onChange={onToggleAll}
               />
             </th>
@@ -42,7 +30,7 @@ export function UsersTable({ users, selected, onToggle, onToggleAll }: {
         <tbody>
           {users.map((u) => {
             const isSel = selected.includes(u.id);
-            const isMe = me?.id === u.id;
+            const isMe = vm.isMe(u);
             return (
               <tr key={u.id} className={isSel ? 'bg-indigo-50/40' : ''}>
                 <td className="px-4 py-3">
@@ -73,15 +61,8 @@ export function UsersTable({ users, selected, onToggle, onToggleAll }: {
                   <Select
                     defaultValue={u.role}
                     className="h-8 w-28 text-xs"
-                    disabled={isMe || changeRole.isPending}
-                    onChange={(e) => {
-                      const role = e.target.value as 'USER' | 'ADMIN';
-                      if (role === u.role) return;
-                      changeRole.mutate({ id: u.id, role }, {
-                        onSuccess: () => toast.success(`${u.name} is now ${role}`),
-                        onError: (err: any) => toast.error(err?.message ?? 'Role change failed'),
-                      });
-                    }}
+                    disabled={isMe || vm.isChangingRole}
+                    onChange={(e) => vm.onChangeRole(u, e.target.value as 'USER' | 'ADMIN')}
                   >
                     <option value="USER">USER</option>
                     <option value="ADMIN">ADMIN</option>
