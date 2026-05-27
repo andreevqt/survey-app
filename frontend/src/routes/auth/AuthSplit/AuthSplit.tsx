@@ -1,10 +1,11 @@
-import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { LiveResultsCard } from '../../components/marketing/LiveResultsCard';
+import { LiveResultsCard } from '../../../components/marketing/LiveResultsCard';
+import { useAuthSplit } from './hooks/useAuthSplit';
+import type { AuthSplitProps } from './types';
 
-type Props = { side: ReactNode; children: ReactNode };
+export function AuthSplit({ side, children }: AuthSplitProps) {
+  useAuthSplit();
 
-export function AuthSplit({ side, children }: Props) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-white">
       <style>{`

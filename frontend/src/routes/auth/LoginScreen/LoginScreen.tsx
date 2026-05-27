@@ -1,32 +1,14 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { AuthSplit } from './AuthSplit';
-import { AuthBenefits } from './AuthBenefits';
-import { AuthFormCard } from './AuthFormCard';
-import { Button } from '../../components/primitives/Button';
-import { Input } from '../../components/primitives/Input';
-import { Field } from '../../components/primitives/Field';
-import { useLoginMutation } from '../../auth/auth-mutations';
-import { loginSchema, LoginFormValues } from '../../forms/schemas/login.schema';
+import { Link } from 'react-router-dom';
+import { AuthSplit } from '../AuthSplit';
+import { AuthBenefits } from '../AuthBenefits';
+import { AuthFormCard } from '../AuthFormCard';
+import { Button } from '../../../components/primitives/Button';
+import { Input } from '../../../components/primitives/Input';
+import { Field } from '../../../components/primitives/Field';
+import { useLoginScreen } from './hooks/useLoginScreen';
 
 export function LoginScreen() {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-  });
-  const login = useLoginMutation();
-  const navigate = useNavigate();
-  const location = useLocation() as { state?: { from?: string } };
-
-  const onSubmit = handleSubmit(async (values) => {
-    try {
-      await login.mutateAsync(values);
-      navigate(location.state?.from ?? '/dashboard', { replace: true });
-    } catch {
-      toast.error('Invalid email or password');
-    }
-  });
+  const { register, errors, isPending, onSubmit, onForgotClick } = useLoginScreen();
 
   return (
     <AuthSplit
@@ -64,7 +46,7 @@ export function LoginScreen() {
               <label htmlFor="login-pw" className="text-sm font-medium text-gray-700">Password</label>
               <button
                 type="button"
-                onClick={() => toast.info('Password reset is not implemented yet.')}
+                onClick={onForgotClick}
                 className="text-xs text-indigo-600 hover:underline"
               >
                 Forgot?
@@ -76,7 +58,7 @@ export function LoginScreen() {
             )}
           </div>
 
-          <Button type="submit" size="lg" isLoading={login.isPending} className="w-full">
+          <Button type="submit" size="lg" isLoading={isPending} className="w-full">
             Sign in
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M13 5l7 7-7 7" />

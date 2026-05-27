@@ -1,33 +1,14 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { AuthSplit } from './AuthSplit';
-import { AuthBenefits } from './AuthBenefits';
-import { AuthFormCard } from './AuthFormCard';
-import { Button } from '../../components/primitives/Button';
-import { Input } from '../../components/primitives/Input';
-import { Field } from '../../components/primitives/Field';
-import { useRegisterMutation } from '../../auth/auth-mutations';
-import { registerSchema, RegisterFormValues } from '../../forms/schemas/register.schema';
+import { Link } from 'react-router-dom';
+import { AuthSplit } from '../AuthSplit';
+import { AuthBenefits } from '../AuthBenefits';
+import { AuthFormCard } from '../AuthFormCard';
+import { Button } from '../../../components/primitives/Button';
+import { Input } from '../../../components/primitives/Input';
+import { Field } from '../../../components/primitives/Field';
+import { useRegisterScreen } from './hooks/useRegisterScreen';
 
 export function RegisterScreen() {
-  const { register: registerInput, handleSubmit, formState: { errors } } = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
-  });
-  const reg = useRegisterMutation();
-  const navigate = useNavigate();
-
-  const onSubmit = handleSubmit(async (values) => {
-    try {
-      await reg.mutateAsync(values);
-      navigate('/dashboard', { replace: true });
-    } catch (err: unknown) {
-      const apiErr = err as { code?: string };
-      if (apiErr?.code === 'EMAIL_TAKEN') toast.error('That email is already registered.');
-      else toast.error('Could not create your account.');
-    }
-  });
+  const { registerInput, errors, isPending, onSubmit } = useRegisterScreen();
 
   return (
     <AuthSplit
@@ -74,7 +55,7 @@ export function RegisterScreen() {
             )}
           </div>
 
-          <Button type="submit" size="lg" isLoading={reg.isPending} className="w-full">
+          <Button type="submit" size="lg" isLoading={isPending} className="w-full">
             Create account
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M13 5l7 7-7 7" />
