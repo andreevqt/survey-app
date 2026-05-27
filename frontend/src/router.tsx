@@ -6,6 +6,7 @@ import { LoginScreen } from './routes/auth/LoginScreen';
 import { RegisterScreen } from './routes/auth/RegisterScreen';
 import { MyPollsTab } from './routes/dashboard/MyPollsTab';
 import { UsersTab } from './routes/dashboard/UsersTab';
+import { AllPollsTab } from './routes/dashboard/AllPollsTab';
 import { RequireAuth } from './auth/RequireAuth';
 import { RequireAdmin } from './auth/RequireAdmin';
 import { PollFormScreen } from './routes/polls/PollFormScreen';
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <MyPollsTab /> },
       { path: 'all-users', element: <RequireAdmin><UsersTab /></RequireAdmin> },
+      { path: 'all-polls', element: <RequireAdmin><AllPollsTab /></RequireAdmin> },
       { path: 'polls/new', element: <PollFormScreen /> },
       { path: 'polls/:id/edit', element: <PollFormScreen /> },
       { path: 'polls/:id/analytics', element: <OwnerAnalyticsScreen /> },

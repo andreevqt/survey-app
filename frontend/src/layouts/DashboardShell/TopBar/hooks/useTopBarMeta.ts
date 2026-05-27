@@ -1,6 +1,6 @@
 import { useLocation, useMatch } from 'react-router-dom';
 import { useAuth } from '../../../../auth/useAuth';
-import { useAdminUsers } from '../../../../api/queries/admin';
+import { useAdminUsers, useAdminPolls } from '../../../../api/queries/admin';
 import { usePoll } from '../../../../api/queries/polls';
 
 interface TopBarMeta {
@@ -17,10 +17,12 @@ export function useTopBarMeta(): TopBarMeta {
   const editMatch = useMatch('/dashboard/polls/:id/edit');
   const analyticsMatch = useMatch('/dashboard/polls/:id/analytics');
   const allUsersMatch = useMatch('/dashboard/all-users');
+  const allPollsMatch = useMatch('/dashboard/all-polls');
 
   const pollId = editMatch?.params.id ?? analyticsMatch?.params.id;
   const { data: poll } = usePoll(pollId);
   const { data: usersData } = useAdminUsers({ enabled: allUsersMatch !== null });
+  const { data: pollsData } = useAdminPolls({ enabled: allPollsMatch !== null });
 
   if (pathname === '/dashboard/polls/new') {
     return {
@@ -30,18 +32,10 @@ export function useTopBarMeta(): TopBarMeta {
     };
   }
   if (editMatch) {
-    return {
-      title: 'Edit poll',
-      subtitle: poll?.title,
-      showNewPollButton: false,
-    };
+    return { title: 'Edit poll', subtitle: poll?.title, showNewPollButton: false };
   }
   if (analyticsMatch) {
-    return {
-      title: 'Analytics',
-      subtitle: poll?.title,
-      showNewPollButton: false,
-    };
+    return { title: 'Analytics', subtitle: poll?.title, showNewPollButton: false };
   }
   if (allUsersMatch) {
     return {
@@ -50,7 +44,13 @@ export function useTopBarMeta(): TopBarMeta {
       showNewPollButton: false,
     };
   }
-
+  if (allPollsMatch) {
+    return {
+      title: 'All polls',
+      subtitle: pollsData?.total !== undefined ? `${pollsData.total} total polls in the system` : undefined,
+      showNewPollButton: true,
+    };
+  }
   if (dashboardMatch) {
     return {
       title: 'My polls',
@@ -59,8 +59,5 @@ export function useTopBarMeta(): TopBarMeta {
     };
   }
 
-  return {
-    title: 'Dashboard',
-    showNewPollButton: false,
-  };
+  return { title: 'Dashboard', showNewPollButton: false };
 }
