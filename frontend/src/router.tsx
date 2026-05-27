@@ -14,12 +14,15 @@ import { PollScreen } from './routes/poll/PollScreen';
 import { OwnerAnalyticsScreen } from './routes/polls/analytics/OwnerAnalyticsScreen';
 
 export const router = createBrowserRouter([
+  // Public marketing/auth surface — own top chrome, no MainLayout Header.
+  { path: '/', element: <LandingScreen /> },
+  { path: '/login', element: <LoginScreen /> },
+  { path: '/register', element: <RegisterScreen /> },
+
+  // Everything else: MainLayout with the existing Header.
   {
     element: <MainLayout />,
     children: [
-      { path: '/', element: <LandingScreen /> },
-      { path: '/login', element: <LoginScreen /> },
-      { path: '/register', element: <RegisterScreen /> },
       { path: '/p/:slug', element: <PollScreen /> },
 
       {
@@ -39,8 +42,9 @@ export const router = createBrowserRouter([
       { path: '/admin', element: <Navigate to="/dashboard" replace /> },
       { path: '/admin/users', element: <Navigate to="/dashboard/users" replace /> },
       { path: '/admin/analytics', element: <Navigate to="/dashboard/analytics" replace /> },
-
-      { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
+
+  // Top-level catch-all so unknown paths outside MainLayout still redirect home.
+  { path: '*', element: <Navigate to="/" replace /> },
 ]);
