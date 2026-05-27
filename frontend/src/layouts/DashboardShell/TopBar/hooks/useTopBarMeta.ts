@@ -13,6 +13,7 @@ export function useTopBarMeta(): TopBarMeta {
   const { user } = useAuth();
   const { pathname } = useLocation();
 
+  const dashboardMatch = useMatch('/dashboard');
   const editMatch = useMatch('/dashboard/polls/:id/edit');
   const analyticsMatch = useMatch('/dashboard/polls/:id/analytics');
   const allUsersMatch = useMatch('/dashboard/all-users');
@@ -50,9 +51,16 @@ export function useTopBarMeta(): TopBarMeta {
     };
   }
 
+  if (dashboardMatch) {
+    return {
+      title: 'My polls',
+      subtitle: user?.name ? `Welcome back, ${user.name}` : undefined,
+      showNewPollButton: true,
+    };
+  }
+
   return {
-    title: 'My polls',
-    subtitle: user?.name ? `Welcome back, ${user.name}` : undefined,
-    showNewPollButton: true,
+    title: 'Dashboard',
+    showNewPollButton: false,
   };
 }
