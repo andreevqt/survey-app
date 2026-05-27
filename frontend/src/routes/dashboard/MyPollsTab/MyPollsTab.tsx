@@ -3,7 +3,7 @@ import { Card } from '../../../components/primitives/Card';
 import { Button } from '../../../components/primitives/Button';
 import { Spinner } from '../../../components/primitives/Spinner';
 import { ConfirmDialog } from '../../../components/primitives/ConfirmDialog';
-import { PollListItem } from '../PollListItem';
+import { AdminPollsTable } from '../AdminPollsTable';
 import { useMyPollsTab } from './hooks/useMyPollsTab';
 
 export function MyPollsTab() {
@@ -25,11 +25,7 @@ export function MyPollsTab() {
           <Link to="/dashboard/polls/new"><Button className="mt-4">Create Poll</Button></Link>
         </Card>
       ) : (
-        <div className="flex flex-col gap-4">
-          {vm.polls!.map((p) => (
-            <PollListItem key={p.id} poll={p} onDelete={vm.setPendingDeleteId} />
-          ))}
-        </div>
+        <AdminPollsTable polls={vm.polls!} onDelete={vm.setPendingDeleteId} />
       )}
 
       {vm.pendingDeleteId && (

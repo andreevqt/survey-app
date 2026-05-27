@@ -2,7 +2,7 @@ import type { components } from '../../../api/schema';
 
 export type PollSummary = components['schemas']['PollSummaryDto'];
 
-export interface PollListItemProps {
-  poll: PollSummary;
+export interface AdminPollsTableProps {
+  polls: PollSummary[];
   onDelete: (id: string) => void;
 }
