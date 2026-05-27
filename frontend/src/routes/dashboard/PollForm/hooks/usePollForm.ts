@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { BaseSyntheticEvent } from 'react';
 import { pollFormSchema, type PollFormValues } from '../../../../forms/schemas/poll.schema';
 import { useCreatePoll, useUpdatePoll } from '../../../../api/mutations/polls';
 import { usePoll } from '../../../../api/queries/polls';
 
-// Private helper: converts ISO timestamp to datetime-local input value in local time.
 function toLocalInputValue(iso: string): string {
   const d = new Date(iso);
   const pad = (n: number) => String(n).padStart(2, '0');
@@ -22,11 +20,8 @@ const defaultQuestion: PollFormValues['questions'][number] = {
   options: [{ text: '' }, { text: '' }],
 };
 
-export function usePollFormScreen() {
-  const { id } = useParams<{ id?: string }>();
-  const navigate = useNavigate();
+export function usePollForm({ id, onSuccess }: { id?: string; onSuccess?: () => void }) {
   const isEdit = !!id;
-
   const pollQuery = usePoll(id);
   const poll = pollQuery.data;
   const locked = isEdit && (poll?.responseCount ?? 0) > 0;
@@ -34,6 +29,7 @@ export function usePollFormScreen() {
 
   const create = useCreatePoll();
   const update = useUpdatePoll(id ?? '');
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const methods = useForm<PollFormValues>({
     resolver: zodResolver(pollFormSchema),
@@ -66,9 +62,8 @@ export function usePollFormScreen() {
     });
   }, [isEdit, poll, reset]);
 
-  const [serverError, setServerError] = useState<string | null>(null);
-
-  const onSubmit = handleSubmit(async (values) => {
+  const onSubmit = handleSubmit(async (values, e?: BaseSyntheticEvent) => {
+    e?.preventDefault();
     setServerError(null);
     const payload = {
       title: values.title,
@@ -91,33 +86,40 @@ export function usePollFormScreen() {
         await create.mutateAsync(payload as any);
         toast.success('Poll created');
       }
-      navigate('/dashboard');
+      onSuccess?.();
     } catch (err: any) {
       setServerError(err?.message ?? 'Could not save poll');
       toast.error('Could not save poll');
     }
   });
 
+  const isSubmitting = create.isPending || update.isPending;
+
   const heading = useMemo(
     () => (isEdit ? `Edit "${poll?.title ?? '…'}"` : 'New poll'),
     [isEdit, poll?.title],
   );
 
+  const isHydrating = isEdit && pollQuery.isLoading;
+
   function onAddQuestion() {
     questionFields.append({ ...defaultQuestion });
   }
 
-  return {
-    isEdit,
-    isHydrating: isEdit && pollQuery.isLoading,
-    heading,
-    locked,
-    responseCount,
-    methods,
-    questionFields,
-    serverError,
-    isSubmitting: create.isPending || update.isPending,
-    onSubmit: onSubmit as (e?: BaseSyntheticEvent) => void,
-    onAddQuestion,
-  };
+  return useMemo(
+    () => ({
+      methods,
+      questionFields,
+      isEdit,
+      heading,
+      isHydrating,
+      isSubmitting,
+      locked,
+      responseCount,
+      serverError,
+      onSubmit: onSubmit as (e?: BaseSyntheticEvent) => void,
+      onAddQuestion,
+    }),
+    [methods, questionFields, isEdit, heading, isHydrating, isSubmitting, locked, responseCount, serverError, onSubmit],
+  );
 }
