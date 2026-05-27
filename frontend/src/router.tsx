@@ -9,9 +9,7 @@ import { UsersTab } from './routes/dashboard/UsersTab';
 import { AllPollsTab } from './routes/dashboard/AllPollsTab';
 import { RequireAuth } from './auth/RequireAuth';
 import { RequireAdmin } from './auth/RequireAdmin';
-import { PollFormScreen } from './routes/polls/PollFormScreen';
 import { PollScreen } from './routes/poll/PollScreen';
-import { OwnerAnalyticsScreen } from './routes/polls/analytics/OwnerAnalyticsScreen';
 
 function RedirectWithId({ template }: { template: string }) {
   const { id } = useParams<{ id: string }>();
@@ -37,9 +35,9 @@ export const router = createBrowserRouter([
       { index: true, element: <MyPollsTab /> },
       { path: 'all-users', element: <RequireAdmin><UsersTab /></RequireAdmin> },
       { path: 'all-polls', element: <RequireAdmin><AllPollsTab /></RequireAdmin> },
-      { path: 'polls/new', element: <PollFormScreen /> },
-      { path: 'polls/:id/edit', element: <PollFormScreen /> },
-      { path: 'polls/:id/analytics', element: <OwnerAnalyticsScreen /> },
+      { path: 'polls/new', element: <MyPollsTab /> },
+      { path: 'polls/:id/edit', element: <MyPollsTab /> },
+      { path: 'polls/:id/analytics', element: <MyPollsTab /> },
     ],
   },
 
