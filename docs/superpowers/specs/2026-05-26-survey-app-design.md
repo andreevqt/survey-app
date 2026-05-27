@@ -31,7 +31,7 @@ Build a full-stack polling platform that mirrors the visual surface in `design/`
 - Public poll discovery — `visibility` is stored but behaviorally inert; both PUBLIC and PRIVATE polls are link-gated. The field is stored so discovery can be added later without a migration.
 - Production deployment manifests — Docker Compose is for local dev only.
 - Rate limiting on submissions — explicit non-goal; cookie dedup is for honest deduplication, not abuse prevention. `@nestjs/throttler` can be added later if needed.
-- An admin "system dashboard" stats page (the `AdminDashboard` component in the design). Admins see the same `/dashboard` as users. The admin shell exists only as a layout for admin management pages (Users, Analytics).
+- An admin "system dashboard" stats page (the `AdminDashboard` component in the design kit) — still out of scope. The admin shell from the design kit is not used; admin features live as nested tabs on `/dashboard` (see [2026-05-27-unified-dashboard-design.md](2026-05-27-unified-dashboard-design.md)).
 
 ---
 
@@ -455,17 +455,21 @@ When an admin promotes or demotes a user, the user's `RefreshToken` rows are del
 /p/:slug                       MainLayout > PollScreen (public)
 
 <RequireAuth>
-  /dashboard                   MainLayout > DashboardScreen
+  /dashboard                   MainLayout > DashboardScreen (shell)
+    (index)                    MyPollsTab
+    /dashboard/users           RequireAdmin > UsersTab
+    /dashboard/analytics       RequireAdmin > AnalyticsTab
   /polls/new                   MainLayout > PollFormScreen
   /polls/:id/edit              MainLayout > PollFormScreen
   /polls/:id/analytics         MainLayout > OwnerAnalyticsScreen
 
-<RequireAdmin>
-  /admin/users                 AdminLayout > UsersScreen
-  /admin/analytics             AdminLayout > SystemAnalyticsScreen
+Legacy redirects (declared inside MainLayout, above the catch-all):
+  /admin                       → /dashboard
+  /admin/users                 → /dashboard/users
+  /admin/analytics             → /dashboard/analytics
 ```
 
-The "Admin Panel" button on `DashboardScreen` (shown when `user.role === 'ADMIN'`) navigates to `/admin/users`. The admin sidebar's "Dashboard" link routes back to `/dashboard`.
+See [2026-05-27-unified-dashboard-design.md](2026-05-27-unified-dashboard-design.md) for the rationale behind the nested-tab layout and the removal of `AdminLayout`.
 
 ### State management
 

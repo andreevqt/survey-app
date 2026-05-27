@@ -2133,3 +2133,7 @@ git commit -m "docs: note plan 3 surface (analytics + admin)"
 - [ ] `npm run gen:api && git diff --exit-code` — spec in sync.
 
 End of v1.
+
+---
+
+**2026-05-27 update:** The admin surface was reworked from a separate `AdminLayout` panel into nested tabs on `/dashboard`. See [2026-05-27-unified-dashboard-design.md](../specs/2026-05-27-unified-dashboard-design.md) and the implementation in [2026-05-27-unified-dashboard.md](2026-05-27-unified-dashboard.md).
