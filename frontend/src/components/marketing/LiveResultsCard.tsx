@@ -61,11 +61,15 @@ export function LiveResultsCard({
 
   useEffect(() => {
     if (reduced) return;
+    let inner: ReturnType<typeof setTimeout> | undefined;
     const interval = setInterval(() => {
       setFill(false);
-      setTimeout(() => setIdx((p) => (p + 1) % ROTATING_POLLS.length), 350);
+      inner = setTimeout(() => setIdx((p) => (p + 1) % ROTATING_POLLS.length), 350);
     }, 4500);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (inner) clearTimeout(inner);
+    };
   }, [reduced]);
 
   const poll = ROTATING_POLLS[idx];
