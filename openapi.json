@@ -309,6 +309,27 @@
         ]
       }
     },
+    "/admin/polls": {
+      "get": {
+        "operationId": "AdminPollsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PollListResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin-polls"
+        ]
+      }
+    },
     "/public/polls/{slug}": {
       "get": {
         "operationId": "ResponsesController_getPublic",

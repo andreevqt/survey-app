@@ -67,6 +67,28 @@ export class PollsService {
     };
   }
 
+  async listAll(q: { page: number; pageSize: number }) {
+    const skip = (q.page - 1) * q.pageSize;
+    const [rows, total] = await this.prisma.$transaction([
+      this.prisma.poll.findMany({
+        orderBy: { createdAt: 'desc' },
+        skip, take: q.pageSize,
+        select: {
+          id: true, slug: true, title: true, description: true,
+          visibility: true, isActive: true, expiresAt: true,
+          createdAt: true, _count: { select: { responses: true } },
+        },
+      }),
+      this.prisma.poll.count(),
+    ]);
+    return {
+      items: rows.map((r) => this.toSummary(r)),
+      total,
+      page: q.page,
+      pageSize: q.pageSize,
+    };
+  }
+
   async findOne(ownerId: string, id: string) {
     const p = await this.prisma.poll.findFirst({
       where: { id, ownerId },
