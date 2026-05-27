@@ -90,7 +90,7 @@ export function LandingHero() {
 
             {/* Trust strip */}
             <div className="mt-8 flex flex-wrap items-center gap-6">
-              <div className="flex items-center">
+              <div aria-hidden="true" className="flex items-center">
                 {TRUST_AVATARS.map((a, i) => (
                   <div
                     key={a.initials}

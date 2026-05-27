@@ -114,6 +114,12 @@ export function LandingTryIt() {
           )}
         </div>
       </div>
+      <style>{`
+        @keyframes lrc-pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgb(22 163 74 / 0.6); }
+          50%      { box-shadow: 0 0 0 6px rgb(22 163 74 / 0); }
+        }
+      `}</style>
     </section>
   );
 }
