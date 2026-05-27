@@ -22,17 +22,15 @@ const usersIcon = (
 );
 
 export function Sidebar() {
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'ADMIN';
+  const { user, isLoading } = useAuth();
+  const isAdmin = !isLoading && user?.role === 'ADMIN';
 
   return (
     <nav
       aria-label="Primary"
       className="sticky top-0 h-screen w-[248px] shrink-0 bg-white border-r border-gray-200 flex flex-col"
     >
-      <div className="px-3 pt-4">
-        <BrandMark />
-      </div>
+      <BrandMark />
 
       <SidebarSection label="Workspace">
         <SidebarItem to="/dashboard" label="My polls" icon={pollsIcon} end />
