@@ -1,10 +1,8 @@
-import { Card } from '../primitives/Card';
-import { QuestionAnalyticsCard } from './QuestionAnalyticsCard';
-import type { components } from '../../api/schema';
+import { Card } from '../../primitives/Card';
+import { QuestionAnalyticsCard } from '../QuestionAnalyticsCard';
+import type { AnalyticsViewProps } from './types';
 
-type Analytics = components['schemas']['OwnerAnalyticsDto'];
-
-export function AnalyticsView({ analytics }: { analytics: Analytics }) {
+export function AnalyticsView({ analytics }: AnalyticsViewProps) {
   return (
     <div className="flex flex-col gap-6">
       <Card>
