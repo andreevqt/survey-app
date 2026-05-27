@@ -1,50 +1,54 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter, Navigate, useParams } from 'react-router-dom';
 import { MainLayout } from './layouts/MainLayout/MainLayout';
+import { DashboardShell } from './layouts/DashboardShell';
 import { LandingScreen } from './routes/landing/LandingScreen';
 import { LoginScreen } from './routes/auth/LoginScreen';
 import { RegisterScreen } from './routes/auth/RegisterScreen';
-import { DashboardScreen } from './routes/dashboard/DashboardScreen';
 import { MyPollsTab } from './routes/dashboard/MyPollsTab';
 import { UsersTab } from './routes/dashboard/UsersTab';
-import { AnalyticsTab } from './routes/dashboard/AnalyticsTab';
 import { RequireAuth } from './auth/RequireAuth';
 import { RequireAdmin } from './auth/RequireAdmin';
 import { PollFormScreen } from './routes/polls/PollFormScreen';
 import { PollScreen } from './routes/poll/PollScreen';
 import { OwnerAnalyticsScreen } from './routes/polls/analytics/OwnerAnalyticsScreen';
 
+function RedirectWithId({ template }: { template: string }) {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={template.replace(':id', id ?? '')} replace />;
+}
+
 export const router = createBrowserRouter([
-  // Public marketing/auth surface — own top chrome, no MainLayout Header.
   { path: '/', element: <LandingScreen /> },
   { path: '/login', element: <LoginScreen /> },
   { path: '/register', element: <RegisterScreen /> },
 
-  // Everything else: MainLayout with the existing Header.
   {
     element: <MainLayout />,
     children: [
       { path: '/p/:slug', element: <PollScreen /> },
-
-      {
-        path: '/dashboard',
-        element: <RequireAuth><DashboardScreen /></RequireAuth>,
-        children: [
-          { index: true, element: <MyPollsTab /> },
-          { path: 'users', element: <RequireAdmin><UsersTab /></RequireAdmin> },
-          { path: 'analytics', element: <RequireAdmin><AnalyticsTab /></RequireAdmin> },
-        ],
-      },
-
-      { path: '/polls/new', element: <RequireAuth><PollFormScreen /></RequireAuth> },
-      { path: '/polls/:id/edit', element: <RequireAuth><PollFormScreen /></RequireAuth> },
-      { path: '/polls/:id/analytics', element: <RequireAuth><OwnerAnalyticsScreen /></RequireAuth> },
-
-      { path: '/admin', element: <Navigate to="/dashboard" replace /> },
-      { path: '/admin/users', element: <Navigate to="/dashboard/users" replace /> },
-      { path: '/admin/analytics', element: <Navigate to="/dashboard/analytics" replace /> },
     ],
   },
 
-  // Top-level catch-all so unknown paths outside MainLayout still redirect home.
+  {
+    path: '/dashboard',
+    element: <RequireAuth><DashboardShell /></RequireAuth>,
+    children: [
+      { index: true, element: <MyPollsTab /> },
+      { path: 'all-users', element: <RequireAdmin><UsersTab /></RequireAdmin> },
+      { path: 'polls/new', element: <PollFormScreen /> },
+      { path: 'polls/:id/edit', element: <PollFormScreen /> },
+      { path: 'polls/:id/analytics', element: <OwnerAnalyticsScreen /> },
+    ],
+  },
+
+  { path: '/polls/new', element: <Navigate to="/dashboard/polls/new" replace /> },
+  { path: '/polls/:id/edit', element: <RedirectWithId template="/dashboard/polls/:id/edit" /> },
+  { path: '/polls/:id/analytics', element: <RedirectWithId template="/dashboard/polls/:id/analytics" /> },
+  { path: '/dashboard/users', element: <Navigate to="/dashboard/all-users" replace /> },
+  { path: '/dashboard/analytics', element: <Navigate to="/dashboard" replace /> },
+  { path: '/admin', element: <Navigate to="/dashboard" replace /> },
+  { path: '/admin/users', element: <Navigate to="/dashboard/all-users" replace /> },
+  { path: '/admin/analytics', element: <Navigate to="/dashboard" replace /> },
+
   { path: '*', element: <Navigate to="/" replace /> },
 ]);

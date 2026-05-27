@@ -26,8 +26,8 @@ export function usePollListItem({ poll, onDelete }: PollListItemProps): PollList
     toast[ok ? 'success' : 'error'](ok ? 'Link copied' : 'Could not copy link');
   };
 
-  const onNavigateAnalytics = () => navigate(`/polls/${poll.id}/analytics`);
-  const onNavigateEdit = () => navigate(`/polls/${poll.id}/edit`);
+  const onNavigateAnalytics = () => navigate(`/dashboard/polls/${poll.id}/analytics`);
+  const onNavigateEdit = () => navigate(`/dashboard/polls/${poll.id}/edit`);
   const onRequestDelete = () => onDelete(poll.id);
 
   return {
