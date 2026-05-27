@@ -2,6 +2,7 @@ import { useAuth } from '../../../auth/useAuth';
 import { BrandMark } from './BrandMark';
 import { SidebarSection } from './SidebarSection';
 import { SidebarItem } from './SidebarItem';
+import { SidebarSearch } from './SidebarSearch';
 
 const pollsIcon = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
@@ -31,6 +32,7 @@ export function Sidebar() {
       className="sticky top-0 h-screen w-[248px] shrink-0 bg-white border-r border-gray-200 flex flex-col"
     >
       <BrandMark />
+      <SidebarSearch />
 
       <SidebarSection label="Workspace">
         <SidebarItem to="/dashboard" label="My polls" icon={pollsIcon} end />
@@ -39,6 +41,7 @@ export function Sidebar() {
       {isAdmin && (
         <SidebarSection label="Staff">
           <SidebarItem to="/dashboard/all-users" label="All users" icon={usersIcon} />
+          <SidebarItem to="/dashboard/all-polls" label="All polls" icon={pollsIcon} />
         </SidebarSection>
       )}
     </nav>
