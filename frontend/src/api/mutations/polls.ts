@@ -13,7 +13,10 @@ export function useCreatePoll() {
       if (!r.response.ok) throw r.error ?? new Error('Create failed');
       return r.data!;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['polls'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['polls'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'polls'] });
+    },
   });
 }
 
@@ -25,7 +28,10 @@ export function useUpdatePoll(id: string) {
       if (!r.response.ok) throw r.error ?? new Error('Update failed');
       return r.data!;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['polls'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['polls'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'polls'] });
+    },
   });
 }
 
@@ -36,7 +42,10 @@ export function useDeletePoll() {
       const r = await apiClient.DELETE('/polls/{id}', { params: { path: { id } } });
       if (!r.response.ok) throw r.error ?? new Error('Delete failed');
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['polls'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['polls'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'polls'] });
+    },
   });
 }
 
@@ -51,6 +60,9 @@ export function useToggleActive() {
       if (!r.response.ok) throw r.error ?? new Error('Toggle failed');
       return r.data!;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['polls'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['polls'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'polls'] });
+    },
   });
 }
