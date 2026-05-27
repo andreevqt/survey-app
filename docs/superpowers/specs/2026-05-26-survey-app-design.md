@@ -693,7 +693,7 @@ Covered explicitly:
 2. Anonymous user submits twice from the same browser → second is blocked.
 3. Poll with `expiresAt` in the past → public view shows "closed".
 4. Owner edits a poll with responses → structural fields disabled.
-5. Admin promotes a user → that user sees the "Admin Panel" button after logging in.
+5. Admin promotes a user → that user sees the "Users" tab on `/dashboard` after logging in.
 6. Admin bulk-deletes users → CSV export reflects the deletion.
 
 ### CI (GitHub Actions)
