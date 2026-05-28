@@ -123,6 +123,26 @@ const TEXT_POLL: DemoTextPoll = {
   ],
 };
 
+const TEXT_POLL_2: DemoTextPoll = {
+  pollId: 'demo_poll_text2',
+  questionId: 'demo_q_text2',
+  slug: 'dev-pain-points',
+  title: 'What is the biggest pain point in your current workflow?',
+  questionText: 'One thing you wish was easier.',
+  answers: [
+    'Code review takes forever, the queue is always backed up',
+    'Slow tests make me dread pushing changes',
+    'Onboarding new engineers is painful, docs are scattered',
+    'Flaky CI pipelines waste hours every week',
+    'Standup meetings are too long and add no value',
+    'Deployment process is brittle, breaks half the time',
+    'Documentation is outdated, can never trust the README',
+    'Too many notifications, real signal gets lost',
+    'Local dev environment setup is a nightmare',
+    'Code review feels rushed because of deadlines',
+  ],
+};
+
 async function seedChoicePoll(prisma: PrismaClient, ownerId: string, poll: DemoChoicePoll) {
   const existing = await prisma.poll.findUnique({ where: { id: poll.pollId } });
   if (existing) {
@@ -240,6 +260,7 @@ async function main() {
     await seedChoicePoll(prisma, ownerId, SINGLE_POLL);
     await seedChoicePoll(prisma, ownerId, MULTI_POLL);
     await seedTextPoll(prisma, ownerId, TEXT_POLL);
+    await seedTextPoll(prisma, ownerId, TEXT_POLL_2);
   } finally {
     await prisma.$disconnect();
   }
