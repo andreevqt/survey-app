@@ -612,6 +612,44 @@
         ]
       }
     },
+    "/polls/{pollId}/questions/{questionId}/analyze": {
+      "post": {
+        "operationId": "AnalyticsController_analyzeFreeTextQuestion",
+        "parameters": [
+          {
+            "name": "pollId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "questionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiAnalysisDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
     "/admin/polls/{id}/analytics": {
       "get": {
         "operationId": "AnalyticsController_getAdminPollAnalytics",
@@ -1374,6 +1412,74 @@
           "title",
           "totalResponses",
           "questions"
+        ]
+      },
+      "SentimentDto": {
+        "type": "object",
+        "properties": {
+          "positive": {
+            "type": "number",
+            "description": "Percentage of positive answers (0-100, integer)"
+          },
+          "neutral": {
+            "type": "number",
+            "description": "Percentage of neutral answers (0-100, integer)"
+          },
+          "negative": {
+            "type": "number",
+            "description": "Percentage of negative answers (0-100, integer)"
+          }
+        },
+        "required": [
+          "positive",
+          "neutral",
+          "negative"
+        ]
+      },
+      "ThemeDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "Short theme label, lowercase token"
+          },
+          "count": {
+            "type": "number",
+            "description": "Number of answers mentioning the theme"
+          },
+          "quote": {
+            "type": "string",
+            "description": "Verbatim answer fragment, ≤ 140 chars"
+          }
+        },
+        "required": [
+          "label",
+          "count",
+          "quote"
+        ]
+      },
+      "AiAnalysisDto": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One-sentence summary of the responses"
+          },
+          "sentiment": {
+            "$ref": "#/components/schemas/SentimentDto"
+          },
+          "themes": {
+            "description": "0–5 themes ordered by frequency",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ThemeDto"
+            }
+          }
+        },
+        "required": [
+          "summary",
+          "sentiment",
+          "themes"
         ]
       },
       "SystemAnalyticsDto": {

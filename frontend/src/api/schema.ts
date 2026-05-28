@@ -260,6 +260,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polls/{pollId}/questions/{questionId}/analyze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AnalyticsController_analyzeFreeTextQuestion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/polls/{id}/analytics": {
         parameters: {
             query?: never;
@@ -522,6 +538,29 @@ export interface components {
             title: string;
             totalResponses: number;
             questions: components["schemas"]["QuestionAggregateDto"][];
+        };
+        SentimentDto: {
+            /** @description Percentage of positive answers (0-100, integer) */
+            positive: number;
+            /** @description Percentage of neutral answers (0-100, integer) */
+            neutral: number;
+            /** @description Percentage of negative answers (0-100, integer) */
+            negative: number;
+        };
+        ThemeDto: {
+            /** @description Short theme label, lowercase token */
+            label: string;
+            /** @description Number of answers mentioning the theme */
+            count: number;
+            /** @description Verbatim answer fragment, ≤ 140 chars */
+            quote: string;
+        };
+        AiAnalysisDto: {
+            /** @description One-sentence summary of the responses */
+            summary: string;
+            sentiment: components["schemas"]["SentimentDto"];
+            /** @description 0–5 themes ordered by frequency */
+            themes: components["schemas"]["ThemeDto"][];
         };
         SystemAnalyticsDto: {
             totalUsers: number;
@@ -1030,6 +1069,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OwnerAnalyticsDto"];
+                };
+            };
+        };
+    };
+    AnalyticsController_analyzeFreeTextQuestion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pollId: string;
+                questionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiAnalysisDto"];
                 };
             };
         };
