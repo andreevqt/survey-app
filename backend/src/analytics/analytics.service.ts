@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { QuestionType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiAnalysisDto, SentimentDto, ThemeDto } from './dto/ai-analysis.dto';
@@ -133,7 +133,7 @@ export class AnalyticsService {
 
     const question = await this.prisma.question.findFirst({
       where: { id: questionId, pollId },
-      select: { id: true, type: true },
+      select: { id: true, type: true, text: true },
     });
     if (!question) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
     if (question.type !== QuestionType.TEXT) {
@@ -149,7 +149,9 @@ export class AnalyticsService {
       .map((s) => s.trim())
       .filter((s) => s.length > 0);
 
-    return mockAnalyzeAnswers(answers);
+    return process.env.DEEPSEEK_API_KEY
+      ? deepseekAnalyzeAnswers(question.text, answers)
+      : mockAnalyzeAnswers(answers);
   }
 }
 
@@ -237,4 +239,164 @@ function mockAnalyzeAnswers(answers: string[]): AiAnalysisDto {
   const themes = buildThemes(answers);
   const summary = buildSummary(answers, themes);
   return { summary, sentiment, themes };
+}
+
+// --- DeepSeek provider ----------------------------------------------------
+// Called when DEEPSEEK_API_KEY is set. OpenAI-compatible chat-completions
+// shape, JSON-mode response, 30s timeout. Errors surface as BadGateway so
+// the existing frontend hook renders its red error panel.
+// --------------------------------------------------------------------------
+
+const DEEPSEEK_URL = 'https://api.deepseek.com/chat/completions';
+const DEEPSEEK_TIMEOUT_MS = 30_000;
+
+function buildDeepseekPrompt(questionText: string, answers: string[]): string {
+  const numbered = answers.length
+    ? answers.map((a, i) => `${i + 1}. ${a}`).join('\n')
+    : '(no responses)';
+  return `Return STRICT JSON of the shape:
+{
+  "summary": string (1-2 sentences),
+  "sentiment": { "positive": number, "neutral": number, "negative": number } (integer percentages, sum 100),
+  "themes": [ { "label": string, "count": number, "quote": string } ] (3-5 themes; quote is a short verbatim from the input, ≤ 140 chars)
+}
+Do not include any prose outside the JSON. Do not wrap in markdown fences.
+
+Question: ${questionText}
+
+Responses:
+${numbered}`;
+}
+
+function coerceInt(v: unknown, fallback: number): number {
+  const n = typeof v === 'number' ? v : Number(v);
+  return Number.isFinite(n) ? Math.round(n) : fallback;
+}
+
+function coerceAiAnalysis(raw: unknown): AiAnalysisDto {
+  if (!raw || typeof raw !== 'object') {
+    throw new Error('schema: not an object');
+  }
+  const r = raw as Record<string, unknown>;
+  const summary = typeof r.summary === 'string' ? r.summary.trim() : '';
+  if (!summary) throw new Error('schema: missing summary');
+
+  const sentRaw = (r.sentiment ?? {}) as Record<string, unknown>;
+  let positive = Math.max(0, coerceInt(sentRaw.positive, 0));
+  let negative = Math.max(0, coerceInt(sentRaw.negative, 0));
+  let neutral = Math.max(0, coerceInt(sentRaw.neutral, 0));
+  const sum = positive + neutral + negative;
+  if (sum !== 100) {
+    const drift = 100 - sum;
+    neutral = Math.max(0, neutral + drift);
+    const total = positive + neutral + negative;
+    if (total === 0) {
+      neutral = 100;
+    } else if (total !== 100) {
+      const k = 100 / total;
+      positive = Math.round(positive * k);
+      negative = Math.round(negative * k);
+      neutral = 100 - positive - negative;
+      if (neutral < 0) neutral = 0;
+    }
+  }
+  const sentiment: SentimentDto = { positive, neutral, negative };
+
+  const themesRaw = Array.isArray(r.themes) ? r.themes : [];
+  const themes: ThemeDto[] = themesRaw
+    .slice(0, 5)
+    .map((t) => {
+      const obj = (t ?? {}) as Record<string, unknown>;
+      const label = typeof obj.label === 'string' ? obj.label.trim() : '';
+      const count = Math.max(1, coerceInt(obj.count, 1));
+      const quote = typeof obj.quote === 'string' ? obj.quote.trim() : '';
+      return { label, count, quote };
+    })
+    .filter((t) => t.label.length > 0);
+
+  return { summary, sentiment, themes };
+}
+
+async function deepseekAnalyzeAnswers(
+  questionText: string,
+  answers: string[],
+): Promise<AiAnalysisDto> {
+  const apiKey = process.env.DEEPSEEK_API_KEY!;
+  const model = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
+  const body = {
+    model,
+    messages: [
+      {
+        role: 'system',
+        content:
+          'You analyze open-text survey responses. Respond with strict JSON only — no prose, no markdown fences.',
+      },
+      { role: 'user', content: buildDeepseekPrompt(questionText, answers) },
+    ],
+    response_format: { type: 'json_object' },
+    temperature: 0.2,
+    max_tokens: 800,
+  };
+
+  let response: Response;
+  try {
+    response = await fetch(DEEPSEEK_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(DEEPSEEK_TIMEOUT_MS),
+    });
+  } catch (e) {
+    throw new BadGatewayException({
+      code: 'AI_PROVIDER_ERROR',
+      message: `DeepSeek request failed: ${(e as Error).message}`,
+    });
+  }
+
+  if (!response.ok) {
+    throw new BadGatewayException({
+      code: 'AI_PROVIDER_ERROR',
+      message: `DeepSeek returned HTTP ${response.status}`,
+    });
+  }
+
+  let payload: unknown;
+  try {
+    payload = await response.json();
+  } catch {
+    throw new BadGatewayException({
+      code: 'AI_PROVIDER_ERROR',
+      message: 'DeepSeek returned a non-JSON body',
+    });
+  }
+
+  const content = (payload as any)?.choices?.[0]?.message?.content;
+  if (typeof content !== 'string') {
+    throw new BadGatewayException({
+      code: 'AI_PROVIDER_ERROR',
+      message: 'DeepSeek response missing choices[0].message.content',
+    });
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    throw new BadGatewayException({
+      code: 'AI_PROVIDER_ERROR',
+      message: 'DeepSeek content is not valid JSON',
+    });
+  }
+
+  try {
+    return coerceAiAnalysis(parsed);
+  } catch (e) {
+    throw new BadGatewayException({
+      code: 'AI_PROVIDER_ERROR',
+      message: `DeepSeek schema mismatch: ${(e as Error).message}`,
+    });
+  }
 }
