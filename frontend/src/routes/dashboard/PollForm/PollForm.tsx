@@ -1,7 +1,7 @@
-import { FormProvider } from 'react-hook-form';
+import { FormProvider, Controller } from 'react-hook-form';
 import { Input } from '../../../components/primitives/Input';
 import { Textarea } from '../../../components/primitives/Textarea';
-import { Select } from '../../../components/primitives/Select';
+import { Dropdown } from '../../../components/primitives/Dropdown';
 import { Button } from '../../../components/primitives/Button';
 import { Field } from '../../../components/primitives/Field';
 import { Card } from '../../../components/primitives/Card';
@@ -43,10 +43,20 @@ export function PollForm({ id, context, onSuccess, onCancel }: PollFormProps) {
               </Field>
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Visibility">
-                  <Select {...register('visibility')}>
-                    <option value="PRIVATE">Private (link only)</option>
-                    <option value="PUBLIC">Public</option>
-                  </Select>
+                  <Controller
+                    control={vm.methods.control}
+                    name="visibility"
+                    render={({ field }) => (
+                      <Dropdown
+                        value={field.value}
+                        onChange={field.onChange}
+                        options={[
+                          { value: 'PRIVATE', label: 'Private (link only)' },
+                          { value: 'PUBLIC', label: 'Public' },
+                        ]}
+                      />
+                    )}
+                  />
                 </Field>
                 <Field label="Expires at (optional)" error={errors.expiresAt?.message}>
                   <Input type="datetime-local" {...register('expiresAt')} />

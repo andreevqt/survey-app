@@ -1,5 +1,5 @@
 import { Badge } from '../../../components/primitives/Badge';
-import { Select } from '../../../components/primitives/Select';
+import { Dropdown } from '../../../components/primitives/Dropdown';
 import { Avatar } from '../../../components/primitives/Avatar';
 import type { UsersTableProps } from './types';
 import { useUsersTable } from './hooks/useUsersTable';
@@ -59,15 +59,16 @@ export function UsersTable({ users, selected, onToggle, onToggleAll }: UsersTabl
                   {new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(u.createdAt))}
                 </td>
                 <td className="px-4 py-3">
-                  <Select
-                    defaultValue={u.role}
-                    className="h-8 w-28 text-xs"
+                  <Dropdown
+                    value={u.role}
+                    className="w-28"
                     disabled={isMe || vm.isChangingRole}
-                    onChange={(e) => vm.onChangeRole(u, e.target.value as 'USER' | 'ADMIN')}
-                  >
-                    <option value="USER">USER</option>
-                    <option value="ADMIN">ADMIN</option>
-                  </Select>
+                    onChange={(v) => vm.onChangeRole(u, v as 'USER' | 'ADMIN')}
+                    options={[
+                      { value: 'USER', label: 'USER' },
+                      { value: 'ADMIN', label: 'ADMIN' },
+                    ]}
+                  />
                 </td>
               </tr>
             );
