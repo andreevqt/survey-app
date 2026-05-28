@@ -22,7 +22,7 @@ export function AllPollsTab() {
           <p className="mt-1 text-sm text-gray-500">Once users create polls, they will show up here.</p>
         </Card>
       ) : (
-        <AdminPollsTable polls={vm.polls!} onDelete={vm.setPendingDeleteId} />
+        <AdminPollsTable polls={vm.polls!} onDelete={vm.setPendingDeleteId} context="admin" />
       )}
 
       {vm.pendingDeleteId && (

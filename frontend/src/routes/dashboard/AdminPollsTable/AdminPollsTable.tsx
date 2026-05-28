@@ -4,8 +4,8 @@ import { Button } from '../../../components/primitives/Button';
 import { useAdminPollsTable } from './hooks/useAdminPollsTable';
 import type { AdminPollsTableProps } from './types';
 
-export function AdminPollsTable({ polls, onDelete }: AdminPollsTableProps) {
-  const vm = useAdminPollsTable({ polls });
+export function AdminPollsTable({ polls, onDelete, context }: AdminPollsTableProps) {
+  const vm = useAdminPollsTable({ polls, context });
 
   if (vm.search && vm.filtered.length === 0) {
     return (

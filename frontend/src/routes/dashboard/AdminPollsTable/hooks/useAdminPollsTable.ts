@@ -3,12 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { copyToClipboard } from '../../../../lib/copy-to-clipboard';
 import { useToggleActive } from '../../../../api/mutations/polls';
+import { useAdminToggleActive } from '../../../../api/mutations/admin';
 import { useSidebarSearch } from '../../../../layouts/DashboardShell/SidebarSearchContext';
-import type { PollSummary } from '../types';
+import type { AdminPollsTableContext, PollSummary } from '../types';
 
-export function useAdminPollsTable({ polls }: { polls: PollSummary[] }) {
+export function useAdminPollsTable({
+  polls,
+  context = 'owner',
+}: {
+  polls: PollSummary[];
+  context?: AdminPollsTableContext;
+}) {
   const navigate = useNavigate();
-  const toggle = useToggleActive();
+  const ownerToggle = useToggleActive();
+  const adminToggle = useAdminToggleActive();
+  const toggle = context === 'admin' ? adminToggle : ownerToggle;
   const { search } = useSidebarSearch();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -37,10 +46,13 @@ export function useAdminPollsTable({ polls }: { polls: PollSummary[] }) {
     toast[ok ? 'success' : 'error'](ok ? 'Link copied' : 'Could not copy link');
   };
 
-  const onNavigateAnalytics = (poll: PollSummary) =>
-    navigate(`/dashboard/polls/${poll.id}/analytics`);
-  const onNavigateEdit = (poll: PollSummary) =>
-    navigate(`/dashboard/polls/${poll.id}/edit`);
+  const editPath = (poll: PollSummary) =>
+    context === 'admin' ? `/dashboard/all-polls/${poll.id}/edit` : `/dashboard/polls/${poll.id}/edit`;
+  const analyticsPath = (poll: PollSummary) =>
+    context === 'admin' ? `/dashboard/all-polls/${poll.id}/analytics` : `/dashboard/polls/${poll.id}/analytics`;
+
+  const onNavigateAnalytics = (poll: PollSummary) => navigate(analyticsPath(poll));
+  const onNavigateEdit = (poll: PollSummary) => navigate(editPath(poll));
 
   const onExportCsv = () => toast.message('Export CSV — coming soon');
   const onBulkDelete = () => toast.message('Bulk delete — coming soon');

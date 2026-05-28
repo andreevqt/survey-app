@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useAdminPolls } from '../../../../api/queries/admin';
-import { useDeletePoll } from '../../../../api/mutations/polls';
+import { useDeleteAdminPoll } from '../../../../api/mutations/admin';
 import type { UseAllPollsTabResult } from '../types';
 
 export function useAllPollsTab(): UseAllPollsTabResult {
   const q = useAdminPolls();
-  const del = useDeletePoll();
+  const del = useDeleteAdminPoll();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const status: UseAllPollsTabResult['status'] = q.isLoading
