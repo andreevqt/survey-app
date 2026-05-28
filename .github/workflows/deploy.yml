@@ -50,7 +50,7 @@ jobs:
           target: prod
           push: true
           build-args: |
-            VITE_API_BASE_URL=https://api.andreevxdr.ru/v1
+            VITE_API_BASE_URL=https://api.andreevxdr.ru/api/v1
           tags: |
             ${{ env.IMAGE_BASE }}-frontend:latest
             ${{ env.IMAGE_BASE }}-frontend:${{ github.sha }}
