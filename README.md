@@ -1,130 +1,123 @@
 # Survey App
 
-Full-stack polling platform. Monorepo with NestJS + Prisma backend and React + Vite frontend, orchestrated with Docker Compose. Deployed to a testing VPS on every push to `main` and to per-PR Vercel previews on every pull request.
-
-Spec: [`docs/superpowers/specs/2026-05-26-survey-app-design.md`](docs/superpowers/specs/2026-05-26-survey-app-design.md)
-
-Implementation plans:
-- Plan 1 — Foundation + Auth: [`docs/superpowers/plans/2026-05-26-foundation-and-auth.md`](docs/superpowers/plans/2026-05-26-foundation-and-auth.md)
-- Plan 2 — Polls + Public Responses: [`docs/superpowers/plans/2026-05-26-polls-and-responses.md`](docs/superpowers/plans/2026-05-26-polls-and-responses.md)
-- Plan 3 — Analytics + Admin: [`docs/superpowers/plans/2026-05-26-analytics-and-admin.md`](docs/superpowers/plans/2026-05-26-analytics-and-admin.md)
+Fullstack платформа для опросов. Монорепозиторий: бэкенд на NestJS + Prisma и фронтенд на React + Vite, всё оркестрировано через Docker Compose. На каждый push в `main` происходит деплой на тестовый VPS, на каждый pull request — отдельный Vercel-превью.
 
 ---
 
-## Features
+## Фичи
 
-### Auth & session
-- Register, login, logout, silent refresh.
-- JWT access + refresh tokens in `HttpOnly` cookies; refresh rotation (single-use, revoked-on-use).
-- Role-aware UI: only `ADMIN` users see the Staff sidebar section.
+### Аутентификация и сессии
+- Регистрация, вход, выход, обновление токена.
+- JWT access + refresh токены в `HttpOnly` cookies; ротация refresh-токенов (одноразовые, аннулируются после использования).
+- UI учитывает роль: раздел «Staff» в сайдбаре видят только пользователи с `ADMIN`.
 
-### Polls — owner workflow
-- **My polls** at [`/dashboard`](frontend/src/routes/dashboard/MyPollsTab) — your polls with response counts, status badges, Activate/Deactivate, Copy link, Analytics, Edit, Delete.
-- **Create / edit** via [`/dashboard/polls/new`](frontend/src/routes/dashboard/PollForm) and `/dashboard/polls/:id/edit` — single-choice, multiple-choice, and free-text questions. Metadata (title, description, visibility, `expiresAt`, active toggle) is always editable.
-- **Edit-lock on responses.** Once any response lands, the poll's *structure* (questions/options) is locked — title/description/visibility/active still editable. The form shows a banner and disables the locked fields. Backend re-enforces with `409 POLL_LOCKED_HAS_RESPONSES`.
-- **Per-poll analytics** at `/dashboard/polls/:id/analytics` (modal) — total responses, per-question breakdown with proportional progress bars for choice questions, count summary for text questions.
+### Опросы
+- **Мои опросы** на [`/dashboard`](frontend/src/routes/dashboard/MyPollsTab) — список ваших опросов с количеством ответов, бейджами статуса, кнопками Activate/Deactivate, Copy link, Analytics, Edit, Delete.
+- **Создание / редактирование** через [`/dashboard/polls/new`](frontend/src/routes/dashboard/PollForm) и `/dashboard/polls/:id/edit` — поддерживаются одиночный выбор, множественный выбор и свободный текст. Метаданные (title, description, visibility, `expiresAt`, active toggle) всегда доступны для правки.
+- **Блокировка структуры после ответов.** Как только приходит первый ответ, *структура* опроса (вопросы и варианты) блокируется — заголовок/описание/видимость/активность остаются редактируемыми. Форма показывает баннер и отключает заблокированные поля. На бэкенде это дополнительно валидируется ошибкой `409 POLL_LOCKED_HAS_RESPONSES`.
+- **Аналитика по опросу** на `/dashboard/polls/:id/analytics` (модалка) — общее число ответов, разбивка по вопросам с пропорциональными прогресс-барами для вариантов и подсчётом для текстовых ответов.
 
-### Public response page
-- Anonymous respondents answer at [`/p/:slug`](frontend/src/routes/public).
-- Cookie-based deduplication — same browser submitting twice gets `409 ALREADY_RESPONDED`.
-- Inactive or expired polls render read-only ("This poll has closed").
+### Публичная страница ответа
+- Анонимные респонденты отвечают на [`/p/:slug`](frontend/src/routes/public).
+- Дедупликация по cookie — повторная отправка из того же браузера получает `409 ALREADY_RESPONDED`.
+- Неактивные или просроченные опросы рендерятся в режиме «только чтение» («This poll has closed»).
 
-### Admin Panel (`role === 'ADMIN'`)
-- **All users** at [`/dashboard/all-users`](frontend/src/routes/dashboard/UsersTab) — paginated table, per-row role select (USER ↔ ADMIN), bulk select + bulk delete, CSV export (`id,name,email,role,createdAt` with UTF-8 BOM and RFC-4180 escaping). Safety guards: admins can't delete themselves; the system refuses to wipe the last admin.
-- **All polls** at [`/dashboard/all-polls`](frontend/src/routes/dashboard/AllPollsTab) — every poll in the workspace with the same row actions as owner view (Deactivate / Edit / Analytics / Delete), routed through admin-scoped endpoints.
-- Role changes invalidate the affected user's refresh tokens — they must re-login with the new role to see the Admin Panel link.
+### Админ-панель (`role === 'ADMIN'`)
+- **All users** на [`/dashboard/all-users`](frontend/src/routes/dashboard/UsersTab) — пагинированная таблица, в каждой строке селектор роли (USER ↔ ADMIN), массовый выбор + массовое удаление, CSV-экспорт (`id,name,email,role,createdAt` с UTF-8 BOM и экранированием по RFC-4180). Защита: админ не может удалить сам себя; система отказывается оставить систему без последнего админа.
+- **All polls** на [`/dashboard/all-polls`](frontend/src/routes/dashboard/AllPollsTab) — все опросы воркспейса с тем же набором действий, что и у владельца (Deactivate / Edit / Analytics / Delete), но через admin-эндпоинты.
+- Смена роли инвалидирует refresh-токены затронутого пользователя — ему нужно перелогиниться, чтобы увидеть ссылку на админ-панель.
 
-### Settings (modal at `/dashboard/settings`)
-Six sections: Profile, Password, Email notifications, Appearance, Sessions, Danger zone (account deletion). Sections are independently saved.
+### Настройки (модалка на `/dashboard/settings`)
+Шесть секций: Profile, Password, Email notifications, Appearance, Sessions, Danger zone (удаление аккаунта). Каждая секция сохраняется независимо.
 
-### UI primitives
-Custom Tailwind-styled primitives in [`frontend/src/components/primitives/`](frontend/src/components/primitives) — no headless-UI lib, all hand-rolled:
-- **DataTable** — generic table with column config and optional row selection; backs both the users and all-polls views.
-- **Breadcrumbs** — per-route trail rendered above the page title in the sticky TopBar.
-- **DateField** — datetime input with custom calendar popover (month nav, today/selection styling, time input disabled until a date is picked).
-- **Select**, **Modal** (sticky footer + close X), **Button**, **Avatar**, **Badge**, **Card**, **Field**, **Input**, **Textarea**, **Spinner**, **ConfirmDialog**.
+### UI-примитивы
+Кастомные примитивы на Tailwind в [`frontend/src/components/primitives/`](frontend/src/components/primitives) — без сторонних headless-библиотек, всё своё:
+- **DataTable** — обобщённая таблица с конфигом колонок и опциональным выбором строк; используется и в users, и в all-polls.
+- **Breadcrumbs** — хлебные крошки над заголовком страницы в липком TopBar, считаются по роуту.
+- **DateField** — datetime-инпут с собственной календарной попап-выборкой (навигация по месяцам, выделение «сегодня» и выбранного дня, поле времени активируется только после выбора даты).
+- **Select**, **Modal** (липкий футер + крестик), **Button**, **Avatar**, **Badge**, **Card**, **Field**, **Input**, **Textarea**, **Spinner**, **ConfirmDialog**.
 
-### Search (⌘K)
-Fullscreen search modal opens from the sidebar or via `Cmd/Ctrl+K`. Stub implementation with mocked results across polls/people/pages — wired to the real router so selecting a row navigates. Real search backend is a TODO.
+### Поиск (⌘K)
+Полноэкранная модалка поиска открывается из сайдбара или по `Cmd/Ctrl+K`. Сейчас это заглушка с моковыми результатами по полям polls/people/pages — но клик по строке реально навигирует через роутер. Реальный поиск-бэкенд — TODO.
 
 ### CI/CD
-- [`deploy.yml`](.github/workflows/deploy.yml) — on push to `main`, builds backend + frontend Docker images, pushes to GHCR, SSHs into the testing VPS, and `docker compose up -d`. Frontend is rebuilt with `VITE_API_BASE_URL=https://api.andreevxdr.ru/v1`.
-- [`vercel-preview.yml`](.github/workflows/vercel-preview.yml) — on every PR open/sync/reopen, builds the frontend via Vercel CLI, deploys to a Vercel Preview environment, aliases it to `pr-<n>.survey.andreevxdr.ru`, and posts a sticky comment with the URL. On PR close, the comment is updated to indicate teardown.
+- [`deploy.yml`](.github/workflows/deploy.yml) — на push в `main` собирает Docker-образы бэкенда и фронтенда, пушит в GHCR, заходит по SSH на тестовый VPS и поднимает `docker compose up -d`. Фронтенд пересобирается с `VITE_API_BASE_URL=https://api.andreevxdr.ru/v1`.
+- [`vercel-preview.yml`](.github/workflows/vercel-preview.yml) — на каждый PR (open/sync/reopen) собирает фронт через Vercel CLI, деплоит в Preview-окружение Vercel, привязывает алиас `pr-<n>.survey.andreevxdr.ru` и постит липкий комментарий в PR со ссылкой. На закрытие PR комментарий обновляется на сообщение о выводе превью из эксплуатации.
 
-### Testing
-- Backend: Jest unit + e2e suites (auth, polls, responses, analytics, admin).
-- Frontend: Vitest component tests for primitives + hooks.
-- Playwright flows under [`frontend/tests/`](frontend/tests/): full lifecycle (register → create poll → anonymous submit → see in analytics) and admin promotion (admin promotes a user → that user sees the Admin Panel link after re-login).
+### Тесты
+- Бэкенд: Jest, unit + e2e наборы (auth, polls, responses, analytics, admin).
+- Фронтенд: Vitest, компонентные тесты для примитивов и хуков.
+- Playwright-сценарии в [`frontend/tests/`](frontend/tests/): полный цикл (регистрация → создание опроса → анонимный ответ → видим в аналитике) и промоут админом (админ повышает пользователя → тот видит ссылку на админ-панель после перелогина).
 
 ---
 
-## Quickstart (Docker)
+## Быстрый старт (Docker)
 
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
 
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:3000/api/v1
+- Фронтенд: http://localhost:5173
+- API: http://localhost:3000/api/v1
 - Swagger UI: http://localhost:3000/api/docs
-- Compose's Postgres: host port `5433` (avoids conflict with a local Postgres on `5432`).
+- Postgres в compose: хост-порт `5433` (чтобы не конфликтовать с локальным Postgres на `5432`).
 
-Seed admin is created on first boot from `ADMIN_EMAIL` / `ADMIN_PASSWORD` (defaults `admin@polls.local` / `admin`).
+При первом запуске создаётся seed-админ из `ADMIN_EMAIL` / `ADMIN_PASSWORD` (по умолчанию `admin@polls.local` / `admin`).
 
-## Local-without-Docker
+## Локально, без Docker
 
-Requires Node 20 (`.nvmrc`) and a Postgres on `localhost:5432` with a `polls` role + `survey_app` database.
+Нужен Node 20 (`.nvmrc`) и Postgres на `localhost:5432` с ролью `polls` и БД `survey_app`.
 
 ```bash
-# One-time DB setup (as a superuser):
+# Одноразовая настройка БД (под суперпользователем):
 #   CREATE ROLE polls WITH LOGIN PASSWORD 'polls';
-#   ALTER USER polls CREATEDB;          -- needed for Prisma shadow DB on dev
+#   ALTER USER polls CREATEDB;          -- нужно для shadow DB Prisma в dev
 #   CREATE DATABASE survey_app OWNER polls;
 
 npm install
 npm run db:migrate
 npm run db:seed
-npm run dev          # backend (:3000) + frontend (:5173) in parallel
+npm run dev          # бэкенд (:3000) + фронт (:5173) параллельно
 ```
 
-## Scripts (from repo root)
+## Скрипты (из корня репозитория)
 
-| Script | What |
+| Скрипт | Что делает |
 |---|---|
-| `npm run dev` | Backend + frontend in dev mode |
-| `npm test` | Jest (backend) + Vitest (frontend) |
-| `npm run test:e2e` | Playwright (runs against the live compose stack) |
-| `npm run check:ts` | TS check both workspaces |
-| `npm run lint` | ESLint both workspaces |
+| `npm run dev` | Бэкенд + фронт в dev-режиме |
+| `npm test` | Jest (бэкенд) + Vitest (фронт) |
+| `npm run test:e2e` | Playwright (по живому compose-стеку) |
+| `npm run check:ts` | TS-чек обоих воркспейсов |
+| `npm run lint` | ESLint обоих воркспейсов |
 | `npm run db:migrate` | `prisma migrate deploy` |
-| `npm run db:seed` | Seed first admin |
-| `npm run gen:api` | Export OpenAPI spec → regenerate `frontend/src/api/schema.ts` |
+| `npm run db:seed` | Seed первого админа |
+| `npm run gen:api` | Экспорт OpenAPI спеки → перегенерация `frontend/src/api/schema.ts` |
 
-## Tech stack
+## Стек
 
-**Backend:** NestJS, Prisma, PostgreSQL 16, JWT (access + refresh) in `HttpOnly` cookies, `class-validator`, `@nestjs/swagger`.
+**Бэкенд:** NestJS, Prisma, PostgreSQL 16, JWT (access + refresh) в `HttpOnly` cookies, `class-validator`, `@nestjs/swagger`.
 
-**Frontend:** React 19, Vite, Tailwind, TanStack Query, `openapi-fetch`, react-router-dom, react-hook-form + zod, sonner.
+**Фронтенд:** React 19, Vite, Tailwind, TanStack Query, `openapi-fetch`, react-router-dom, react-hook-form + zod, sonner.
 
-**Infra:** Docker Compose (dev + prod), GHCR (image registry), SSH-deploy to VPS (production), Vercel (PR previews).
+**Инфра:** Docker Compose (dev + prod), GHCR (реестр образов), SSH-деплой на VPS (продакшен), Vercel (PR-превью).
 
-## Generated artifacts in version control
+## Сгенерированные артефакты в git
 
-- `openapi.json` — API contract exported from NestJS Swagger.
-- `frontend/src/api/schema.ts` — TS types generated from `openapi.json` by `openapi-typescript`.
+- `openapi.json` — контракт API, экспортированный из NestJS Swagger.
+- `frontend/src/api/schema.ts` — TS-типы, сгенерированные из `openapi.json` через `openapi-typescript`.
 
-Both are committed so PRs visibly carry contract changes.
+Оба коммитятся, чтобы изменения контракта были видны в PR.
 
-## Project layout
+## Структура проекта
 
 ```
-backend/           NestJS app + Prisma schema + e2e tests
-frontend/          React + Vite app
-  src/components/primitives/   Custom Tailwind UI primitives
-  src/layouts/DashboardShell/  TopBar, Sidebar, modals
-  src/routes/                  Route components
-  tests/                       Playwright flows
-docs/              Specs and implementation plans
-.github/workflows/ deploy.yml (prod) + vercel-preview.yml (PR previews)
+backend/           Приложение NestJS + Prisma-схема + e2e тесты
+frontend/          Приложение React + Vite
+  src/components/primitives/   Кастомные UI-примитивы на Tailwind
+  src/layouts/DashboardShell/  TopBar, Sidebar, модалки
+  src/routes/                  Компоненты роутов
+  tests/                       Playwright-сценарии
+docs/              Спеки и планы реализации
+.github/workflows/ deploy.yml (прод) + vercel-preview.yml (PR-превью)
 ```
