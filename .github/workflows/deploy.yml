@@ -1,0 +1,35 @@
+name: Deploy to testing
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-testing
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          command_timeout: 15m
+          script: |
+            set -e
+            cd /opt/survey-app
+            git fetch origin main
+            git reset --hard origin/main
+            # Build services sequentially to avoid OOM on small VPS (2GB RAM)
+            docker compose -f docker-compose.prod.yml build backend
+            docker compose -f docker-compose.prod.yml build frontend
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            docker image prune -f
+            docker builder prune -f --keep-storage 2gb

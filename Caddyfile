@@ -1,0 +1,11 @@
+{
+	email admin@andreevxdr.ru
+}
+
+survey.andreevxdr.ru {
+	reverse_proxy frontend:80
+}
+
+api.andreevxdr.ru {
+	reverse_proxy backend:3000
+}
