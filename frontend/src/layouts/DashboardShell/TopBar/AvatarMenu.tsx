@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Avatar } from '../../../components/primitives/Avatar';
 import { useAuth } from '../../../auth/useAuth';
 import { useLogoutMutation } from '../../../auth/auth-mutations';
@@ -54,6 +54,25 @@ export function AvatarMenu() {
           role="menu"
           className="absolute right-0 mt-2 w-44 rounded-md bg-white border border-gray-200 shadow-lg py-1 z-20"
         >
+          <li role="menuitem">
+            <Link
+              to="/dashboard/settings"
+              onClick={() => setOpen(false)}
+              className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            >
+              Your profile
+            </Link>
+          </li>
+          <li role="menuitem">
+            <Link
+              to="/dashboard/settings"
+              onClick={() => setOpen(false)}
+              className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            >
+              Settings
+            </Link>
+          </li>
+          <li role="separator" aria-hidden="true" className="my-1 border-t border-gray-100" />
           <li role="menuitem">
             <button
               type="button"

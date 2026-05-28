@@ -4,6 +4,7 @@ import { TopBar } from './TopBar';
 import { SidebarSearchProvider } from './SidebarSearchContext';
 import { PollFormModal } from './modals/PollFormModal';
 import { AnalyticsModal } from './modals/AnalyticsModal';
+import { SettingsModal } from './modals/SettingsModal';
 
 export function DashboardShell() {
   const newMatch = useMatch('/dashboard/polls/new');
@@ -11,6 +12,7 @@ export function DashboardShell() {
   const analyticsMatch = useMatch('/dashboard/polls/:id/analytics');
   const adminEditMatch = useMatch('/dashboard/all-polls/:id/edit');
   const adminAnalyticsMatch = useMatch('/dashboard/all-polls/:id/analytics');
+  const settingsMatch = useMatch('/dashboard/settings');
 
   return (
     <SidebarSearchProvider>
@@ -28,6 +30,7 @@ export function DashboardShell() {
       {analyticsMatch && <AnalyticsModal id={analyticsMatch.params.id!} />}
       {adminEditMatch && <PollFormModal mode="edit" context="admin" id={adminEditMatch.params.id!} />}
       {adminAnalyticsMatch && <AnalyticsModal id={adminAnalyticsMatch.params.id!} context="admin" />}
+      {settingsMatch && <SettingsModal />}
     </SidebarSearchProvider>
   );
 }
