@@ -10,8 +10,8 @@ import { QuestionEditor } from '../../polls/QuestionEditor';
 import { usePollForm } from './hooks/usePollForm';
 import type { PollFormProps } from './types';
 
-export function PollForm({ id, onSuccess, onCancel }: PollFormProps) {
-  const vm = usePollForm({ id, onSuccess });
+export function PollForm({ id, context, onSuccess, onCancel }: PollFormProps) {
+  const vm = usePollForm({ id, context, onSuccess });
 
   if (vm.isHydrating) {
     return <div className="flex justify-center py-16"><Spinner size={28} /></div>;

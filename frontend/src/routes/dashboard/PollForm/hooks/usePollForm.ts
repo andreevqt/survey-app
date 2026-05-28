@@ -5,7 +5,10 @@ import { toast } from 'sonner';
 import type { BaseSyntheticEvent } from 'react';
 import { pollFormSchema, type PollFormValues } from '../../../../forms/schemas/poll.schema';
 import { useCreatePoll, useUpdatePoll } from '../../../../api/mutations/polls';
+import { useUpdateAdminPoll } from '../../../../api/mutations/admin';
 import { usePoll } from '../../../../api/queries/polls';
+import { useAdminPoll } from '../../../../api/queries/admin';
+import type { PollFormContext } from '../types';
 
 function toLocalInputValue(iso: string): string {
   const d = new Date(iso);
@@ -20,15 +23,29 @@ const defaultQuestion: PollFormValues['questions'][number] = {
   options: [{ text: '' }, { text: '' }],
 };
 
-export function usePollForm({ id, onSuccess }: { id?: string; onSuccess?: () => void }) {
+export function usePollForm({
+  id,
+  context = 'owner',
+  onSuccess,
+}: {
+  id?: string;
+  context?: PollFormContext;
+  onSuccess?: () => void;
+}) {
   const isEdit = !!id;
-  const pollQuery = usePoll(id);
+  const isAdmin = context === 'admin';
+
+  const ownerPoll = usePoll(isAdmin ? undefined : id);
+  const adminPoll = useAdminPoll(isAdmin ? id : undefined);
+  const pollQuery = isAdmin ? adminPoll : ownerPoll;
   const poll = pollQuery.data;
   const locked = isEdit && (poll?.responseCount ?? 0) > 0;
   const responseCount = poll?.responseCount ?? 0;
 
   const create = useCreatePoll();
-  const update = useUpdatePoll(id ?? '');
+  const ownerUpdate = useUpdatePoll(id ?? '');
+  const adminUpdate = useUpdateAdminPoll(id ?? '');
+  const update = isAdmin ? adminUpdate : ownerUpdate;
   const [serverError, setServerError] = useState<string | null>(null);
 
   const methods = useForm<PollFormValues>({
