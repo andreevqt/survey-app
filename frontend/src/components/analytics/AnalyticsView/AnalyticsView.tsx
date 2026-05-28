@@ -11,7 +11,7 @@ export function AnalyticsView({ analytics }: AnalyticsViewProps) {
       </Card>
       <div className="flex flex-col gap-4">
         {analytics.questions.map((q) => (
-          <QuestionAnalyticsCard key={q.questionId} question={q} />
+          <QuestionAnalyticsCard key={q.questionId} pollId={analytics.pollId} question={q} />
         ))}
       </div>
     </div>
