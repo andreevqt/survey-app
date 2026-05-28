@@ -32,3 +32,23 @@ export function useLogoutMutation() {
     onSuccess: () => setMeInCache(null),
   });
 }
+
+export function useUpdateMeMutation() {
+  return useMutation({
+    mutationFn: async (input: { name?: string; email?: string }) => {
+      const r = await apiClient.PATCH('/auth/me', { body: input });
+      if (!r.response.ok) throw r.error ?? new Error('Update failed');
+      return (r.data as AuthUser);
+    },
+    onSuccess: (user) => setMeInCache(user),
+  });
+}
+
+export function useChangePasswordMutation() {
+  return useMutation({
+    mutationFn: async (input: { currentPassword: string; newPassword: string }) => {
+      const r = await apiClient.POST('/auth/change-password', { body: input });
+      if (!r.response.ok) throw r.error ?? new Error('Password change failed');
+    },
+  });
+}
