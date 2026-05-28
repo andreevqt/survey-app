@@ -12,6 +12,7 @@ FROM dev AS build
 RUN npm run build
 
 FROM node:20-alpine AS prod
+LABEL org.opencontainers.image.source="https://github.com/andreevqt/survey-app"
 WORKDIR /app
 RUN apk add --no-cache openssl
 COPY --from=build /app/dist ./dist

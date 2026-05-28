@@ -1,6 +1,11 @@
 # Deploy to testing VPS
 
-This repo auto-deploys on push to `main` via `.github/workflows/deploy.yml`. The workflow SSHes into the Yandex Cloud VPS at `survey.andreevxdr.ru` / `api.andreevxdr.ru` and rebuilds the stack.
+This repo auto-deploys on push to `main` via `.github/workflows/deploy.yml`:
+
+1. **build** job — runs on the GitHub Actions runner, builds backend + frontend Docker images, pushes to GHCR as `ghcr.io/andreevqt/survey-app-{backend,frontend}` with `latest` and per-commit SHA tags.
+2. **deploy** job — SSHes into the Yandex Cloud VPS, `docker login ghcr.io` using the workflow's `GITHUB_TOKEN`, `git pull` for the latest `docker-compose.prod.yml` + `Caddyfile`, then `docker compose pull && up -d`.
+
+The VPS doesn't build anything — it just pulls pre-built images. This keeps deploys fast on a 2 GB VPS and avoids OOM.
 
 Stack on the VPS:
 - **Caddy** — reverse proxy, auto-HTTPS via Let's Encrypt
@@ -72,16 +77,17 @@ openssl rand -hex 12   # ADMIN_PASSWORD
 nano .env              # paste them in
 ```
 
-First deploy (manual, to validate before wiring up CI):
+First deploy: the easiest path is to push a commit to `main` and let CI build & push images, then it'll deploy automatically. If you want to validate the VPS-side compose manually before wiring CI, you'll need GHCR images to exist first — so either kick off a workflow run (it'll fail on the deploy step until SSH secrets are set, but the build step will create the images), or run the build job locally and push manually.
+
+Then on the VPS, watch the logs:
 
 ```sh
-docker compose -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.prod.yml logs -f
 ```
 
-Wait until Caddy logs show successful Let's Encrypt cert issuance. Then visit:
+Caddy logs should show successful Let's Encrypt cert issuance. Then visit:
 - https://survey.andreevxdr.ru
-- https://api.andreevxdr.ru/v1/<some-endpoint>
+- https://api.andreevxdr.ru/api/v1/health
 
 ### 4. Generate a dedicated CI SSH key
 
@@ -121,16 +127,25 @@ In the repo settings → Settings → Secrets and variables → Actions → New 
 
 Any push to `main` runs the workflow. Manual runs: GitHub → Actions → "Deploy to testing" → "Run workflow".
 
-The workflow on the VPS does:
+The workflow does, in two jobs:
+
+**`build` job** (on the GHA runner):
+- Logs in to `ghcr.io` with the auto-provided `GITHUB_TOKEN`
+- Builds + pushes `ghcr.io/andreevqt/survey-app-backend:{latest,<sha>}` and `…-frontend:{latest,<sha>}`
+- Uses GHA cache (`type=gha`) to speed up subsequent builds
+
+**`deploy` job** (over SSH to the VPS):
 
 ```sh
 cd /opt/survey-app
 git fetch origin main && git reset --hard origin/main
-docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
 docker image prune -f
 ```
 
-This wipes any local edits on the VPS (intentional — VPS is a deploy target, not an edit surface).
+`git reset --hard` wipes any local edits on the VPS (intentional — VPS is a deploy target, not an edit surface).
 
 ---
 
@@ -148,10 +163,19 @@ This wipes any local edits on the VPS (intentional — VPS is a deploy target, n
 **Frontend shows old `VITE_API_BASE_URL`:**
 - It's baked in at build time. Re-run the workflow (forces a rebuild) — a plain restart won't pick up the new value.
 
-**Manual rollback:**
+**GHCR pull fails (`unauthorized` / `denied`):**
+- The deploy job logs the VPS into `ghcr.io` each run. If the login step fails, check the `build` job's `permissions` block in the workflow has `packages: write`. The very first build creates the package and links it to the repo via the `org.opencontainers.image.source` label.
+
+**Manual rollback** — pin to a previous commit's image tag:
 
 ```sh
+ssh alexsf2017@<VPS IP>
 cd /opt/survey-app
-git reset --hard <previous-commit-sha>
-docker compose -f docker-compose.prod.yml up -d --build
+# Find the SHA you want from git log or GHCR
+PIN=<previous-commit-sha>
+docker pull ghcr.io/andreevqt/survey-app-backend:$PIN
+docker pull ghcr.io/andreevqt/survey-app-frontend:$PIN
+docker tag ghcr.io/andreevqt/survey-app-backend:$PIN ghcr.io/andreevqt/survey-app-backend:latest
+docker tag ghcr.io/andreevqt/survey-app-frontend:$PIN ghcr.io/andreevqt/survey-app-frontend:latest
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
 ```
