@@ -7,10 +7,10 @@ import { AnalyticsView } from '../../../../components/analytics/AnalyticsView';
 import { useAnalyticsModal } from './hooks/useAnalyticsModal';
 import type { AnalyticsModalProps } from './types';
 
-export function AnalyticsModal({ id }: AnalyticsModalProps) {
+export function AnalyticsModal({ id, context = 'owner' }: AnalyticsModalProps) {
   const navigate = useNavigate();
-  const close = () => navigate('/dashboard');
-  const vm = useAnalyticsModal(id);
+  const close = () => navigate(context === 'admin' ? '/dashboard/all-polls' : '/dashboard');
+  const vm = useAnalyticsModal(id, context);
 
   const subtitle = vm.poll ? (
     <span>For <b>{vm.poll.title}</b> · /{vm.poll.slug}</span>

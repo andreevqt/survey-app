@@ -38,6 +38,8 @@ export const router = createBrowserRouter([
       { path: 'polls/new', element: <MyPollsTab /> },
       { path: 'polls/:id/edit', element: <MyPollsTab /> },
       { path: 'polls/:id/analytics', element: <MyPollsTab /> },
+      { path: 'all-polls/:id/edit', element: <RequireAdmin><AllPollsTab /></RequireAdmin> },
+      { path: 'all-polls/:id/analytics', element: <RequireAdmin><AllPollsTab /></RequireAdmin> },
     ],
   },
 

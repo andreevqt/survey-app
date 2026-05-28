@@ -9,6 +9,8 @@ export function DashboardShell() {
   const newMatch = useMatch('/dashboard/polls/new');
   const editMatch = useMatch('/dashboard/polls/:id/edit');
   const analyticsMatch = useMatch('/dashboard/polls/:id/analytics');
+  const adminEditMatch = useMatch('/dashboard/all-polls/:id/edit');
+  const adminAnalyticsMatch = useMatch('/dashboard/all-polls/:id/analytics');
 
   return (
     <SidebarSearchProvider>
@@ -24,6 +26,8 @@ export function DashboardShell() {
       {newMatch && <PollFormModal mode="create" />}
       {editMatch && <PollFormModal mode="edit" id={editMatch.params.id!} />}
       {analyticsMatch && <AnalyticsModal id={analyticsMatch.params.id!} />}
+      {adminEditMatch && <PollFormModal mode="edit" context="admin" id={adminEditMatch.params.id!} />}
+      {adminAnalyticsMatch && <AnalyticsModal id={adminAnalyticsMatch.params.id!} context="admin" />}
     </SidebarSearchProvider>
   );
 }

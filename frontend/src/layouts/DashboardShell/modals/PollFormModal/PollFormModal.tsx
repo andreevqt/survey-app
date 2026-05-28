@@ -3,9 +3,9 @@ import { Modal } from '../../../../components/primitives/Modal';
 import { PollForm } from '../../../../routes/dashboard/PollForm';
 import type { PollFormModalProps } from './types';
 
-export function PollFormModal({ mode, id }: PollFormModalProps) {
+export function PollFormModal({ mode, context = 'owner', id }: PollFormModalProps) {
   const navigate = useNavigate();
-  const close = () => navigate('/dashboard');
+  const close = () => navigate(context === 'admin' ? '/dashboard/all-polls' : '/dashboard');
 
   return (
     <Modal
@@ -15,7 +15,7 @@ export function PollFormModal({ mode, id }: PollFormModalProps) {
       title={mode === 'edit' ? 'Edit poll' : 'New poll'}
       subtitle={mode === 'edit' ? undefined : 'Build your poll and publish when ready.'}
     >
-      <PollForm id={id} onSuccess={close} onCancel={close} />
+      <PollForm id={id} context={context} onSuccess={close} onCancel={close} />
     </Modal>
   );
 }
