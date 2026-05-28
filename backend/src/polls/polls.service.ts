@@ -187,6 +187,96 @@ export class PollsService {
     if (r.count === 0) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
   }
 
+  async findOneById(id: string) {
+    const p = await this.prisma.poll.findUnique({
+      where: { id },
+      include: {
+        questions: { include: { options: { orderBy: { order: 'asc' } } }, orderBy: { order: 'asc' } },
+        _count: { select: { responses: true } },
+      },
+    });
+    if (!p) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
+    return this.toDetail(p);
+  }
+
+  async updateById(id: string, dto: UpdatePollDto) {
+    const existing = await this.prisma.poll.findUnique({
+      where: { id },
+      include: {
+        questions: { include: { options: { orderBy: { order: 'asc' } } }, orderBy: { order: 'asc' } },
+        _count: { select: { responses: true } },
+      },
+    });
+    if (!existing) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
+
+    const hasResponses = existing._count.responses > 0;
+
+    if (hasResponses) {
+      if (this.structuralDiff(existing, dto)) {
+        throw new ConflictException({
+          code: 'POLL_LOCKED_HAS_RESPONSES',
+          message: 'POLL_LOCKED_HAS_RESPONSES: Questions and options cannot change after a poll has responses',
+        });
+      }
+      await this.prisma.poll.update({
+        where: { id },
+        data: {
+          title: dto.title,
+          description: dto.description ?? null,
+          visibility: dto.visibility,
+          isActive: dto.isActive,
+          expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null,
+        },
+      });
+    } else {
+      this.validateQuestions(dto.questions);
+      await this.prisma.$transaction([
+        this.prisma.question.deleteMany({ where: { pollId: id } }),
+        this.prisma.poll.update({
+          where: { id },
+          data: {
+            title: dto.title,
+            description: dto.description ?? null,
+            visibility: dto.visibility,
+            isActive: dto.isActive,
+            expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null,
+            questions: {
+              create: dto.questions.map((q, qi) => ({
+                order: qi, type: q.type, text: q.text, isRequired: q.isRequired,
+                ...(q.type === QuestionType.TEXT ? {} : {
+                  options: { create: (q.options ?? []).map((o, oi) => ({ order: oi, text: o.text })) },
+                }),
+              })),
+            },
+          },
+        }),
+      ]);
+    }
+    return this.findOneById(id);
+  }
+
+  async deleteById(id: string) {
+    const exists = await this.prisma.poll.findUnique({ where: { id }, select: { id: true } });
+    if (!exists) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
+
+    await this.prisma.$transaction([
+      this.prisma.answerOption.deleteMany({ where: { answer: { response: { pollId: id } } } }),
+      this.prisma.answer.deleteMany({ where: { response: { pollId: id } } }),
+      this.prisma.response.deleteMany({ where: { pollId: id } }),
+      this.prisma.option.deleteMany({ where: { question: { pollId: id } } }),
+      this.prisma.question.deleteMany({ where: { pollId: id } }),
+      this.prisma.poll.delete({ where: { id } }),
+    ]);
+  }
+
+  async toggleActiveById(id: string, isActive: boolean) {
+    const r = await this.prisma.poll.updateMany({
+      where: { id },
+      data: { isActive },
+    });
+    if (r.count === 0) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
+  }
+
   private structuralDiff(existing: any, dto: UpdatePollDto): boolean {
     if (existing.questions.length !== dto.questions.length) return true;
     for (let i = 0; i < existing.questions.length; i++) {
