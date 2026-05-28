@@ -12,10 +12,10 @@ export function LandingNav() {
       }}
     >
       <div className="mx-auto flex max-w-[1180px] items-center justify-between px-8 py-3.5">
-        <div className="flex items-center gap-2.5">
+        <Link to="/" aria-label="Polls — home" className="flex items-center gap-2.5 rounded-md no-underline hover:no-underline hover:opacity-80 transition-opacity">
           <img src="/logo-mark.svg" width={28} height={28} alt="" />
           <span className="text-lg font-bold tracking-tight text-gray-900">Polls</span>
-        </div>
+        </Link>
         <div className="flex items-center gap-1.5">
           <Link
             to="/login"
