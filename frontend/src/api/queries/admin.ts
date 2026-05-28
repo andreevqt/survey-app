@@ -43,3 +43,27 @@ export function useSystemAnalytics() {
     },
   });
 }
+
+export function useAdminPoll(id: string | undefined) {
+  return useQuery({
+    enabled: !!id,
+    queryKey: ['admin', 'polls', id],
+    queryFn: async () => {
+      const r = await apiClient.GET('/admin/polls/{id}', { params: { path: { id: id! } } });
+      if (!r.response.ok) throw r.error ?? new Error('Failed to load poll');
+      return r.data!;
+    },
+  });
+}
+
+export function useAdminPollAnalytics(id: string | undefined) {
+  return useQuery({
+    enabled: !!id,
+    queryKey: ['admin', 'polls', id, 'analytics'],
+    queryFn: async () => {
+      const r = await apiClient.GET('/admin/polls/{id}/analytics', { params: { path: { id: id! } } });
+      if (!r.response.ok) throw r.error ?? new Error('Could not load analytics');
+      return r.data!;
+    },
+  });
+}

@@ -2,6 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import type { components } from '../schema';
 
+type UpdatePollBody = components['schemas']['UpdatePollDto'];
+
 type Role = components['schemas']['ChangeRoleDto']['role'];
 
 export function useChangeUserRole() {
@@ -34,5 +36,52 @@ export function useBulkDeleteUsers() {
       return r.data!;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin'] }),
+  });
+}
+
+export function useUpdateAdminPoll(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: UpdatePollBody) => {
+      const r = await apiClient.PATCH('/admin/polls/{id}', { params: { path: { id } }, body });
+      if (!r.response.ok) throw r.error ?? new Error('Update failed');
+      return r.data!;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['polls'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'polls'] });
+    },
+  });
+}
+
+export function useDeleteAdminPoll() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const r = await apiClient.DELETE('/admin/polls/{id}', { params: { path: { id } } });
+      if (!r.response.ok) throw r.error ?? new Error('Delete failed');
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['polls'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'polls'] });
+    },
+  });
+}
+
+export function useAdminToggleActive() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (args: { id: string; isActive: boolean }) => {
+      const r = await apiClient.PATCH('/admin/polls/{id}/active', {
+        params: { path: { id: args.id } },
+        body: { isActive: args.isActive },
+      });
+      if (!r.response.ok) throw r.error ?? new Error('Toggle failed');
+      return r.data!;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['polls'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'polls'] });
+    },
   });
 }
