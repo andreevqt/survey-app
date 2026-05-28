@@ -10,6 +10,11 @@ coverage/
 .vscode/
 playwright-report/
 test-results/
+.playwright-mcp/
+
+# Local smoke-test screenshots produced by the Claude Code Playwright MCP.
+verify-*.png
+spec*-*.png
 
 # Per-user Claude Code session settings
 .claude/settings.local.json
