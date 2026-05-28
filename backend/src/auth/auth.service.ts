@@ -98,6 +98,19 @@ export class AuthService {
     return { id: user.id, email: user.email, name: user.name, role: user.role };
   }
 
+  async changePassword(userId: string, dto: { currentPassword: string; newPassword: string }) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException({ code: 'UNAUTHENTICATED' });
+    }
+    const ok = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    if (!ok) {
+      throw new UnauthorizedException({ code: 'CURRENT_PASSWORD_INVALID', message: 'Current password is incorrect' });
+    }
+    const passwordHash = await bcrypt.hash(dto.newPassword, 10);
+    await this.prisma.user.update({ where: { id: userId }, data: { passwordHash } });
+  }
+
   private async findRefreshRow(userId: string, jti: string) {
     const rows = await this.prisma.refreshToken.findMany({ where: { userId } });
     for (const r of rows) {

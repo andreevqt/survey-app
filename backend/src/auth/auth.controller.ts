@@ -11,6 +11,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto, AuthUserDto } from './dto/auth-response.dto';
 import { UpdateMeDto } from './dto/update-me.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -75,6 +76,15 @@ export class AuthController {
     @Body() body: UpdateMeDto,
   ): Promise<AuthUserDto> {
     return this.auth.updateMe(user.id, body);
+  }
+
+  @Post('change-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changePassword(
+    @CurrentUser() user: CurrentUserPayload,
+    @Body() body: ChangePasswordDto,
+  ): Promise<void> {
+    await this.auth.changePassword(user.id, body);
   }
 
   private setCookies(res: Response, t: { accessToken: string; refreshToken: string }) {
