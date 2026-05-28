@@ -154,3 +154,114 @@ describe('AnalyticsService.getSystemAnalytics', () => {
     });
   });
 });
+
+describe('AnalyticsService.analyzeFreeTextQuestion · DeepSeek branch', () => {
+  let svc: AnalyticsService;
+  let prisma: DeepMockProxy<PrismaService>;
+  let fetchSpy: jest.SpyInstance;
+  const originalKey = process.env.DEEPSEEK_API_KEY;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [AnalyticsService, { provide: PrismaService, useValue: prisma }],
+    }).compile();
+    svc = mod.get(AnalyticsService);
+
+    prisma.poll.findFirst.mockResolvedValue({ id: 'p1' } as any);
+    prisma.question.findFirst.mockResolvedValue({
+      id: 'q1',
+      type: QuestionType.TEXT,
+      text: 'How was it?',
+    } as any);
+    prisma.answer.findMany.mockResolvedValue([
+      { textValue: 'It was great, support was helpful' },
+      { textValue: 'Pricing was confusing' },
+    ] as any);
+
+    process.env.DEEPSEEK_API_KEY = 'test-key';
+    fetchSpy = jest.spyOn(global, 'fetch' as any);
+  });
+
+  afterEach(() => {
+    fetchSpy.mockRestore();
+    if (originalKey === undefined) delete process.env.DEEPSEEK_API_KEY;
+    else process.env.DEEPSEEK_API_KEY = originalKey;
+  });
+
+  function jsonResponse(status: number, body: unknown): Response {
+    return {
+      ok: status >= 200 && status < 300,
+      status,
+      json: async () => body,
+    } as unknown as Response;
+  }
+
+  it('returns a coerced DTO on a well-formed DeepSeek reply', async () => {
+    const content = JSON.stringify({
+      summary: 'Mostly positive about support.',
+      sentiment: { positive: 60, neutral: 30, negative: 10 },
+      themes: [
+        { label: 'support', count: 2, quote: 'support was helpful' },
+        { label: 'pricing', count: 1, quote: 'Pricing was confusing' },
+      ],
+    });
+    fetchSpy.mockResolvedValueOnce(
+      jsonResponse(200, { choices: [{ message: { content } }] }),
+    );
+
+    const out = await svc.analyzeFreeTextQuestion('u1', 'p1', 'q1');
+    expect(out.summary).toMatch(/support/i);
+    expect(out.sentiment).toEqual({ positive: 60, neutral: 30, negative: 10 });
+    expect(out.themes).toHaveLength(2);
+    expect(out.themes[0].label).toBe('support');
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    const [url, init] = fetchSpy.mock.calls[0];
+    expect(url).toBe('https://api.deepseek.com/chat/completions');
+    expect((init as RequestInit).method).toBe('POST');
+    expect((init as RequestInit).headers).toMatchObject({
+      Authorization: 'Bearer test-key',
+    });
+  });
+
+  it('normalises sentiment that does not sum to 100', async () => {
+    const content = JSON.stringify({
+      summary: 'Drifty numbers.',
+      sentiment: { positive: 40, neutral: 40, negative: 30 },
+      themes: [],
+    });
+    fetchSpy.mockResolvedValueOnce(
+      jsonResponse(200, { choices: [{ message: { content } }] }),
+    );
+
+    const out = await svc.analyzeFreeTextQuestion('u1', 'p1', 'q1');
+    expect(out.sentiment.positive + out.sentiment.neutral + out.sentiment.negative).toBe(100);
+  });
+
+  it('throws BadGateway when DeepSeek returns HTTP 500', async () => {
+    fetchSpy.mockResolvedValueOnce(jsonResponse(500, { error: 'boom' }));
+    await expect(svc.analyzeFreeTextQuestion('u1', 'p1', 'q1')).rejects.toThrow(/HTTP 500/);
+  });
+
+  it('throws BadGateway when message.content is not valid JSON', async () => {
+    fetchSpy.mockResolvedValueOnce(
+      jsonResponse(200, { choices: [{ message: { content: 'not json {' } }] }),
+    );
+    await expect(svc.analyzeFreeTextQuestion('u1', 'p1', 'q1')).rejects.toThrow(/not valid JSON/);
+  });
+
+  it('throws BadGateway when the parsed JSON misses `summary`', async () => {
+    const content = JSON.stringify({ sentiment: { positive: 0, neutral: 100, negative: 0 }, themes: [] });
+    fetchSpy.mockResolvedValueOnce(
+      jsonResponse(200, { choices: [{ message: { content } }] }),
+    );
+    await expect(svc.analyzeFreeTextQuestion('u1', 'p1', 'q1')).rejects.toThrow(/schema mismatch/);
+  });
+
+  it('falls back to the mock when DEEPSEEK_API_KEY is unset', async () => {
+    delete process.env.DEEPSEEK_API_KEY;
+    const out = await svc.analyzeFreeTextQuestion('u1', 'p1', 'q1');
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(out.summary).toMatch(/responses?/i);
+  });
+});
