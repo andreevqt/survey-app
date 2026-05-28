@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
@@ -10,6 +10,7 @@ import { Public } from '../common/decorators/public.decorator';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto, AuthUserDto } from './dto/auth-response.dto';
+import { UpdateMeDto } from './dto/update-me.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -65,6 +66,15 @@ export class AuthController {
   @ApiOkResponse({ type: AuthUserDto })
   async me(@CurrentUser() user: CurrentUserPayload): Promise<AuthUserDto> {
     return this.auth.findUserById(user.id);
+  }
+
+  @Patch('me')
+  @ApiOkResponse({ type: AuthUserDto })
+  async updateMe(
+    @CurrentUser() user: CurrentUserPayload,
+    @Body() body: UpdateMeDto,
+  ): Promise<AuthUserDto> {
+    return this.auth.updateMe(user.id, body);
   }
 
   private setCookies(res: Response, t: { accessToken: string; refreshToken: string }) {

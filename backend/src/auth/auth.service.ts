@@ -80,6 +80,24 @@ export class AuthService {
     return { id: user.id, email: user.email, name: user.name, role: user.role };
   }
 
+  async updateMe(userId: string, dto: { name?: string; email?: string }) {
+    const data: { name?: string; email?: string } = {};
+    if (dto.name !== undefined) data.name = dto.name;
+    if (dto.email !== undefined) {
+      const email = dto.email.trim().toLowerCase();
+      const existing = await this.prisma.user.findUnique({ where: { email } });
+      if (existing && existing.id !== userId) {
+        throw new ConflictException({ code: 'EMAIL_TAKEN', message: 'Email is already registered' });
+      }
+      data.email = email;
+    }
+    if (Object.keys(data).length === 0) {
+      return this.findUserById(userId);
+    }
+    const user = await this.prisma.user.update({ where: { id: userId }, data });
+    return { id: user.id, email: user.email, name: user.name, role: user.role };
+  }
+
   private async findRefreshRow(userId: string, jti: string) {
     const rows = await this.prisma.refreshToken.findMany({ where: { userId } });
     for (const r of rows) {
