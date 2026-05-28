@@ -23,6 +23,8 @@ const defaultQuestion: PollFormValues['questions'][number] = {
   options: [{ text: '' }, { text: '' }],
 };
 
+export type PollFormViewModel = ReturnType<typeof usePollForm>;
+
 export function usePollForm({
   id,
   context = 'owner',

@@ -60,7 +60,6 @@ export function useAdminPollsTable({
   return {
     filtered,
     selectedIds,
-    allSelected,
     toggleAll,
     toggleOne,
     clearSelection,

@@ -2,21 +2,14 @@ import { FormProvider, Controller } from 'react-hook-form';
 import { Input } from '../../../components/primitives/Input';
 import { Textarea } from '../../../components/primitives/Textarea';
 import { Select } from '../../../components/primitives/Select';
+import { DateField } from '../../../components/primitives/DateField';
 import { Button } from '../../../components/primitives/Button';
 import { Field } from '../../../components/primitives/Field';
 import { Card } from '../../../components/primitives/Card';
-import { Spinner } from '../../../components/primitives/Spinner';
 import { QuestionEditor } from '../../polls/QuestionEditor';
-import { usePollForm } from './hooks/usePollForm';
 import type { PollFormProps } from './types';
 
-export function PollForm({ id, context, onSuccess, onCancel }: PollFormProps) {
-  const vm = usePollForm({ id, context, onSuccess });
-
-  if (vm.isHydrating) {
-    return <div className="flex justify-center py-16"><Spinner size={28} /></div>;
-  }
-
+export function PollForm({ vm, formId }: PollFormProps) {
   const { register, formState: { errors } } = vm.methods;
 
   return (
@@ -32,7 +25,7 @@ export function PollForm({ id, context, onSuccess, onCancel }: PollFormProps) {
       )}
 
       <FormProvider {...vm.methods}>
-        <form onSubmit={vm.onSubmit} className="flex flex-col gap-6">
+        <form id={formId} onSubmit={vm.onSubmit} className="flex flex-col gap-6">
           <Card>
             <div className="flex flex-col gap-4">
               <Field label="Title" error={errors.title?.message}>
@@ -59,7 +52,17 @@ export function PollForm({ id, context, onSuccess, onCancel }: PollFormProps) {
                   />
                 </Field>
                 <Field label="Expires at (optional)" error={errors.expiresAt?.message}>
-                  <Input type="datetime-local" {...register('expiresAt')} />
+                  <Controller
+                    control={vm.methods.control}
+                    name="expiresAt"
+                    render={({ field }) => (
+                      <DateField
+                        value={field.value ?? ''}
+                        onChange={field.onChange}
+                        placeholder="Pick a date and time"
+                      />
+                    )}
+                  />
                 </Field>
               </div>
               <label className="inline-flex items-center gap-2 text-sm text-gray-700">
@@ -90,13 +93,6 @@ export function PollForm({ id, context, onSuccess, onCancel }: PollFormProps) {
             <p className="text-sm text-red-600">{errors.questions.message}</p>
           )}
           {vm.serverError && <p className="text-sm text-red-600">{vm.serverError}</p>}
-
-          <div className="flex justify-end gap-3">
-            <Button variant="secondary" type="button" onClick={onCancel}>Cancel</Button>
-            <Button type="submit" isLoading={vm.isSubmitting}>
-              {vm.isEdit ? 'Save changes' : 'Create poll'}
-            </Button>
-          </div>
         </form>
       </FormProvider>
     </>

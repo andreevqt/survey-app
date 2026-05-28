@@ -1,22 +1,15 @@
-import { useMemo } from 'react';
 import { toast } from 'sonner';
 import { useChangeUserRole } from '../../../../api/mutations/admin';
 import { useAuth } from '../../../../auth/useAuth';
 import type { AdminUser, UsersTableProps } from '../types';
 
 export interface UsersTableViewModel {
-  allSelected: boolean;
   isMe: (user: AdminUser) => boolean;
   isChangingRole: boolean;
   onChangeRole: (user: AdminUser, role: 'USER' | 'ADMIN') => void;
 }
 
-export function useUsersTable(props: UsersTableProps): UsersTableViewModel {
-  const { users, selected } = props;
-  const allSelected = useMemo(
-    () => users.length > 0 && users.every((u) => selected.includes(u.id)),
-    [users, selected],
-  );
+export function useUsersTable(_props: UsersTableProps): UsersTableViewModel {
   const changeRole = useChangeUserRole();
   const { user: me } = useAuth();
 
@@ -31,7 +24,6 @@ export function useUsersTable(props: UsersTableProps): UsersTableViewModel {
   };
 
   return {
-    allSelected,
     isMe,
     isChangingRole: changeRole.isPending,
     onChangeRole,
