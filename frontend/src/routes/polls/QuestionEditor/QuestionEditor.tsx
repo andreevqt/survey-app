@@ -1,5 +1,5 @@
 import { Input } from '../../../components/primitives/Input';
-import { Dropdown } from '../../../components/primitives/Dropdown';
+import { Select } from '../../../components/primitives/Select';
 import { Button } from '../../../components/primitives/Button';
 import { Card } from '../../../components/primitives/Card';
 import { Field } from '../../../components/primitives/Field';
@@ -19,7 +19,7 @@ export function QuestionEditor({ index, onRemove, disabled }: QuestionEditorProp
         </div>
 
         <Field label="Type">
-          <Dropdown
+          <Select
             value={vm.type}
             onChange={(v) => vm.onChangeType(v as any)}
             options={[

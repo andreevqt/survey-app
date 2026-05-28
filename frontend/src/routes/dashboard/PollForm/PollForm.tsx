@@ -1,7 +1,7 @@
 import { FormProvider, Controller } from 'react-hook-form';
 import { Input } from '../../../components/primitives/Input';
 import { Textarea } from '../../../components/primitives/Textarea';
-import { Dropdown } from '../../../components/primitives/Dropdown';
+import { Select } from '../../../components/primitives/Select';
 import { Button } from '../../../components/primitives/Button';
 import { Field } from '../../../components/primitives/Field';
 import { Card } from '../../../components/primitives/Card';
@@ -47,7 +47,7 @@ export function PollForm({ id, context, onSuccess, onCancel }: PollFormProps) {
                     control={vm.methods.control}
                     name="visibility"
                     render={({ field }) => (
-                      <Dropdown
+                      <Select
                         value={field.value}
                         onChange={field.onChange}
                         options={[
