@@ -76,6 +76,58 @@ describe('AnalyticsService.getOwnerAnalytics', () => {
   });
 });
 
+describe('AnalyticsService.analyzeFreeTextQuestion', () => {
+  let svc: AnalyticsService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [AnalyticsService, { provide: PrismaService, useValue: prisma }],
+    }).compile();
+    svc = mod.get(AnalyticsService);
+  });
+
+  it('returns neutral 100% with "No responses yet." when there are no answers', async () => {
+    prisma.poll.findFirst.mockResolvedValueOnce({ id: 'p1' } as any);
+    prisma.question.findFirst.mockResolvedValueOnce({ id: 'q1', type: QuestionType.TEXT } as any);
+    prisma.answer.findMany.mockResolvedValueOnce([] as any);
+
+    const out = await svc.analyzeFreeTextQuestion('u1', 'p1', 'q1');
+    expect(out.sentiment).toEqual({ positive: 0, neutral: 100, negative: 0 });
+    expect(out.summary).toBe('No responses yet.');
+    expect(out.themes).toEqual([]);
+  });
+
+  it('builds themes ordered by frequency and sentiment summing to 100', async () => {
+    prisma.poll.findFirst.mockResolvedValueOnce({ id: 'p1' } as any);
+    prisma.question.findFirst.mockResolvedValueOnce({ id: 'q1', type: QuestionType.TEXT } as any);
+    prisma.answer.findMany.mockResolvedValueOnce([
+      { textValue: 'The pricing is great and the support is helpful' },
+      { textValue: 'Pricing is too high but support is amazing' },
+      { textValue: 'Confusing pricing page, otherwise fine' },
+    ] as any);
+
+    const out = await svc.analyzeFreeTextQuestion('u1', 'p1', 'q1');
+    expect(out.sentiment.positive + out.sentiment.neutral + out.sentiment.negative).toBe(100);
+    expect(out.themes[0].label).toBe('pricing');
+    expect(out.themes[0].count).toBe(3);
+    expect(out.summary.startsWith('3 responses')).toBe(true);
+  });
+
+  it('throws when the question is not TEXT', async () => {
+    prisma.poll.findFirst.mockResolvedValueOnce({ id: 'p1' } as any);
+    prisma.question.findFirst.mockResolvedValueOnce({ id: 'q1', type: QuestionType.SINGLE_CHOICE } as any);
+
+    await expect(svc.analyzeFreeTextQuestion('u1', 'p1', 'q1')).rejects.toThrow(/free-text/);
+  });
+
+  it('throws NOT_FOUND when the poll is not owned by the caller', async () => {
+    prisma.poll.findFirst.mockResolvedValueOnce(null);
+    await expect(svc.analyzeFreeTextQuestion('u1', 'p1', 'q1')).rejects.toThrow(/NOT_FOUND|Not Found/);
+  });
+});
+
 describe('AnalyticsService.getSystemAnalytics', () => {
   let svc: AnalyticsService;
   let prisma: DeepMockProxy<PrismaService>;

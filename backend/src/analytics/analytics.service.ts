@@ -129,13 +129,13 @@ export class AnalyticsService {
       where: { id: pollId, ownerId },
       select: { id: true },
     });
-    if (!poll) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Poll not found' });
+    if (!poll) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
 
     const question = await this.prisma.question.findFirst({
       where: { id: questionId, pollId },
       select: { id: true, type: true },
     });
-    if (!question) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Question not found' });
+    if (!question) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Not Found' });
     if (question.type !== QuestionType.TEXT) {
       throw new BadRequestException({ code: 'QUESTION_NOT_TEXT', message: 'Question is not a free-text question' });
     }
