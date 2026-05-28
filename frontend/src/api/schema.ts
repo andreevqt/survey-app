@@ -164,6 +164,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/polls/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminPollsController_getOne"];
+        put?: never;
+        post?: never;
+        delete: operations["AdminPollsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["AdminPollsController_update"];
+        trace?: never;
+    };
+    "/admin/polls/{id}/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AdminPollsController_toggleActive"];
+        trace?: never;
+    };
     "/public/polls/{slug}": {
         parameters: {
             query?: never;
@@ -204,6 +236,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["AnalyticsController_getOwnerAnalytics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/polls/{id}/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AnalyticsController_getAdminPollAnalytics"];
         put?: never;
         post?: never;
         delete?: never;
@@ -759,6 +807,96 @@ export interface operations {
             };
         };
     };
+    AdminPollsController_getOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PollDetailDto"];
+                };
+            };
+        };
+    };
+    AdminPollsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminPollsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePollDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PollDetailDto"];
+                };
+            };
+        };
+    };
+    AdminPollsController_toggleActive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ToggleActiveDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PollSummaryDto"];
+                };
+            };
+        };
+    };
     ResponsesController_getPublic: {
         parameters: {
             query?: never;
@@ -806,6 +944,27 @@ export interface operations {
         };
     };
     AnalyticsController_getOwnerAnalytics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerAnalyticsDto"];
+                };
+            };
+        };
+    };
+    AnalyticsController_getAdminPollAnalytics: {
         parameters: {
             query?: never;
             header?: never;

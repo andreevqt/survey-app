@@ -330,6 +330,135 @@
         ]
       }
     },
+    "/admin/polls/{id}": {
+      "get": {
+        "operationId": "AdminPollsController_getOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PollDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin-polls"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminPollsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePollDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PollDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin-polls"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminPollsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-polls"
+        ]
+      }
+    },
+    "/admin/polls/{id}/active": {
+      "patch": {
+        "operationId": "AdminPollsController_toggleActive",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToggleActiveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PollSummaryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin-polls"
+        ]
+      }
+    },
     "/public/polls/{slug}": {
       "get": {
         "operationId": "ResponsesController_getPublic",
@@ -403,6 +532,36 @@
     "/polls/{id}/analytics": {
       "get": {
         "operationId": "AnalyticsController_getOwnerAnalytics",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerAnalyticsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/admin/polls/{id}/analytics": {
+      "get": {
+        "operationId": "AnalyticsController_getAdminPollAnalytics",
         "parameters": [
           {
             "name": "id",

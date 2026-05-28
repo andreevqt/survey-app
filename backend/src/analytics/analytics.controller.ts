@@ -17,6 +17,13 @@ export class AnalyticsController {
     return this.svc.getOwnerAnalytics(user.id, id);
   }
 
+  @Get('admin/polls/:id/analytics')
+  @UseGuards(AdminRoleGuard)
+  @ApiOkResponse({ type: OwnerAnalyticsDto })
+  getAdminPollAnalytics(@Param('id') id: string) {
+    return this.svc.getAnalyticsById(id);
+  }
+
   @Get('admin/analytics')
   @UseGuards(AdminRoleGuard)
   @ApiOkResponse({ type: SystemAnalyticsDto })
