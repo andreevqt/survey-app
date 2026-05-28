@@ -52,6 +52,13 @@ jobs:
           url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
+      - name: Alias to custom domain
+        id: alias
+        run: |
+          alias="pr-${{ github.event.pull_request.number }}.survey.andreevxdr.ru"
+          vercel alias set "${{ steps.deploy.outputs.url }}" "$alias" --token=${{ secrets.VERCEL_TOKEN }}
+          echo "alias=https://$alias" >> "$GITHUB_OUTPUT"
+
       - name: Comment preview URL on PR
         uses: marocchino/sticky-pull-request-comment@v2
         with:
@@ -59,7 +66,8 @@ jobs:
           message: |
             🟢 **Vercel preview ready**
             Commit: `${{ github.event.pull_request.head.sha }}`
-            URL: ${{ steps.deploy.outputs.url }}
+            Preview: ${{ steps.alias.outputs.alias }}
+            Raw: ${{ steps.deploy.outputs.url }}
 
   cleanup:
     if: github.event.action == 'closed'
