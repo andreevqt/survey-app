@@ -1,10 +1,11 @@
 import { Button } from '../../../components/primitives/Button';
-import { Spinner } from '../../../components/primitives/Spinner';
 import { ConfirmDialog } from '../../../components/primitives/ConfirmDialog';
+import { SectionError, withErrorBoundaryAndSuspense } from '../../../components/feedback/ErrorBoundary';
+import { SectionSpinner } from '../../../components/feedback/SectionSpinner';
 import { UsersTable } from '../UsersTable';
 import { useUsersTab } from './hooks/useUsersTab';
 
-export function UsersTab() {
+function UsersTabContent() {
   const vm = useUsersTab();
 
   return (
@@ -29,18 +30,12 @@ export function UsersTab() {
         </div>
       )}
 
-      {vm.status === 'loading' ? (
-        <div className="flex justify-center py-12"><Spinner size={28} /></div>
-      ) : vm.status === 'error' ? (
-        <p className="text-sm text-red-600">Could not load users.</p>
-      ) : (
-        <UsersTable
-          users={vm.users!}
-          selected={vm.selected}
-          onToggle={vm.onToggle}
-          onToggleAll={vm.onToggleAll}
-        />
-      )}
+      <UsersTable
+        users={vm.users}
+        selected={vm.selected}
+        onToggle={vm.onToggle}
+        onToggleAll={vm.onToggleAll}
+      />
 
       {vm.confirming && (
         <ConfirmDialog
@@ -55,3 +50,8 @@ export function UsersTab() {
     </div>
   );
 }
+
+export const UsersTab = withErrorBoundaryAndSuspense(UsersTabContent, {
+  skeleton: <div className="mt-6"><SectionSpinner /></div>,
+  fallback: (p) => <div className="mt-6"><SectionError {...p} message="Could not load users." /></div>,
+});

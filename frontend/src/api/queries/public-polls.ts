@@ -1,14 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import { unwrap } from '../errors';
 
-export function usePublicPoll(slug: string | undefined) {
-  return useQuery({
-    enabled: !!slug,
+export function publicPollQueryOptions(slug: string) {
+  return queryOptions({
     queryKey: ['public-poll', slug],
-    queryFn: async () => {
-      const r = await apiClient.GET('/public/polls/{slug}', { params: { path: { slug: slug! } } });
-      if (!r.response.ok) throw r.error ?? new Error('Not found');
-      return r.data!;
-    },
+    queryFn: async () => unwrap(await apiClient.GET('/public/polls/{slug}', { params: { path: { slug } } })),
   });
+}
+
+export function usePublicPollSuspense(slug: string) {
+  return useSuspenseQuery(publicPollQueryOptions(slug));
 }

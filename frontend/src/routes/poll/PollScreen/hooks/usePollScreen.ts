@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { usePublicPoll } from '../../../../api/queries/public-polls';
+import { usePublicPollSuspense } from '../../../../api/queries/public-polls';
 import { useSubmitResponse } from '../../../../api/mutations/responses';
 import type { PollDto, PollResponseValues } from '../types';
 
 export interface PollScreenViewModel {
-  status: 'loading' | 'not-found' | 'closed' | 'submitted' | 'ready';
-  poll?: PollDto;
+  status: 'closed' | 'submitted' | 'ready';
+  poll: PollDto;
   values: PollResponseValues;
   errors: Record<string, string>;
   isSubmitting: boolean;
@@ -17,7 +17,7 @@ export interface PollScreenViewModel {
 
 export function usePollScreen(): PollScreenViewModel {
   const { slug } = useParams<{ slug: string }>();
-  const q = usePublicPoll(slug);
+  const { data: poll } = usePublicPollSuspense(slug ?? '');
   const submit = useSubmitResponse(slug ?? '');
   const [values, setValues] = useState<PollResponseValues>({});
   const [submitted, setSubmitted] = useState(false);
@@ -27,7 +27,7 @@ export function usePollScreen(): PollScreenViewModel {
     setValues((prev) => ({ ...prev, [questionId]: v }));
   };
 
-  function validate(poll: PollDto): boolean {
+  function validate(): boolean {
     const next: Record<string, string> = {};
     for (const question of poll.questions) {
       const v = values[question.id];
@@ -45,9 +45,7 @@ export function usePollScreen(): PollScreenViewModel {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!q.data) return;
-    const poll = q.data;
-    if (!validate(poll)) return;
+    if (!validate()) return;
     try {
       await submit.mutateAsync({
         answers: poll.questions.map((question) => {
@@ -65,13 +63,7 @@ export function usePollScreen(): PollScreenViewModel {
     }
   };
 
-  if (q.isLoading) return { status: 'loading', values, errors, isSubmitting: submit.isPending, onChangeValue, onSubmit };
-  if (q.isError || !q.data) return { status: 'not-found', values, errors, isSubmitting: submit.isPending, onChangeValue, onSubmit };
+  const status: PollScreenViewModel['status'] = poll.closed ? 'closed' : submitted ? 'submitted' : 'ready';
 
-  const poll = q.data;
-
-  if (poll.closed) return { status: 'closed', poll, values, errors, isSubmitting: submit.isPending, onChangeValue, onSubmit };
-  if (submitted) return { status: 'submitted', poll, values, errors, isSubmitting: submit.isPending, onChangeValue, onSubmit };
-
-  return { status: 'ready', poll, values, errors, isSubmitting: submit.isPending, onChangeValue, onSubmit };
+  return { status, poll, values, errors, isSubmitting: submit.isPending, onChangeValue, onSubmit };
 }

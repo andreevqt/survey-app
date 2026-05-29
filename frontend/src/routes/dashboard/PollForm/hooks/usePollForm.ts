@@ -6,9 +6,10 @@ import type { BaseSyntheticEvent } from 'react';
 import { pollFormSchema, type PollFormValues } from '../../../../forms/schemas/poll.schema';
 import { useCreatePoll, useUpdatePoll } from '../../../../api/mutations/polls';
 import { useUpdateAdminPoll } from '../../../../api/mutations/admin';
-import { usePoll } from '../../../../api/queries/polls';
-import { useAdminPoll } from '../../../../api/queries/admin';
+import type { components } from '../../../../api/schema';
 import type { PollFormContext } from '../types';
+
+type PollDetail = components['schemas']['PollDetailDto'];
 
 function toLocalInputValue(iso: string): string {
   const d = new Date(iso);
@@ -28,19 +29,18 @@ export type PollFormViewModel = ReturnType<typeof usePollForm>;
 export function usePollForm({
   id,
   context = 'owner',
+  poll,
   onSuccess,
 }: {
   id?: string;
   context?: PollFormContext;
+  /** Already-loaded poll for edit mode (fetched by the suspense boundary above). */
+  poll?: PollDetail;
   onSuccess?: () => void;
 }) {
   const isEdit = !!id;
   const isAdmin = context === 'admin';
 
-  const ownerPoll = usePoll(isAdmin ? undefined : id);
-  const adminPoll = useAdminPoll(isAdmin ? id : undefined);
-  const pollQuery = isAdmin ? adminPoll : ownerPoll;
-  const poll = pollQuery.data;
   const locked = isEdit && (poll?.responseCount ?? 0) > 0;
   const responseCount = poll?.responseCount ?? 0;
 
@@ -119,8 +119,6 @@ export function usePollForm({
     [isEdit, poll?.title],
   );
 
-  const isHydrating = isEdit && pollQuery.isLoading;
-
   function onAddQuestion() {
     questionFields.append({ ...defaultQuestion });
   }
@@ -131,7 +129,6 @@ export function usePollForm({
       questionFields,
       isEdit,
       heading,
-      isHydrating,
       isSubmitting,
       locked,
       responseCount,
@@ -139,6 +136,6 @@ export function usePollForm({
       onSubmit: onSubmit as (e?: BaseSyntheticEvent) => void,
       onAddQuestion,
     }),
-    [methods, questionFields, isEdit, heading, isHydrating, isSubmitting, locked, responseCount, serverError, onSubmit],
+    [methods, questionFields, isEdit, heading, isSubmitting, locked, responseCount, serverError, onSubmit],
   );
 }
