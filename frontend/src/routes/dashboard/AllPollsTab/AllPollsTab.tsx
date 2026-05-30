@@ -1,28 +1,23 @@
 import { Card } from '../../../components/primitives/Card';
-import { Spinner } from '../../../components/primitives/Spinner';
 import { ConfirmDialog } from '../../../components/primitives/ConfirmDialog';
+import { SectionError, withErrorBoundaryAndSuspense } from '../../../components/feedback/ErrorBoundary';
+import { SectionSpinner } from '../../../components/feedback/SectionSpinner';
 import { AdminPollsTable } from '../AdminPollsTable';
 import { useAllPollsTab } from './hooks/useAllPollsTab';
 
-export function AllPollsTab() {
+function AllPollsTabContent() {
   const vm = useAllPollsTab();
 
   return (
     <div className="mt-8">
-      {vm.status === 'loading' ? (
-        <div className="flex justify-center py-12"><Spinner size={28} /></div>
-      ) : vm.status === 'error' ? (
-        <Card className="text-center">
-          <p className="text-sm text-red-600">Could not load polls.</p>
-        </Card>
-      ) : vm.status === 'empty' ? (
+      {vm.polls.length === 0 ? (
         <Card className="text-center">
           <p className="text-3xl">📋</p>
           <p className="mt-3 text-base font-semibold text-gray-900">No polls in the system</p>
           <p className="mt-1 text-sm text-gray-500">Once users create polls, they will show up here.</p>
         </Card>
       ) : (
-        <AdminPollsTable polls={vm.polls!} onDelete={vm.setPendingDeleteId} context="admin" />
+        <AdminPollsTable polls={vm.polls} onDelete={vm.setPendingDeleteId} context="admin" />
       )}
 
       {vm.pendingDeleteId && (
@@ -38,3 +33,8 @@ export function AllPollsTab() {
     </div>
   );
 }
+
+export const AllPollsTab = withErrorBoundaryAndSuspense(AllPollsTabContent, {
+  skeleton: <div className="mt-8"><SectionSpinner /></div>,
+  fallback: (p) => <div className="mt-8"><SectionError {...p} message="Could not load polls." /></div>,
+});

@@ -1,14 +1,11 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { useMyPolls } from '../../../../api/queries/polls';
+import { useMyPollsSuspense } from '../../../../api/queries/polls';
 import { useDeletePoll } from '../../../../api/mutations/polls';
 import type { PollSummary } from '../types';
 
-export type MyPollsTabStatus = 'loading' | 'error' | 'empty' | 'list';
-
 export interface MyPollsTabViewModel {
-  status: MyPollsTabStatus;
-  polls?: PollSummary[];
+  polls: PollSummary[];
   pendingDeleteId: string | null;
   setPendingDeleteId: (id: string | null) => void;
   onConfirmDelete: () => void;
@@ -16,20 +13,9 @@ export interface MyPollsTabViewModel {
 }
 
 export function useMyPollsTab(): MyPollsTabViewModel {
-  const polls = useMyPolls();
+  const { data } = useMyPollsSuspense();
   const del = useDeletePoll();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-
-  let status: MyPollsTabStatus;
-  if (polls.isLoading) {
-    status = 'loading';
-  } else if (polls.isError) {
-    status = 'error';
-  } else if (!polls.data || polls.data.items.length === 0) {
-    status = 'empty';
-  } else {
-    status = 'list';
-  }
 
   const onConfirmDelete = () => {
     if (!pendingDeleteId) return;
@@ -43,8 +29,7 @@ export function useMyPollsTab(): MyPollsTabViewModel {
   };
 
   return {
-    status,
-    polls: polls.data?.items,
+    polls: data.items,
     pendingDeleteId,
     setPendingDeleteId,
     onConfirmDelete,

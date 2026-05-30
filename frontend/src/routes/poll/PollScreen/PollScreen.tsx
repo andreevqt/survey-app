@@ -1,23 +1,44 @@
+import { Suspense } from 'react';
 import { Card } from '../../../components/primitives/Card';
 import { Button } from '../../../components/primitives/Button';
 import { Spinner } from '../../../components/primitives/Spinner';
+import { ErrorBoundary } from '../../../components/feedback/ErrorBoundary';
+import type { ErrorFallbackProps } from '../../../components/feedback/ErrorBoundary';
+import { ApiError } from '../../../api/errors';
 import { QuestionRenderer } from '../QuestionRenderer';
 import { usePollScreen } from './hooks/usePollScreen';
 
 export function PollScreen() {
+  return (
+    <ErrorBoundary fallback={(p) => <PollScreenError {...p} />}>
+      <Suspense fallback={<div className="flex justify-center py-16"><Spinner size={28} /></div>}>
+        <PollScreenContent />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+
+function PollScreenError({ reset, error, traceId, clientDebugId }: ErrorFallbackProps) {
+  const notFound = error instanceof ApiError && error.status === 404;
+  return (
+    <Card className="max-w-md mx-auto mt-16 text-center">
+      <p className="text-base font-semibold text-gray-900">
+        {notFound ? 'Poll not found' : 'Could not load this poll'}
+      </p>
+      {!notFound && (
+        <Button variant="secondary" size="sm" className="mt-4" onClick={reset}>
+          Try again
+        </Button>
+      )}
+      <p className="mt-3 text-xs text-gray-400">
+        {traceId ? <>Trace: {traceId} · </> : null}Debug: {clientDebugId}
+      </p>
+    </Card>
+  );
+}
+
+function PollScreenContent() {
   const vm = usePollScreen();
-
-  if (vm.status === 'loading') {
-    return <div className="flex justify-center py-16"><Spinner size={28} /></div>;
-  }
-
-  if (vm.status === 'not-found') {
-    return (
-      <Card className="max-w-md mx-auto mt-16 text-center">
-        <p className="text-base font-semibold text-gray-900">Poll not found</p>
-      </Card>
-    );
-  }
 
   if (vm.status === 'closed') {
     return (
@@ -42,12 +63,12 @@ export function PollScreen() {
   return (
     <section className="max-w-xl mx-auto py-12 px-6">
       <Card>
-        <h1 className="text-2xl font-bold text-gray-900">{vm.poll!.title}</h1>
-        {vm.poll!.description && (
-          <p className="mt-2 text-sm text-gray-600 whitespace-pre-line">{vm.poll!.description}</p>
+        <h1 className="text-2xl font-bold text-gray-900">{vm.poll.title}</h1>
+        {vm.poll.description && (
+          <p className="mt-2 text-sm text-gray-600 whitespace-pre-line">{vm.poll.description}</p>
         )}
         <form onSubmit={vm.onSubmit} className="mt-6 flex flex-col gap-6">
-          {vm.poll!.questions.map((qn) => (
+          {vm.poll.questions.map((qn) => (
             <QuestionRenderer
               key={qn.id}
               question={qn}

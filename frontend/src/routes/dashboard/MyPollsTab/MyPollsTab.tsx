@@ -1,23 +1,29 @@
 import { Link } from 'react-router-dom';
 import { Card } from '../../../components/primitives/Card';
 import { Button } from '../../../components/primitives/Button';
-import { Spinner } from '../../../components/primitives/Spinner';
 import { ConfirmDialog } from '../../../components/primitives/ConfirmDialog';
+import { ErrorBoundary, SectionError } from '../../../components/feedback/ErrorBoundary';
+import { SectionSpinner } from '../../../components/feedback/SectionSpinner';
+import { Suspense } from 'react';
 import { AdminPollsTable } from '../AdminPollsTable';
 import { useMyPollsTab } from './hooks/useMyPollsTab';
 
 export function MyPollsTab() {
+  return (
+    <ErrorBoundary fallback={(p) => <div className="mt-8"><SectionError {...p} message="Could not load polls." /></div>}>
+      <Suspense fallback={<div className="mt-8"><SectionSpinner /></div>}>
+        <MyPollsTabContent />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+
+function MyPollsTabContent() {
   const vm = useMyPollsTab();
 
   return (
     <div className="mt-8">
-      {vm.status === 'loading' ? (
-        <div className="flex justify-center py-12"><Spinner size={28} /></div>
-      ) : vm.status === 'error' ? (
-        <Card className="text-center">
-          <p className="text-sm text-red-600">Could not load polls.</p>
-        </Card>
-      ) : vm.status === 'empty' ? (
+      {vm.polls.length === 0 ? (
         <Card className="text-center">
           <p className="text-3xl">📋</p>
           <p className="mt-3 text-base font-semibold text-gray-900">No polls yet</p>
@@ -25,7 +31,7 @@ export function MyPollsTab() {
           <Link to="/dashboard/polls/new"><Button className="mt-4">Create Poll</Button></Link>
         </Card>
       ) : (
-        <AdminPollsTable polls={vm.polls!} onDelete={vm.setPendingDeleteId} />
+        <AdminPollsTable polls={vm.polls} onDelete={vm.setPendingDeleteId} />
       )}
 
       {vm.pendingDeleteId && (
