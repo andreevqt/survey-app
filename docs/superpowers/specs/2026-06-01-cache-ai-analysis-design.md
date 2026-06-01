@@ -62,7 +62,8 @@ In `AnalyticsService`:
     errors as the POST path).
   - Load the `QuestionAnalysis` row. If none → return `null`.
   - Compute current free-text answer count.
-  - Return `{ ...result, generatedAt: row.createdAt, stale: row.answerCount !== currentCount }`.
+  - Return `{ ...result, generatedAt: row.updatedAt, stale: row.answerCount !== currentCount }`
+    (uses `updatedAt` so re-analysis refreshes the timestamp, not first-generation time).
 
 - **`analyzeFreeTextQuestion(...)`** (existing): unchanged generation logic. **Change:**
   after a successful **real-provider** call, `upsert` the row
