@@ -42,6 +42,11 @@ export function useUserFormModal(args: {
 
   const roleDisabled = isEdit && !!user && me?.id === user.id;
 
+  const handleSetEmail = (v: string) => {
+    setEmail(v);
+    if (emailError) setEmailError(null);
+  };
+
   const handleError = (err: any) => {
     if (err?.code === 'EMAIL_TAKEN') {
       setEmailError('Email is already in use');
@@ -99,7 +104,7 @@ export function useUserFormModal(args: {
     emailError,
     isSubmitting: create.isPending || update.isPending,
     setName,
-    setEmail,
+    setEmail: handleSetEmail,
     setRole,
     setPassword,
     onSubmit,

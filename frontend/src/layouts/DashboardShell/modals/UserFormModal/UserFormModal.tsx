@@ -46,6 +46,10 @@ export function UserFormModal({ mode, id }: UserFormModalProps) {
 }
 
 function UserFormEditView({ id, title, onClose }: { id: string; title: string; onClose: () => void }) {
+  // Resolve the target from the page-1 admin-users cache — the same query the
+  // UsersTab table renders. Edit is always launched from a visible row, so the
+  // user is present. A manual deep-link to a user beyond page 1 falls through to
+  // the "User not found" branch below (acceptable until the list is paginated).
   const { data } = useAdminUsersSuspense();
   const user = data.items.find((u: AdminUser) => u.id === id);
   if (!user) {
