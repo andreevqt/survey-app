@@ -113,7 +113,7 @@ function UserFormView({
             value={vm.password}
             onChange={(e) => vm.setPassword(e.target.value)}
             placeholder={vm.isEdit ? 'Leave blank to keep current' : 'At least 8 characters'}
-            minLength={vm.isEdit ? undefined : 8}
+            minLength={!vm.isEdit || vm.password.length > 0 ? 8 : undefined}
             required={!vm.isEdit}
           />
         </Field>
