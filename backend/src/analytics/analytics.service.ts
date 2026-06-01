@@ -1,7 +1,7 @@
 import { BadGatewayException, BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { QuestionType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { AiAnalysisDto, SentimentDto, ThemeDto } from './dto/ai-analysis.dto';
+import { AiAnalysisDto, CachedAiAnalysisDto, SentimentDto, ThemeDto } from './dto/ai-analysis.dto';
 import { OwnerAnalyticsDto } from './dto/owner-analytics.dto';
 
 @Injectable()
@@ -120,11 +120,11 @@ export class AnalyticsService {
     return { totalUsers, totalAdmins, totalPolls, activePolls, totalResponses };
   }
 
-  async analyzeFreeTextQuestion(
+  private async loadTextAnswers(
     ownerId: string,
     pollId: string,
     questionId: string,
-  ): Promise<AiAnalysisDto> {
+  ): Promise<{ questionText: string; answers: string[] }> {
     const poll = await this.prisma.poll.findFirst({
       where: { id: pollId, ownerId },
       select: { id: true },
@@ -149,9 +149,56 @@ export class AnalyticsService {
       .map((s) => s.trim())
       .filter((s) => s.length > 0);
 
-    return process.env.DEEPSEEK_API_KEY
-      ? deepseekAnalyzeAnswers(question.text, answers)
-      : mockAnalyzeAnswers(answers);
+    return { questionText: question.text, answers };
+  }
+
+  async analyzeFreeTextQuestion(
+    ownerId: string,
+    pollId: string,
+    questionId: string,
+  ): Promise<AiAnalysisDto> {
+    const { questionText, answers } = await this.loadTextAnswers(ownerId, pollId, questionId);
+
+    const useProvider = Boolean(process.env.DEEPSEEK_API_KEY);
+    if (!useProvider) {
+      return mockAnalyzeAnswers(answers);
+    }
+
+    const result = await deepseekAnalyzeAnswers(questionText, answers);
+    await this.prisma.questionAnalysis.upsert({
+      where: { questionId },
+      create: {
+        questionId,
+        // Prisma Json input requires the `unknown` bridge cast for our DTO object.
+        result: result as unknown as object,
+        answerCount: answers.length,
+        model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
+      },
+      update: {
+        result: result as unknown as object,
+        answerCount: answers.length,
+        model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
+      },
+    });
+    return result;
+  }
+
+  async getQuestionAnalysis(
+    ownerId: string,
+    pollId: string,
+    questionId: string,
+  ): Promise<CachedAiAnalysisDto | null> {
+    const { answers } = await this.loadTextAnswers(ownerId, pollId, questionId);
+
+    const row = await this.prisma.questionAnalysis.findUnique({ where: { questionId } });
+    if (!row) return null;
+
+    const cached = row.result as unknown as AiAnalysisDto;
+    return {
+      ...cached,
+      generatedAt: row.updatedAt.toISOString(),
+      stale: row.answerCount !== answers.length,
+    };
   }
 }
 

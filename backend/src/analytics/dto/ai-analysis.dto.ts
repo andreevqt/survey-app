@@ -17,3 +17,11 @@ export class AiAnalysisDto {
   @ApiProperty({ type: SentimentDto }) sentiment!: SentimentDto;
   @ApiProperty({ type: [ThemeDto], description: '0–5 themes ordered by frequency' }) themes!: ThemeDto[];
 }
+
+export class CachedAiAnalysisDto extends AiAnalysisDto {
+  @ApiProperty({ type: String, format: 'date-time', description: 'When the cached analysis was generated' })
+  generatedAt!: string;
+
+  @ApiProperty({ description: 'True when the free-text answer count changed since generation' })
+  stale!: boolean;
+}

@@ -3,7 +3,7 @@ import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 import { AdminRoleGuard } from '../common/guards/admin-role.guard';
 import { AnalyticsService } from './analytics.service';
-import { AiAnalysisDto } from './dto/ai-analysis.dto';
+import { AiAnalysisDto, CachedAiAnalysisDto } from './dto/ai-analysis.dto';
 import { OwnerAnalyticsDto } from './dto/owner-analytics.dto';
 import { SystemAnalyticsDto } from './dto/system-analytics.dto';
 
@@ -26,6 +26,16 @@ export class AnalyticsController {
     @Param('questionId') questionId: string,
   ) {
     return this.svc.analyzeFreeTextQuestion(user.id, pollId, questionId);
+  }
+
+  @Get('polls/:pollId/questions/:questionId/analysis')
+  @ApiOkResponse({ type: CachedAiAnalysisDto })
+  getQuestionAnalysis(
+    @CurrentUser() user: CurrentUserPayload,
+    @Param('pollId') pollId: string,
+    @Param('questionId') questionId: string,
+  ): Promise<CachedAiAnalysisDto | null> {
+    return this.svc.getQuestionAnalysis(user.id, pollId, questionId);
   }
 
   @Get('admin/polls/:id/analytics')

@@ -87,6 +87,11 @@ export function QuestionAnalyticsCard({ pollId, question }: QuestionAnalyticsCar
             </span>
           </div>
           <p className="mt-2 text-sm leading-relaxed text-gray-800">{ai.analysis.summary}</p>
+          {ai.stale && (
+            <p className="mt-2 text-xs text-amber-700">
+              Responses changed since this was generated — re-analyze to update.
+            </p>
+          )}
 
           <div className="mt-3">
             <p className="text-xs text-gray-500">Sentiment</p>
