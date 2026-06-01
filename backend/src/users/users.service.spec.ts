@@ -33,7 +33,7 @@ describe('UsersService.list', () => {
   });
 });
 
-describe('UsersService.changeRole', () => {
+describe('UsersService.create', () => {
   let svc: UsersService;
   let prisma: DeepMockProxy<PrismaService>;
 
@@ -45,29 +45,142 @@ describe('UsersService.changeRole', () => {
     svc = mod.get(UsersService);
   });
 
-  it('updates role and deletes refresh tokens for that user', async () => {
+  it('hashes the password and creates the user', async () => {
+    prisma.user.create.mockResolvedValueOnce({
+      id: 'u1', email: 'a@x.com', name: 'A', role: Role.USER, createdAt: new Date('2026-05-01T00:00:00Z'),
+    } as any);
+    const r = await svc.create({ name: 'A', email: 'a@x.com', password: 'secret123', role: Role.USER });
+    expect(r.id).toBe('u1');
+    expect(r.createdAt).toMatch(/^2026-05-01/);
+    const arg = prisma.user.create.mock.calls[0][0] as any;
+    expect(arg.data.passwordHash).toBeDefined();
+    expect(arg.data.passwordHash).not.toBe('secret123');
+    expect(arg.data).not.toHaveProperty('password');
+  });
+
+  it('throws EMAIL_TAKEN when the email already exists (P2002)', async () => {
+    prisma.user.create.mockRejectedValueOnce(Object.assign(new Error('dup'), { code: 'P2002' }));
+    await expect(
+      svc.create({ name: 'A', email: 'a@x.com', password: 'secret123', role: Role.USER }),
+    ).rejects.toThrow(/EMAIL_TAKEN|already/);
+  });
+});
+
+describe('UsersService.update', () => {
+  let svc: UsersService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [UsersService, { provide: PrismaService, useValue: prisma }],
+    }).compile();
+    svc = mod.get(UsersService);
+  });
+
+  it('updates name only and does NOT revoke refresh tokens (single-op transaction)', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce({ role: Role.USER } as any);
     prisma.$transaction.mockResolvedValueOnce([
-      { id: 'u1', email: 'x@x.com', name: 'X', role: Role.ADMIN, createdAt: new Date() },
-      { count: 2 },
+      { id: 'u1', email: 'a@x.com', name: 'New', role: Role.USER, createdAt: new Date('2026-05-01T00:00:00Z') },
     ] as any);
-    const r = await svc.changeRole({ adminId: 'a1', userId: 'u1', role: Role.ADMIN });
-    expect(r.role).toBe(Role.ADMIN);
-    // Transaction must do user.update AND refreshToken.deleteMany (2 ops)
+    const r = await svc.update({ adminId: 'a1', userId: 'u1', dto: { name: 'New' } });
+    expect(r.name).toBe('New');
+    const ops = prisma.$transaction.mock.calls[0][0] as unknown as any[];
+    expect(ops).toHaveLength(1);
+  });
+
+  it('revokes refresh tokens when the role changes (two-op transaction)', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce({ role: Role.USER } as any);
+    prisma.$transaction.mockResolvedValueOnce([
+      { id: 'u1', email: 'a@x.com', name: 'A', role: Role.ADMIN, createdAt: new Date() },
+      { count: 1 },
+    ] as any);
+    await svc.update({ adminId: 'a1', userId: 'u1', dto: { role: Role.ADMIN } });
     const ops = prisma.$transaction.mock.calls[0][0] as unknown as any[];
     expect(ops).toHaveLength(2);
   });
 
-  it('throws NOT_FOUND on missing user', async () => {
-    prisma.$transaction.mockRejectedValueOnce(
-      Object.assign(new Error('record not found'), { code: 'P2025' }),
-    );
-    await expect(svc.changeRole({ adminId: 'a1', userId: 'u9', role: Role.ADMIN }))
-      .rejects.toThrow(/NOT_FOUND|Not Found/);
+  it('revokes refresh tokens when the password changes (two-op transaction)', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce({ role: Role.USER } as any);
+    prisma.$transaction.mockResolvedValueOnce([
+      { id: 'u1', email: 'a@x.com', name: 'A', role: Role.USER, createdAt: new Date() },
+      { count: 1 },
+    ] as any);
+    await svc.update({ adminId: 'a1', userId: 'u1', dto: { password: 'newsecret1' } });
+    const ops = prisma.$transaction.mock.calls[0][0] as unknown as any[];
+    expect(ops).toHaveLength(2);
   });
 
   it('rejects an admin demoting themselves', async () => {
-    await expect(svc.changeRole({ adminId: 'a1', userId: 'a1', role: Role.USER }))
-      .rejects.toThrow(/SELF_DEMOTION_FORBIDDEN|Forbidden/);
+    prisma.user.findUnique.mockResolvedValueOnce({ role: Role.ADMIN } as any);
+    await expect(
+      svc.update({ adminId: 'a1', userId: 'a1', dto: { role: Role.USER } }),
+    ).rejects.toThrow(/SELF_DEMOTION_FORBIDDEN|Forbidden/);
+  });
+
+  it('rejects demoting the last admin', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce({ role: Role.ADMIN } as any);
+    prisma.user.count.mockResolvedValueOnce(1);
+    prisma.user.findMany.mockResolvedValueOnce([{ role: Role.ADMIN }] as any);
+    await expect(
+      svc.update({ adminId: 'a1', userId: 'u2', dto: { role: Role.USER } }),
+    ).rejects.toThrow(/LAST_ADMIN_FORBIDDEN|Forbidden/);
+  });
+
+  it('throws NOT_FOUND when the target user does not exist', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce(null as any);
+    await expect(
+      svc.update({ adminId: 'a1', userId: 'u9', dto: { name: 'X' } }),
+    ).rejects.toThrow(/NOT_FOUND|Not Found/);
+  });
+
+  it('throws EMAIL_TAKEN when the new email collides (P2002)', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce({ role: Role.USER } as any);
+    prisma.$transaction.mockRejectedValueOnce(Object.assign(new Error('dup'), { code: 'P2002' }));
+    await expect(
+      svc.update({ adminId: 'a1', userId: 'u1', dto: { email: 'b@x.com' } }),
+    ).rejects.toThrow(/EMAIL_TAKEN|already/);
+  });
+});
+
+describe('UsersService.deleteOne', () => {
+  let svc: UsersService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [UsersService, { provide: PrismaService, useValue: prisma }],
+    }).compile();
+    svc = mod.get(UsersService);
+  });
+
+  it('deletes the user when not self and not the last admin', async () => {
+    prisma.user.count.mockResolvedValueOnce(2);
+    prisma.user.findMany.mockResolvedValueOnce([{ role: Role.USER }] as any);
+    prisma.user.delete.mockResolvedValueOnce({} as any);
+    await svc.deleteOne({ adminId: 'a1', userId: 'u1' });
+    expect(prisma.user.delete).toHaveBeenCalledWith({ where: { id: 'u1' } });
+  });
+
+  it('rejects deleting yourself', async () => {
+    await expect(svc.deleteOne({ adminId: 'a1', userId: 'a1' }))
+      .rejects.toThrow(/SELF_DELETION_FORBIDDEN|Forbidden/);
+  });
+
+  it('rejects deleting the last admin', async () => {
+    prisma.user.count.mockResolvedValueOnce(1);
+    prisma.user.findMany.mockResolvedValueOnce([{ role: Role.ADMIN }] as any);
+    await expect(svc.deleteOne({ adminId: 'a1', userId: 'u2' }))
+      .rejects.toThrow(/LAST_ADMIN_FORBIDDEN|Forbidden/);
+  });
+
+  it('throws NOT_FOUND when the user is gone (P2025)', async () => {
+    prisma.user.count.mockResolvedValueOnce(2);
+    prisma.user.findMany.mockResolvedValueOnce([{ role: Role.USER }] as any);
+    prisma.user.delete.mockRejectedValueOnce(Object.assign(new Error('nf'), { code: 'P2025' }));
+    await expect(svc.deleteOne({ adminId: 'a1', userId: 'u9' }))
+      .rejects.toThrow(/NOT_FOUND|Not Found/);
   });
 });
 
