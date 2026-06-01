@@ -1,13 +1,13 @@
 import { Badge } from '../../../components/primitives/Badge';
-import { Select } from '../../../components/primitives/Select';
+import { Button } from '../../../components/primitives/Button';
 import { Avatar } from '../../../components/primitives/Avatar';
 import { DataTable } from '../../../components/primitives/DataTable';
 import type { DataTableColumn } from '../../../components/primitives/DataTable';
 import type { AdminUser, UsersTableProps } from './types';
 import { useUsersTable } from './hooks/useUsersTable';
 
-export function UsersTable({ users, selected, onToggle, onToggleAll }: UsersTableProps) {
-  const vm = useUsersTable({ users, selected, onToggle, onToggleAll });
+export function UsersTable({ users, selected, onToggle, onToggleAll, onEdit, onDelete }: UsersTableProps) {
+  const vm = useUsersTable({ users, selected, onToggle, onToggleAll, onEdit, onDelete });
 
   const columns: DataTableColumn<AdminUser>[] = [
     {
@@ -48,17 +48,14 @@ export function UsersTable({ users, selected, onToggle, onToggleAll }: UsersTabl
     {
       key: 'actions',
       header: 'Actions',
+      align: 'right',
       cell: (u) => (
-        <Select
-          value={u.role}
-          className="w-28"
-          disabled={vm.isMe(u) || vm.isChangingRole}
-          onChange={(v) => vm.onChangeRole(u, v as 'USER' | 'ADMIN')}
-          options={[
-            { value: 'USER', label: 'USER' },
-            { value: 'ADMIN', label: 'ADMIN' },
-          ]}
-        />
+        <div className="flex justify-end gap-2">
+          <Button variant="secondary" size="sm" onClick={() => onEdit(u)}>Edit</Button>
+          <Button variant="danger" size="sm" disabled={vm.isMe(u)} onClick={() => onDelete(u)}>
+            Delete
+          </Button>
+        </div>
       ),
     },
   ];
