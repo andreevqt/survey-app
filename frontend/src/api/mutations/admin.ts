@@ -3,26 +3,8 @@ import { apiClient } from '../client';
 import type { components } from '../schema';
 
 type UpdatePollBody = components['schemas']['UpdatePollDto'];
-
-type Role = components['schemas']['ChangeRoleDto']['role'];
-
-export function useChangeUserRole() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (args: { id: string; role: Role }) => {
-      const r = await apiClient.PATCH('/admin/users/{id}/role', {
-        params: { path: { id: args.id } },
-        body: { role: args.role },
-      });
-      if (!r.response.ok) {
-        const code = (r.error as any)?.code;
-        throw Object.assign(new Error('Role change failed'), { code });
-      }
-      return r.data!;
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'users'] }),
-  });
-}
+type CreateUserBody = components['schemas']['CreateUserDto'];
+type UpdateUserBody = components['schemas']['UpdateUserDto'];
 
 export function useBulkDeleteUsers() {
   const qc = useQueryClient();
@@ -36,6 +18,53 @@ export function useBulkDeleteUsers() {
       return r.data!;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin'] }),
+  });
+}
+
+export function useCreateUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: CreateUserBody) => {
+      const r = await apiClient.POST('/admin/users', { body });
+      if (!r.response.ok) {
+        const code = (r.error as any)?.code;
+        throw Object.assign(new Error('Create failed'), { code });
+      }
+      return r.data!;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'users'] }),
+  });
+}
+
+export function useUpdateUser(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: UpdateUserBody) => {
+      const r = await apiClient.PATCH('/admin/users/{id}', {
+        params: { path: { id } },
+        body,
+      });
+      if (!r.response.ok) {
+        const code = (r.error as any)?.code;
+        throw Object.assign(new Error('Update failed'), { code });
+      }
+      return r.data!;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'users'] }),
+  });
+}
+
+export function useDeleteUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const r = await apiClient.DELETE('/admin/users/{id}', { params: { path: { id } } });
+      if (!r.response.ok) {
+        const code = (r.error as any)?.code;
+        throw Object.assign(new Error('Delete failed'), { code });
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'users'] }),
   });
 }
 
