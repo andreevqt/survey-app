@@ -1,16 +1,22 @@
-import { act, renderHook } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { apiClient } from '../../../../api/client';
 import { useFreeTextAnalysis } from './useFreeTextAnalysis';
 
 vi.mock('../../../../api/client', () => ({
-  apiClient: { POST: vi.fn() },
+  apiClient: { GET: vi.fn(), POST: vi.fn() },
 }));
 
+const getMock = apiClient.GET as unknown as ReturnType<typeof vi.fn>;
 const postMock = apiClient.POST as unknown as ReturnType<typeof vi.fn>;
+
+beforeEach(() => {
+  getMock.mockResolvedValue({ data: null, error: undefined });
+});
 
 afterEach(() => {
   postMock.mockReset();
+  getMock.mockReset();
 });
 
 describe('useFreeTextAnalysis', () => {
@@ -38,5 +44,14 @@ describe('useFreeTextAnalysis', () => {
 
     expect(result.current.analysis).toBeNull();
     expect(result.current.error).toMatch(/try again/i);
+  });
+
+  it('auto-loads a cached analysis on mount', async () => {
+    getMock.mockResolvedValueOnce({
+      data: { summary: 'cached', sentiment: { positive: 0, neutral: 100, negative: 0 }, themes: [], generatedAt: '2026-05-01T00:00:00.000Z', stale: false },
+      error: undefined,
+    });
+    const { result } = renderHook(() => useFreeTextAnalysis('p1', 'q1'));
+    await waitFor(() => expect(result.current.analysis?.summary).toBe('cached'));
   });
 });

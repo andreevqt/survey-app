@@ -265,3 +265,82 @@ describe('AnalyticsService.analyzeFreeTextQuestion · DeepSeek branch', () => {
     expect(out.summary).toMatch(/responses?/i);
   });
 });
+
+describe('AnalyticsService cache', () => {
+  let svc: AnalyticsService;
+  let prisma: DeepMockProxy<PrismaService>;
+
+  beforeEach(async () => {
+    prisma = mockDeep<PrismaService>();
+    const mod = await Test.createTestingModule({
+      providers: [AnalyticsService, { provide: PrismaService, useValue: prisma }],
+    }).compile();
+    svc = mod.get(AnalyticsService);
+  });
+
+  function mockTextQuestion(answerTexts: string[]) {
+    prisma.poll.findFirst.mockResolvedValueOnce({ id: 'p1' } as any);
+    prisma.question.findFirst.mockResolvedValueOnce({ id: 'q1', type: QuestionType.TEXT, text: 'Why?' } as any);
+    prisma.answer.findMany.mockResolvedValueOnce(
+      answerTexts.map((t) => ({ textValue: t })) as any,
+    );
+  }
+
+  it('getQuestionAnalysis returns null on cache miss', async () => {
+    mockTextQuestion(['a', 'b']);
+    prisma.questionAnalysis.findUnique.mockResolvedValueOnce(null as any);
+    const r = await svc.getQuestionAnalysis('u1', 'p1', 'q1');
+    expect(r).toBeNull();
+  });
+
+  it('getQuestionAnalysis returns stale:false when the answer count matches', async () => {
+    mockTextQuestion(['a', 'b']);
+    prisma.questionAnalysis.findUnique.mockResolvedValueOnce({
+      questionId: 'q1',
+      result: { summary: 'S', sentiment: { positive: 50, neutral: 50, negative: 0 }, themes: [] },
+      answerCount: 2,
+      model: 'deepseek-chat',
+      createdAt: new Date('2026-05-01T00:00:00Z'),
+      updatedAt: new Date('2026-05-02T00:00:00Z'),
+    } as any);
+    const r = await svc.getQuestionAnalysis('u1', 'p1', 'q1');
+    expect(r?.stale).toBe(false);
+    expect(r?.summary).toBe('S');
+    expect(r?.generatedAt).toMatch(/^2026-05-02/);
+  });
+
+  it('getQuestionAnalysis returns stale:true when the answer count changed', async () => {
+    mockTextQuestion(['a', 'b', 'c']);
+    prisma.questionAnalysis.findUnique.mockResolvedValueOnce({
+      questionId: 'q1',
+      result: { summary: 'S', sentiment: { positive: 0, neutral: 100, negative: 0 }, themes: [] },
+      answerCount: 2,
+      model: 'deepseek-chat',
+      createdAt: new Date('2026-05-01T00:00:00Z'),
+      updatedAt: new Date('2026-05-01T00:00:00Z'),
+    } as any);
+    const r = await svc.getQuestionAnalysis('u1', 'p1', 'q1');
+    expect(r?.stale).toBe(true);
+  });
+
+  it('getQuestionAnalysis throws NOT_FOUND when the poll is not owned', async () => {
+    prisma.poll.findFirst.mockResolvedValueOnce(null as any);
+    await expect(svc.getQuestionAnalysis('u1', 'p1', 'q1')).rejects.toThrow(/NOT_FOUND|Not Found/);
+  });
+
+  it('getQuestionAnalysis throws QUESTION_NOT_TEXT for a non-text question', async () => {
+    prisma.poll.findFirst.mockResolvedValueOnce({ id: 'p1' } as any);
+    prisma.question.findFirst.mockResolvedValueOnce({ id: 'q1', type: QuestionType.SINGLE_CHOICE, text: 'Pick' } as any);
+    await expect(svc.getQuestionAnalysis('u1', 'p1', 'q1')).rejects.toThrow(/QUESTION_NOT_TEXT|free-text/);
+  });
+
+  it('analyzeFreeTextQuestion does NOT persist when using the mock provider (no API key)', async () => {
+    const prev = process.env.DEEPSEEK_API_KEY;
+    delete process.env.DEEPSEEK_API_KEY;
+    mockTextQuestion(['great', 'awful']);
+    const r = await svc.analyzeFreeTextQuestion('u1', 'p1', 'q1');
+    expect(r.summary).toBeDefined();
+    expect(prisma.questionAnalysis.upsert).not.toHaveBeenCalled();
+    if (prev !== undefined) process.env.DEEPSEEK_API_KEY = prev;
+  });
+});
