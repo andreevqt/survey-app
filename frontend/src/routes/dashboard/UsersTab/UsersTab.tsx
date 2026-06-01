@@ -10,9 +10,12 @@ function UsersTabContent() {
 
   return (
     <div className="mt-6">
-      <div className="mb-4 flex items-center justify-end">
+      <div className="mb-4 flex items-center justify-end gap-2">
         <Button variant="secondary" size="sm" onClick={vm.onExportCsv}>
           Export CSV
+        </Button>
+        <Button size="sm" onClick={vm.onNewUser}>
+          New user
         </Button>
       </div>
 
@@ -35,6 +38,8 @@ function UsersTabContent() {
         selected={vm.selected}
         onToggle={vm.onToggle}
         onToggleAll={vm.onToggleAll}
+        onEdit={vm.onEditUser}
+        onDelete={vm.onAskDeleteUser}
       />
 
       {vm.confirming && (
@@ -45,6 +50,17 @@ function UsersTabContent() {
           isPending={vm.isBulkDeleting}
           onCancel={vm.onCancelDelete}
           onConfirm={vm.onConfirmDelete}
+        />
+      )}
+
+      {vm.deleteTarget && (
+        <ConfirmDialog
+          title={`Delete ${vm.deleteTarget.name}?`}
+          body="This will permanently delete this account and all their polls."
+          confirmLabel="Delete"
+          isPending={vm.isDeleting}
+          onCancel={vm.onCancelDeleteUser}
+          onConfirm={vm.onConfirmDeleteUser}
         />
       )}
     </div>

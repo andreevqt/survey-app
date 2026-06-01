@@ -7,6 +7,7 @@ import { PollFormModal } from './modals/PollFormModal';
 import { AnalyticsModal } from './modals/AnalyticsModal';
 import { SettingsModal } from './modals/SettingsModal';
 import { SearchModal } from './modals/SearchModal';
+import { UserFormModal } from './modals/UserFormModal';
 
 export function DashboardShell() {
   const newMatch = useMatch('/dashboard/polls/new');
@@ -15,6 +16,8 @@ export function DashboardShell() {
   const adminEditMatch = useMatch('/dashboard/all-polls/:id/edit');
   const adminAnalyticsMatch = useMatch('/dashboard/all-polls/:id/analytics');
   const settingsMatch = useMatch('/dashboard/settings');
+  const newUserMatch = useMatch('/dashboard/all-users/new');
+  const editUserMatch = useMatch('/dashboard/all-users/:id/edit');
 
   return (
     <SidebarSearchProvider>
@@ -34,6 +37,8 @@ export function DashboardShell() {
       {adminEditMatch && <PollFormModal mode="edit" context="admin" id={adminEditMatch.params.id!} />}
       {adminAnalyticsMatch && <AnalyticsModal id={adminAnalyticsMatch.params.id!} context="admin" />}
       {settingsMatch && <SettingsModal />}
+      {newUserMatch && <UserFormModal mode="create" />}
+      {editUserMatch && <UserFormModal mode="edit" id={editUserMatch.params.id!} />}
       <SearchModal />
       </SearchModalProvider>
     </SidebarSearchProvider>
