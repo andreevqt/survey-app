@@ -720,33 +720,22 @@
         "tags": [
           "admin-users"
         ]
-      }
-    },
-    "/admin/users/{id}/role": {
-      "patch": {
-        "operationId": "UsersController_changeRole",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+      },
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ChangeRoleDto"
+                "$ref": "#/components/schemas/CreateUserDto"
               }
             }
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "",
             "content": {
               "application/json": {
@@ -799,6 +788,67 @@
         "parameters": [],
         "responses": {
           "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-users"
+        ]
+      }
+    },
+    "/admin/users/{id}": {
+      "patch": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSummaryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin-users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
             "description": ""
           }
         },
@@ -1567,9 +1617,21 @@
           "pageSize"
         ]
       },
-      "ChangeRoleDto": {
+      "CreateUserDto": {
         "type": "object",
         "properties": {
+          "email": {
+            "type": "string",
+            "example": "alice@example.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "Alice Example"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8
+          },
           "role": {
             "type": "string",
             "enum": [
@@ -1579,6 +1641,9 @@
           }
         },
         "required": [
+          "email",
+          "name",
+          "password",
           "role"
         ]
       },
@@ -1606,6 +1671,30 @@
         "required": [
           "count"
         ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "alice@example.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "Alice Example"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "USER",
+              "ADMIN"
+            ]
+          }
+        }
       }
     }
   }

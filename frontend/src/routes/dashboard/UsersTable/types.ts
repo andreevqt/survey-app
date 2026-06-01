@@ -7,4 +7,6 @@ export interface UsersTableProps {
   selected: string[];
   onToggle: (id: string) => void;
   onToggleAll: () => void;
+  onEdit: (user: AdminUser) => void;
+  onDelete: (user: AdminUser) => void;
 }

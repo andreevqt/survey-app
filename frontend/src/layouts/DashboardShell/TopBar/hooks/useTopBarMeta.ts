@@ -21,6 +21,8 @@ export function useTopBarMeta(): TopBarMeta {
   const adminEditMatch = useMatch('/dashboard/all-polls/:id/edit');
   const adminAnalyticsMatch = useMatch('/dashboard/all-polls/:id/analytics');
   const allUsersMatch = useMatch('/dashboard/all-users');
+  const newUserMatch = useMatch('/dashboard/all-users/new');
+  const editUserMatch = useMatch('/dashboard/all-users/:id/edit');
   const allPollsMatch = useMatch('/dashboard/all-polls');
   const settingsMatch = useMatch('/dashboard/settings');
 
@@ -87,6 +89,27 @@ export function useTopBarMeta(): TopBarMeta {
         { label: 'All polls', href: '/dashboard/all-polls' },
         { label: poll?.title ?? 'Analytics' },
         { label: 'Analytics' },
+      ],
+    };
+  }
+  if (newUserMatch) {
+    return {
+      title: 'New user',
+      subtitle: 'Create a new account.',
+      showNewPollButton: false,
+      breadcrumbs: [
+        { label: 'All users', href: '/dashboard/all-users' },
+        { label: 'New user' },
+      ],
+    };
+  }
+  if (editUserMatch) {
+    return {
+      title: 'Edit user',
+      showNewPollButton: false,
+      breadcrumbs: [
+        { label: 'All users', href: '/dashboard/all-users' },
+        { label: 'Edit user' },
       ],
     };
   }

@@ -34,6 +34,8 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <MyPollsTab /> },
       { path: 'all-users', element: <RequireAdmin><UsersTab /></RequireAdmin> },
+      { path: 'all-users/new', element: <RequireAdmin><UsersTab /></RequireAdmin> },
+      { path: 'all-users/:id/edit', element: <RequireAdmin><UsersTab /></RequireAdmin> },
       { path: 'all-polls', element: <RequireAdmin><AllPollsTab /></RequireAdmin> },
       { path: 'polls/new', element: <MyPollsTab /> },
       { path: 'polls/:id/edit', element: <MyPollsTab /> },
