@@ -650,6 +650,44 @@
         ]
       }
     },
+    "/polls/{pollId}/questions/{questionId}/analysis": {
+      "get": {
+        "operationId": "AnalyticsController_getQuestionAnalysis",
+        "parameters": [
+          {
+            "name": "pollId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "questionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CachedAiAnalysisDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
     "/admin/polls/{id}/analytics": {
       "get": {
         "operationId": "AnalyticsController_getAdminPollAnalytics",
@@ -1530,6 +1568,41 @@
           "summary",
           "sentiment",
           "themes"
+        ]
+      },
+      "CachedAiAnalysisDto": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One-sentence summary of the responses"
+          },
+          "sentiment": {
+            "$ref": "#/components/schemas/SentimentDto"
+          },
+          "themes": {
+            "description": "0–5 themes ordered by frequency",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ThemeDto"
+            }
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the cached analysis was generated"
+          },
+          "stale": {
+            "type": "boolean",
+            "description": "True when the free-text answer count changed since generation"
+          }
+        },
+        "required": [
+          "summary",
+          "sentiment",
+          "themes",
+          "generatedAt",
+          "stale"
         ]
       },
       "SystemAnalyticsDto": {

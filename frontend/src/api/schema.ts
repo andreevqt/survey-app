@@ -276,6 +276,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polls/{pollId}/questions/{questionId}/analysis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AnalyticsController_getQuestionAnalysis"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/polls/{id}/analytics": {
         parameters: {
             query?: never;
@@ -561,6 +577,20 @@ export interface components {
             sentiment: components["schemas"]["SentimentDto"];
             /** @description 0–5 themes ordered by frequency */
             themes: components["schemas"]["ThemeDto"][];
+        };
+        CachedAiAnalysisDto: {
+            /** @description One-sentence summary of the responses */
+            summary: string;
+            sentiment: components["schemas"]["SentimentDto"];
+            /** @description 0–5 themes ordered by frequency */
+            themes: components["schemas"]["ThemeDto"][];
+            /**
+             * Format: date-time
+             * @description When the cached analysis was generated
+             */
+            generatedAt: string;
+            /** @description True when the free-text answer count changed since generation */
+            stale: boolean;
         };
         SystemAnalyticsDto: {
             totalUsers: number;
@@ -1105,6 +1135,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AiAnalysisDto"];
+                };
+            };
+        };
+    };
+    AnalyticsController_getQuestionAnalysis: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pollId: string;
+                questionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CachedAiAnalysisDto"];
                 };
             };
         };
