@@ -39,30 +39,34 @@ supports `list`, `changeRole`, `bulkDelete`, and `export.csv`.
 `GET /`, `POST /bulk-delete`, `GET /export.csv` are unchanged.
 **`PATCH /:id/role` is removed.**
 
-### DTOs (`class-validator` + `@nestjs/swagger`, matching `RegisterDto` policy)
+### DTOs (`class-validator` + `@nestjs/swagger`, mirroring `RegisterDto` policy)
+
+`RegisterDto` uses: email `@IsEmail` + `@Transform(trim().toLowerCase())`,
+name `@MinLength(1) @MaxLength(80)`, password `@MinLength(8) @MaxLength(128)`.
+Match it exactly.
 
 ```ts
 // create-user.dto.ts
 class CreateUserDto {
-  @IsEmail()                         email!: string;   // lowercased in service
-  @IsString() @MinLength(2) @MaxLength(80)  name!: string;
-  @IsString() @MinLength(8) @MaxLength(100) password!: string;
-  @IsEnum(Role)                      role!: Role;      // USER | ADMIN
+  @IsEmail() @Transform(({ value }) => value.trim().toLowerCase())  email!: string;
+  @IsString() @MinLength(1) @MaxLength(80)   name!: string;
+  @IsString() @MinLength(8) @MaxLength(128)  password!: string;
+  @IsEnum(Role)                              role!: Role;   // USER | ADMIN
 }
 
 // update-user.dto.ts — all optional
 class UpdateUserDto {
-  @IsOptional() @IsEmail()                         email?: string;
-  @IsOptional() @IsString() @MinLength(2) @MaxLength(80)  name?: string;
-  @IsOptional() @IsString() @MinLength(8) @MaxLength(100) password?: string;
-  @IsOptional() @IsEnum(Role)                      role?: Role;
+  @IsOptional() @IsEmail() @Transform(({ value }) => value?.trim().toLowerCase())  email?: string;
+  @IsOptional() @IsString() @MinLength(1) @MaxLength(80)   name?: string;
+  @IsOptional() @IsString() @MinLength(8) @MaxLength(128)  password?: string;
+  @IsOptional() @IsEnum(Role)                             role?: Role;
 }
 ```
 
 ### Service logic & invariants
 
 `create({ name, email, password, role })`
-- Lowercase email; `bcrypt.hash(password, 10)`.
+- Email already normalized by the DTO `@Transform`; `bcrypt.hash(password, 10)`.
 - Unique email → `409 EMAIL_TAKEN` (catch Prisma `P2002`).
 - Return `{ id, email, name, role, createdAt }`.
 
@@ -70,7 +74,7 @@ class UpdateUserDto {
 - If `role` present and changes:
   - `adminId === userId && role !== ADMIN` → `400 SELF_DEMOTION_FORBIDDEN`.
   - Demoting an `ADMIN` who is the last admin → `403 LAST_ADMIN_FORBIDDEN`.
-- If `email` present: lowercase; unique conflict → `409 EMAIL_TAKEN`.
+- If `email` present (already normalized by DTO): unique conflict → `409 EMAIL_TAKEN`.
 - If `password` present: `bcrypt.hash`.
 - **Revoke refresh tokens** (`refreshToken.deleteMany({ userId })`) when **role or
   password** changes, forcing re-login (extends the existing role-change behavior).
