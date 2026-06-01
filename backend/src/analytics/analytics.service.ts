@@ -169,6 +169,7 @@ export class AnalyticsService {
       where: { questionId },
       create: {
         questionId,
+        // Prisma Json input requires the `unknown` bridge cast for our DTO object.
         result: result as unknown as object,
         answerCount: answers.length,
         model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
@@ -195,7 +196,7 @@ export class AnalyticsService {
     const cached = row.result as unknown as AiAnalysisDto;
     return {
       ...cached,
-      generatedAt: row.createdAt.toISOString(),
+      generatedAt: row.updatedAt.toISOString(),
       stale: row.answerCount !== answers.length,
     };
   }
