@@ -1,5 +1,18 @@
-import { Body, Controller, Get, Header, HttpCode, Param, Patch, Post, Query, Res, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Header,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiTags, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 import { AdminRoleGuard } from '../common/guards/admin-role.guard';
@@ -7,7 +20,8 @@ import { UsersService } from './users.service';
 import { ListUsersQueryDto } from './dto/list-users-query.dto';
 import { UserListResponseDto } from './dto/user-list-response.dto';
 import { UserSummaryDto } from './dto/user-summary.dto';
-import { ChangeRoleDto } from './dto/change-role.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { BulkDeleteDto, BulkDeleteResultDto } from './dto/bulk-delete.dto';
 
 @ApiTags('admin-users')
@@ -22,14 +36,10 @@ export class UsersController {
     return this.svc.list(q);
   }
 
-  @Patch(':id/role')
-  @ApiOkResponse({ type: UserSummaryDto })
-  changeRole(
-    @CurrentUser() admin: CurrentUserPayload,
-    @Param('id') id: string,
-    @Body() body: ChangeRoleDto,
-  ) {
-    return this.svc.changeRole({ adminId: admin.id, userId: id, role: body.role });
+  @Post()
+  @ApiCreatedResponse({ type: UserSummaryDto })
+  create(@Body() body: CreateUserDto) {
+    return this.svc.create(body);
   }
 
   @Post('bulk-delete')
@@ -45,5 +55,21 @@ export class UsersController {
   async exportCsv(@Res({ passthrough: false }) res: Response) {
     const csv = await this.svc.streamCsv();
     res.end(csv);
+  }
+
+  @Patch(':id')
+  @ApiOkResponse({ type: UserSummaryDto })
+  update(
+    @CurrentUser() admin: CurrentUserPayload,
+    @Param('id') id: string,
+    @Body() body: UpdateUserDto,
+  ) {
+    return this.svc.update({ adminId: admin.id, userId: id, dto: body });
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  remove(@CurrentUser() admin: CurrentUserPayload, @Param('id') id: string) {
+    return this.svc.deleteOne({ adminId: admin.id, userId: id });
   }
 }
