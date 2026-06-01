@@ -317,27 +317,11 @@ export interface paths {
         };
         get: operations["UsersController_list"];
         put?: never;
-        post?: never;
+        post: operations["UsersController_create"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
-        trace?: never;
-    };
-    "/admin/users/{id}/role": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: operations["UsersController_changeRole"];
         trace?: never;
     };
     "/admin/users/bulk-delete": {
@@ -370,6 +354,22 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["UsersController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["UsersController_update"];
         trace?: never;
     };
 }
@@ -584,7 +584,12 @@ export interface components {
             page: number;
             pageSize: number;
         };
-        ChangeRoleDto: {
+        CreateUserDto: {
+            /** @example alice@example.com */
+            email: string;
+            /** @example Alice Example */
+            name: string;
+            password: string;
             /** @enum {string} */
             role: "USER" | "ADMIN";
         };
@@ -593,6 +598,15 @@ export interface components {
         };
         BulkDeleteResultDto: {
             count: number;
+        };
+        UpdateUserDto: {
+            /** @example alice@example.com */
+            email?: string;
+            /** @example Alice Example */
+            name?: string;
+            password?: string;
+            /** @enum {string} */
+            role?: "USER" | "ADMIN";
         };
     };
     responses: never;
@@ -1154,22 +1168,20 @@ export interface operations {
             };
         };
     };
-    UsersController_changeRole: {
+    UsersController_create: {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                id: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ChangeRoleDto"];
+                "application/json": components["schemas"]["CreateUserDto"];
             };
         };
         responses: {
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1216,6 +1228,50 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    UsersController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUserDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserSummaryDto"];
+                };
             };
         };
     };
