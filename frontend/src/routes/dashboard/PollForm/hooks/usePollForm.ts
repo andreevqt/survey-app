@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -119,9 +119,9 @@ export function usePollForm({
     [isEdit, poll?.title],
   );
 
-  function onAddQuestion() {
+  const onAddQuestion = useCallback(() => {
     questionFields.append({ ...defaultQuestion });
-  }
+  }, [questionFields]);
 
   return useMemo(
     () => ({
@@ -136,6 +136,6 @@ export function usePollForm({
       onSubmit: onSubmit as (e?: BaseSyntheticEvent) => void,
       onAddQuestion,
     }),
-    [methods, questionFields, isEdit, heading, isSubmitting, locked, responseCount, serverError, onSubmit],
+    [methods, questionFields, isEdit, heading, isSubmitting, locked, responseCount, serverError, onSubmit, onAddQuestion],
   );
 }

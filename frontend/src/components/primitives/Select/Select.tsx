@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { useSelect } from './hooks/useSelect';
 import type { SelectProps } from './types';
 
@@ -27,7 +28,7 @@ export function Select<T extends string = string>({
   const showPlaceholder = !selected && !!placeholder;
 
   return (
-    <div ref={ref} className={`relative inline-block w-full ${className ?? ''}`}>
+    <div ref={ref} className={clsx('relative inline-block w-full', className)}>
       <button
         type="button"
         disabled={disabled}
@@ -35,19 +36,21 @@ export function Select<T extends string = string>({
         aria-expanded={open}
         aria-label={ariaLabel}
         onClick={() => !disabled && setOpen((v) => !v)}
-        className={`w-full min-h-9 inline-flex items-center justify-between gap-2 pl-3 pr-2.5 py-1.5 rounded-md border bg-white text-sm transition-colors outline-none ${
+        className={clsx(
+          'w-full min-h-9 inline-flex items-center justify-between gap-2 pl-3 pr-2.5 py-1.5 rounded-md border bg-white text-sm transition-colors outline-none',
           disabled
             ? 'border-gray-200 text-gray-400 cursor-not-allowed'
             : open
             ? 'border-indigo-500 ring-1 ring-indigo-500'
-            : 'border-gray-300 hover:border-gray-400'
-        } ${showPlaceholder ? 'text-gray-400' : 'text-gray-700'}`}
+            : 'border-gray-300 hover:border-gray-400',
+          showPlaceholder ? 'text-gray-400' : 'text-gray-700',
+        )}
       >
         <span className="truncate inline-flex items-center gap-1.5">
           {selected?.icon}
           <span>{selected?.label ?? placeholder ?? ''}</span>
         </span>
-        <span className={`text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`}>
+        <span className={clsx('text-gray-500 transition-transform', open && 'rotate-180')}>
           {chevronIcon}
         </span>
       </button>
@@ -59,11 +62,6 @@ export function Select<T extends string = string>({
         >
           {options.map((o) => {
             const isSel = o.value === value;
-            const itemClass = o.disabled
-              ? 'text-gray-400 cursor-not-allowed'
-              : isSel
-              ? 'bg-indigo-50 text-indigo-700 font-medium hover:bg-indigo-100'
-              : 'text-gray-700 hover:bg-gray-100';
             return (
               <div
                 key={o.value}
@@ -74,7 +72,14 @@ export function Select<T extends string = string>({
                   onChange(o.value);
                   setOpen(false);
                 }}
-                className={`flex items-center justify-between gap-2 px-2.5 py-2 rounded-md text-sm select-none whitespace-nowrap ${itemClass}`}
+                className={clsx(
+                  'flex items-center justify-between gap-2 px-2.5 py-2 rounded-md text-sm select-none whitespace-nowrap',
+                  o.disabled
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : isSel
+                    ? 'bg-indigo-50 text-indigo-700 font-medium hover:bg-indigo-100'
+                    : 'text-gray-700 hover:bg-gray-100',
+                )}
               >
                 <span className="inline-flex items-center gap-2">
                   {o.icon}

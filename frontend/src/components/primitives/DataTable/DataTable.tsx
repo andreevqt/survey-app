@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import type { DataTableColumn, DataTableProps } from './types';
 
 function alignClass(align?: 'left' | 'right') {
@@ -29,7 +30,7 @@ export function DataTable<T>({ rows, getRowId, columns, selection }: DataTablePr
             {columns.map((col: DataTableColumn<T>) => (
               <th
                 key={col.key}
-                className={`px-6 py-3 font-normal ${alignClass(col.align)} ${col.widthClassName ?? ''}`}
+                className={clsx('px-6 py-3 font-normal', alignClass(col.align), col.widthClassName)}
               >
                 {col.header}
               </th>
@@ -42,7 +43,7 @@ export function DataTable<T>({ rows, getRowId, columns, selection }: DataTablePr
             const isSelected = !!selection && selection.selected.includes(id);
             const isSelectable = selection?.isRowSelectable ? selection.isRowSelectable(row) : true;
             return (
-              <tr key={id} className={isSelected ? 'bg-indigo-50/40' : ''}>
+              <tr key={id} className={clsx(isSelected && 'bg-indigo-50/40')}>
                 {selection && (
                   <td className="px-6 py-3">
                     <input
@@ -56,7 +57,7 @@ export function DataTable<T>({ rows, getRowId, columns, selection }: DataTablePr
                   </td>
                 )}
                 {columns.map((col) => (
-                  <td key={col.key} className={`px-6 py-3 ${alignClass(col.align)}`}>
+                  <td key={col.key} className={clsx('px-6 py-3', alignClass(col.align))}>
                     {col.cell(row)}
                   </td>
                 ))}

@@ -1,4 +1,4 @@
-import { BENEFITS } from '../types';
+import { BENEFITS } from '../constants';
 
 export function useAuthBenefits() {
   return { items: BENEFITS };

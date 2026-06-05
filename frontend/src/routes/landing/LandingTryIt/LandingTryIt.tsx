@@ -1,4 +1,6 @@
+import clsx from 'clsx';
 import { useLandingTryIt } from './hooks/useLandingTryIt';
+import { BAR_BASE_MS, BAR_STAGGER_MS, RESPONSES_LABEL } from './constants';
 
 export function LandingTryIt() {
   const { picked, setPicked, reduced, max, options } = useLandingTryIt();
@@ -33,7 +35,7 @@ export function LandingTryIt() {
               style={{ animation: reduced ? undefined : 'lrc-pulse 2s infinite' }}
             />
             <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-              Live · 3,127 responses
+              Live · {RESPONSES_LABEL} responses
             </span>
           </div>
           <p className="mb-[18px] text-lg font-semibold text-gray-900">Tabs or spaces?</p>
@@ -62,9 +64,7 @@ export function LandingTryIt() {
                   <div key={o.t}>
                     <div className="mb-1 flex items-baseline justify-between text-[13px]">
                       <span
-                        className={`inline-flex items-center gap-2 ${
-                          isPicked ? 'font-semibold text-indigo-700' : 'text-gray-700'
-                        }`}
+                        className={clsx('inline-flex items-center gap-2', isPicked ? 'font-semibold text-indigo-700' : 'text-gray-700')}
                       >
                         {o.t}
                         {isPicked && (
@@ -74,9 +74,7 @@ export function LandingTryIt() {
                         )}
                       </span>
                       <span
-                        className={`font-mono text-xs font-medium ${
-                          leader ? 'text-indigo-600' : 'text-gray-500'
-                        }`}
+                        className={clsx('font-mono text-xs font-medium', leader ? 'text-indigo-600' : 'text-gray-500')}
                       >
                         {o.pct}%
                       </span>
@@ -87,9 +85,9 @@ export function LandingTryIt() {
                           width: `${o.pct}%`,
                           transition: reduced
                             ? 'none'
-                            : `width ${800 + i * 150}ms cubic-bezier(0.22, 1, 0.36, 1)`,
+                            : `width ${BAR_BASE_MS + i * BAR_STAGGER_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
                         }}
-                        className={`h-full rounded-full ${leader ? 'bg-indigo-600' : 'bg-indigo-300'}`}
+                        className={clsx('h-full rounded-full', leader ? 'bg-indigo-600' : 'bg-indigo-300')}
                       />
                     </div>
                   </div>

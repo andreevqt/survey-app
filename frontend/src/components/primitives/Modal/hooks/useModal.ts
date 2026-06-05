@@ -1,16 +1,11 @@
 import { useEffect } from 'react';
-
-const SIZE_CLASS: Record<'sm' | 'md' | 'lg' | 'xl', string> = {
-  sm: 'max-w-md',
-  md: 'max-w-lg',
-  lg: 'max-w-2xl',
-  xl: 'max-w-4xl',
-};
+import { SIZE_CLASS } from '../constants';
+import type { ModalSize } from '../types';
 
 export function useModal({ open, onClose, size = 'md', closeOnScrim = true }: {
   open: boolean;
   onClose: () => void;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: ModalSize;
   closeOnScrim?: boolean;
 }) {
   useEffect(() => {

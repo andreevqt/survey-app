@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { Link } from 'react-router-dom';
 import type { BreadcrumbsProps } from './types';
 
@@ -33,7 +34,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                   {item.label}
                 </Link>
               ) : (
-                <span className={isLast ? 'text-gray-700 font-medium' : ''} aria-current={isLast ? 'page' : undefined}>
+                <span className={clsx(isLast && 'text-gray-700 font-medium')} aria-current={isLast ? 'page' : undefined}>
                   {item.label}
                 </span>
               )}

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../../../components/primitives/Button';
 import { LiveResultsCard } from '../../../components/marketing/LiveResultsCard';
-import { TRUST_AVATARS } from './types';
+import { TRUST_AVATARS } from './constants';
 
 export function LandingHero() {
   return (

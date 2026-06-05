@@ -1,6 +1,14 @@
+import clsx from 'clsx';
 import { useSelect } from '../Select/hooks/useSelect';
 import { useCalendar } from './hooks/useCalendar';
 import type { DateFieldProps } from './types';
+import {
+  DAY_CELL_BASE,
+  DAY_CELL_SELECTED,
+  DAY_CELL_OUT_OF_MONTH,
+  DAY_CELL_TODAY,
+  DAY_CELL_DEFAULT,
+} from './constants';
 
 const calendarIcon = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
@@ -55,7 +63,7 @@ export function DateField({ value, onChange, placeholder, disabled, className, a
   const hasValue = !!date;
 
   return (
-    <div ref={ref} className={`relative inline-block w-full ${className ?? ''}`}>
+    <div ref={ref} className={clsx('relative inline-block w-full', className)}>
       <button
         type="button"
         disabled={disabled}
@@ -63,13 +71,15 @@ export function DateField({ value, onChange, placeholder, disabled, className, a
         aria-expanded={open}
         aria-label={ariaLabel}
         onClick={() => !disabled && setOpen((v) => !v)}
-        className={`w-full min-h-9 inline-flex items-center justify-between gap-2 pl-3 pr-2.5 py-1.5 rounded-md border bg-white text-sm transition-colors outline-none ${
+        className={clsx(
+          'w-full min-h-9 inline-flex items-center justify-between gap-2 pl-3 pr-2.5 py-1.5 rounded-md border bg-white text-sm transition-colors outline-none',
           disabled
             ? 'border-gray-200 text-gray-400 cursor-not-allowed'
             : open
             ? 'border-indigo-500 ring-1 ring-indigo-500'
-            : 'border-gray-300 hover:border-gray-400'
-        } ${hasValue ? 'text-gray-700' : 'text-gray-400'}`}
+            : 'border-gray-300 hover:border-gray-400',
+          hasValue ? 'text-gray-700' : 'text-gray-400',
+        )}
       >
         <span className="truncate">{display}</span>
         <span className="text-gray-500">{calendarIcon}</span>
@@ -81,7 +91,7 @@ export function DateField({ value, onChange, placeholder, disabled, className, a
           className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white border border-gray-200 rounded-lg shadow-md p-3 z-50"
         >
           <div className="mb-2 flex items-center justify-between gap-2 pb-2 border-b border-gray-100">
-            <label className={`inline-flex items-center gap-2 text-xs ${hasValue ? 'text-gray-600' : 'text-gray-400'}`}>
+            <label className={clsx('inline-flex items-center gap-2 text-xs', hasValue ? 'text-gray-600' : 'text-gray-400')}>
               Time
               <input
                 type="time"
@@ -129,29 +139,25 @@ export function DateField({ value, onChange, placeholder, disabled, className, a
           </div>
 
           <div className="grid grid-cols-7 gap-0.5">
-            {cal.days.map((d) => {
-              const base = 'aspect-square w-full text-xs rounded-md flex items-center justify-center transition-colors';
-              let cls: string;
-              if (d.isSelected) {
-                cls = `${base} bg-indigo-600 text-white font-medium`;
-              } else if (!d.inMonth) {
-                cls = `${base} text-gray-300 hover:bg-gray-50`;
-              } else if (d.isToday) {
-                cls = `${base} text-indigo-600 font-medium hover:bg-indigo-50`;
-              } else {
-                cls = `${base} text-gray-700 hover:bg-gray-100`;
-              }
-              return (
+            {cal.days.map((d) => (
                 <button
                   key={d.date.toISOString()}
                   type="button"
                   onClick={() => onChange(formatDateTimeLocal(d.date, time))}
-                  className={cls}
+                  className={clsx(
+                    DAY_CELL_BASE,
+                    d.isSelected
+                      ? DAY_CELL_SELECTED
+                      : !d.inMonth
+                      ? DAY_CELL_OUT_OF_MONTH
+                      : d.isToday
+                      ? DAY_CELL_TODAY
+                      : DAY_CELL_DEFAULT,
+                  )}
                 >
                   {d.date.getDate()}
                 </button>
-              );
-            })}
+            ))}
           </div>
         </div>
       )}

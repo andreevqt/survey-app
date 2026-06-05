@@ -40,7 +40,6 @@ describe('analytics e2e', () => {
   let pollSlug: string;
   let singleChoiceQuestionId: string;
   let option1Id: string;
-  let option2Id: string;
   let textQuestionId: string;
 
   beforeAll(async () => {
@@ -90,7 +89,6 @@ describe('analytics e2e', () => {
 
     singleChoiceQuestionId = scQuestion.id;
     option1Id = scQuestion.options[0].id;
-    option2Id = scQuestion.options[1].id;
     textQuestionId = textQuestion.id;
 
     // Anonymous user submits a response

@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useReducedMotion } from '../../../../lib/use-reduced-motion';
-import { ROTATING_POLLS } from '../types';
+import {
+  ROTATING_POLLS,
+  FILL_DELAY_MS,
+  ROTATE_OUT_MS,
+  ROTATE_INTERVAL_MS,
+} from '../constants';
 import type { Poll } from '../types';
 
 type ViewModel = {
@@ -18,7 +23,7 @@ export function useLiveResultsCard(delay: number): ViewModel {
 
   useEffect(() => {
     if (reduced) return;
-    const start = setTimeout(() => setFill(true), 200 + delay);
+    const start = setTimeout(() => setFill(true), FILL_DELAY_MS + delay);
     return () => clearTimeout(start);
   }, [idx, delay, reduced]);
 
@@ -27,8 +32,8 @@ export function useLiveResultsCard(delay: number): ViewModel {
     let inner: ReturnType<typeof setTimeout> | undefined;
     const interval = setInterval(() => {
       setFill(false);
-      inner = setTimeout(() => setIdx((p) => (p + 1) % ROTATING_POLLS.length), 350);
-    }, 4500);
+      inner = setTimeout(() => setIdx((p) => (p + 1) % ROTATING_POLLS.length), ROTATE_OUT_MS);
+    }, ROTATE_INTERVAL_MS);
     return () => {
       clearInterval(interval);
       if (inner) clearTimeout(inner);

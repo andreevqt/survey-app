@@ -1,4 +1,6 @@
+import clsx from 'clsx';
 import { useLiveResultsCard } from './hooks/useLiveResultsCard';
+import { CARD_WIDTH, BAR_BASE_MS, BAR_STAGGER_MS } from './constants';
 import type { LiveResultsCardProps } from './types';
 
 export function LiveResultsCard({
@@ -17,7 +19,7 @@ export function LiveResultsCard({
         position: 'absolute',
         top: offset.y,
         left: offset.x,
-        width: 340,
+        width: CARD_WIDTH,
         transform: `rotate(${rotate}deg)`,
         opacity,
         zIndex,
@@ -45,13 +47,11 @@ export function LiveResultsCard({
           return (
             <div key={`${idx}-${i}`}>
               <div className="mb-1 flex items-baseline justify-between text-xs">
-                <span className={leader ? 'font-semibold text-gray-700' : 'text-gray-700'}>
+                <span className={clsx('text-gray-700', leader && 'font-semibold')}>
                   {o.t}
                 </span>
                 <span
-                  className={`font-mono text-[11px] font-medium ${
-                    leader ? 'text-indigo-600' : 'text-gray-500'
-                  }`}
+                  className={clsx('font-mono text-[11px] font-medium', leader ? 'text-indigo-600' : 'text-gray-500')}
                 >
                   {o.pct}%
                 </span>
@@ -62,11 +62,9 @@ export function LiveResultsCard({
                     width: fill ? `${o.pct}%` : '0%',
                     transition: reduced
                       ? 'none'
-                      : `width ${900 + i * 120}ms cubic-bezier(0.22, 1, 0.36, 1)`,
+                      : `width ${BAR_BASE_MS + i * BAR_STAGGER_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
                   }}
-                  className={`h-full rounded-full ${
-                    leader ? 'bg-indigo-600' : 'bg-indigo-300'
-                  }`}
+                  className={clsx('h-full rounded-full', leader ? 'bg-indigo-600' : 'bg-indigo-300')}
                 />
               </div>
             </div>

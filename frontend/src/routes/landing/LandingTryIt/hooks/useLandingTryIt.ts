@@ -1,12 +1,7 @@
 import { useState } from 'react';
 import { useReducedMotion } from '../../../../lib/use-reduced-motion';
+import { OPTIONS } from '../constants';
 import type { Option } from '../types';
-
-const OPTIONS: readonly Option[] = [
-  { t: 'Tabs', pct: 64 },
-  { t: 'Spaces', pct: 31 },
-  { t: 'Either', pct: 5 },
-] as const;
 
 type ViewModel = {
   picked: string | null;
