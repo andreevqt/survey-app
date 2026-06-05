@@ -12,7 +12,7 @@ Fullstack платформа для создания и проведения о�
 
 ## CI/CD
 - [`deploy.yml`](.github/workflows/deploy.yml) — на push в `main` собирает Docker-образы бэкенда и фронтенда, пушит в GHCR, заходит по SSH на тестовый VPS и поднимает `docker compose up -d`. Фронтенд пересобирается с `VITE_API_BASE_URL=https://api.andreevxdr.ru/v1`.
-- [`vercel-preview.yml`](.github/workflows/vercel-preview.yml) — на каждый PR (open/sync/reopen) собирает фронт через Vercel CLI, деплоит в Preview-окружение Vercel, привязывает алиас `pr-<n>.survey.andreevxdr.ru` и постит липкий комментарий в PR со ссылкой. На закрытие PR комментарий обновляется на сообщение о выводе превью из эксплуатации.
+- [`vercel-preview.yml`](.github/workflows/vercel-preview.yml) — на каждый PR (open/sync/reopen) собирает фронт через Vercel CLI, деплоит в Preview-окружение Vercel, привязывает алиас `pr-<n>.survey.andreevxdr.ru` и постит комментарий в PR со ссылкой. На закрытие PR комментарий обновляется на сообщение о выводе превью из эксплуатации.
 
 ## Запуск (Docker)
 
