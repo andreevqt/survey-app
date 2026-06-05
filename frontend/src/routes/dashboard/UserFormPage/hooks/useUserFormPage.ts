@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
-import { useCreateUser, useUpdateUser } from '../../../../../api/mutations/admin';
-import { useAuth } from '../../../../../auth/useAuth';
-import type { AdminUser } from '../../../../../routes/dashboard/UsersTable/types';
+import { useCreateUser, useUpdateUser } from '../../../../api/mutations/admin';
+import { useAuth } from '../../../../auth/useAuth';
+import type { AdminUser } from '../../UsersTable/types';
 
 type Role = AdminUser['role'];
 
-export interface UserFormModalViewModel {
+export interface UserFormPageViewModel {
   name: string;
   email: string;
   role: Role;
@@ -22,11 +22,11 @@ export interface UserFormModalViewModel {
   onSubmit: (e: FormEvent) => void;
 }
 
-export function useUserFormModal(args: {
+export function useUserFormPage(args: {
   mode: 'create' | 'edit';
   user?: AdminUser;
   onSuccess: () => void;
-}): UserFormModalViewModel {
+}): UserFormPageViewModel {
   const { mode, user, onSuccess } = args;
   const { user: me } = useAuth();
   const isEdit = mode === 'edit';

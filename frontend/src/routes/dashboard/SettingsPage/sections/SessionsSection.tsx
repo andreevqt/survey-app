@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../../../../../components/primitives/Button';
-import { useLogoutMutation } from '../../../../../auth/auth-mutations';
+import { Button } from '../../../../components/primitives/Button';
+import { useLogoutMutation } from '../../../../auth/auth-mutations';
 
 export function SessionsSection() {
   const navigate = useNavigate();

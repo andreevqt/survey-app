@@ -32,8 +32,14 @@ export function useTopBarMeta(): TopBarMeta {
     adminEditMatch?.params.id ??
     adminAnalyticsMatch?.params.id;
   const { data: poll } = usePoll(pollId);
-  const { data: usersData } = useAdminUsers({ enabled: allUsersMatch !== null });
+  const { data: usersData } = useAdminUsers({
+    enabled: allUsersMatch !== null || editUserMatch !== null,
+  });
   const { data: pollsData } = useAdminPolls({ enabled: allPollsMatch !== null });
+
+  const editedUserName = editUserMatch
+    ? usersData?.items.find((u) => u.id === editUserMatch.params.id)?.name
+    : undefined;
 
   if (newMatch) {
     return {
@@ -49,7 +55,6 @@ export function useTopBarMeta(): TopBarMeta {
   if (editMatch) {
     return {
       title: 'Edit poll',
-      subtitle: poll?.title,
       showNewPollButton: false,
       breadcrumbs: [
         { label: 'My polls', href: '/dashboard' },
@@ -60,7 +65,6 @@ export function useTopBarMeta(): TopBarMeta {
   if (analyticsMatch) {
     return {
       title: 'Analytics',
-      subtitle: poll?.title,
       showNewPollButton: false,
       breadcrumbs: [
         { label: 'My polls', href: '/dashboard' },
@@ -72,7 +76,6 @@ export function useTopBarMeta(): TopBarMeta {
   if (adminEditMatch) {
     return {
       title: 'Edit poll',
-      subtitle: poll?.title,
       showNewPollButton: false,
       breadcrumbs: [
         { label: 'All polls', href: '/dashboard/all-polls' },
@@ -83,7 +86,6 @@ export function useTopBarMeta(): TopBarMeta {
   if (adminAnalyticsMatch) {
     return {
       title: 'Analytics',
-      subtitle: poll?.title,
       showNewPollButton: false,
       breadcrumbs: [
         { label: 'All polls', href: '/dashboard/all-polls' },
@@ -109,7 +111,7 @@ export function useTopBarMeta(): TopBarMeta {
       showNewPollButton: false,
       breadcrumbs: [
         { label: 'All users', href: '/dashboard/all-users' },
-        { label: 'Edit user' },
+        { label: editedUserName ?? 'Edit user' },
       ],
     };
   }
