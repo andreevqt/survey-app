@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Button } from '../../../../../components/primitives/Button';
-import { ConfirmDialog } from '../../../../../components/primitives/ConfirmDialog';
-import { useAuth } from '../../../../../auth/useAuth';
+import { Button } from '../../../../components/primitives/Button';
+import { ConfirmDialog } from '../../../../components/primitives/ConfirmDialog';
+import { useAuth } from '../../../../auth/useAuth';
 
 export function DangerZoneSection() {
   const { user } = useAuth();

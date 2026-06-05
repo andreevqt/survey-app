@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Input } from '../../../../../components/primitives/Input';
-import { Field } from '../../../../../components/primitives/Field';
-import { Button } from '../../../../../components/primitives/Button';
-import { Badge } from '../../../../../components/primitives/Badge';
-import { Avatar } from '../../../../../components/primitives/Avatar';
-import { useAuth } from '../../../../../auth/useAuth';
-import { useUpdateMeMutation } from '../../../../../auth/auth-mutations';
+import { Input } from '../../../../components/primitives/Input';
+import { Field } from '../../../../components/primitives/Field';
+import { Button } from '../../../../components/primitives/Button';
+import { Badge } from '../../../../components/primitives/Badge';
+import { Avatar } from '../../../../components/primitives/Avatar';
+import { useAuth } from '../../../../auth/useAuth';
+import { useUpdateMeMutation } from '../../../../auth/auth-mutations';
 
 export function ProfileSection() {
   const { user } = useAuth();

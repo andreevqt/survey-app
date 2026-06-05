@@ -7,6 +7,10 @@ import { RegisterScreen } from './routes/auth/RegisterScreen';
 import { MyPollsTab } from './routes/dashboard/MyPollsTab';
 import { UsersTab } from './routes/dashboard/UsersTab';
 import { AllPollsTab } from './routes/dashboard/AllPollsTab';
+import { PollFormPage } from './routes/dashboard/PollFormPage';
+import { AnalyticsPage } from './routes/dashboard/AnalyticsPage';
+import { SettingsPage } from './routes/dashboard/SettingsPage';
+import { UserFormPage } from './routes/dashboard/UserFormPage';
 import { RequireAuth } from './auth/RequireAuth';
 import { RequireAdmin } from './auth/RequireAdmin';
 import { PollScreen } from './routes/poll/PollScreen';
@@ -34,15 +38,15 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <MyPollsTab /> },
       { path: 'all-users', element: <RequireAdmin><UsersTab /></RequireAdmin> },
-      { path: 'all-users/new', element: <RequireAdmin><UsersTab /></RequireAdmin> },
-      { path: 'all-users/:id/edit', element: <RequireAdmin><UsersTab /></RequireAdmin> },
+      { path: 'all-users/new', element: <RequireAdmin><UserFormPage mode="create" /></RequireAdmin> },
+      { path: 'all-users/:id/edit', element: <RequireAdmin><UserFormPage mode="edit" /></RequireAdmin> },
       { path: 'all-polls', element: <RequireAdmin><AllPollsTab /></RequireAdmin> },
-      { path: 'polls/new', element: <MyPollsTab /> },
-      { path: 'polls/:id/edit', element: <MyPollsTab /> },
-      { path: 'polls/:id/analytics', element: <MyPollsTab /> },
-      { path: 'all-polls/:id/edit', element: <RequireAdmin><AllPollsTab /></RequireAdmin> },
-      { path: 'all-polls/:id/analytics', element: <RequireAdmin><AllPollsTab /></RequireAdmin> },
-      { path: 'settings', element: <MyPollsTab /> },
+      { path: 'polls/new', element: <PollFormPage mode="create" /> },
+      { path: 'polls/:id/edit', element: <PollFormPage mode="edit" /> },
+      { path: 'polls/:id/analytics', element: <AnalyticsPage /> },
+      { path: 'all-polls/:id/edit', element: <RequireAdmin><PollFormPage mode="edit" context="admin" /></RequireAdmin> },
+      { path: 'all-polls/:id/analytics', element: <RequireAdmin><AnalyticsPage context="admin" /></RequireAdmin> },
+      { path: 'settings', element: <SettingsPage /> },
     ],
   },
 
