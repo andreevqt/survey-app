@@ -34,6 +34,9 @@ jobs:
       - name: Type-check (backend + frontend)
         run: npm run check:ts
 
+      - name: Lint (backend + frontend)
+        run: npm run lint
+
       - name: Backend unit tests
         run: npm --workspace backend test
 

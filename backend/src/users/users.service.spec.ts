@@ -242,8 +242,10 @@ describe('UsersService.streamCsv', () => {
     ] as any);
 
     const csv = await svc.streamCsv();
+    /* eslint-disable no-irregular-whitespace */ // assert the intentional UTF-8 BOM
     expect(csv.startsWith('﻿')).toBe(true);
     const lines = csv.replace(/^﻿/, '').split('\n').filter(Boolean);
+    /* eslint-enable no-irregular-whitespace */
     expect(lines[0]).toBe('id,name,email,role,createdAt');
     expect(lines[1]).toBe('u1,A,a@x.com,ADMIN,2026-05-01T00:00:00.000Z');
     // Embedded comma in name → quoted

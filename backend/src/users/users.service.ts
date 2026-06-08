@@ -164,6 +164,8 @@ export class UsersService {
     const body = users.map((u) =>
       [u.id, u.name, u.email, u.role, u.createdAt.toISOString()].map(escape).join(','),
     ).join('\n');
+    // Leading UTF-8 BOM so Excel opens the CSV with correct encoding.
+    // eslint-disable-next-line no-irregular-whitespace
     return '﻿' + header + '\n' + body;
   }
 }
