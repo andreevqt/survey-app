@@ -20,5 +20,5 @@ spec*-*.png
 .claude/settings.local.json
 .vercel
 
-# Local docs / planning notes — kept out of the repo
-docs/
+# Local brainstorming / planning notes — kept out of the repo
+docs/superpowers/
