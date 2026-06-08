@@ -1,0 +1,58 @@
+{
+  "_doc": "Gold/reference set for evaluating the free-text AI analysis. Each case is a free-text question + its answers, with a human-labeled expected sentiment bucket and the themes a correct analysis should surface. Sentiment is scored by majority bucket (positive/neutral/negative dominates); themes by token overlap with the expected set. Extend with real anonymized data for a stronger eval.",
+  "cases": [
+    {
+      "id": "service-feedback",
+      "question": "Tell us, in a sentence or two, what stood out.",
+      "answers": [
+        "Pricing was great and the support team was super helpful",
+        "The pricing page is confusing but the product works fine",
+        "Love it! Easy to use and pricing is fair",
+        "Hated the slow loading. Pricing seems high",
+        "Pricing is reasonable, support helped me twice",
+        "The export feature is amazing, saved me hours",
+        "Documentation could be better, but support filled the gap",
+        "Best polling tool I have tried this year"
+      ],
+      "expected": {
+        "dominant_sentiment": "positive",
+        "themes": ["pricing", "support", "documentation", "export"]
+      }
+    },
+    {
+      "id": "dev-pain-points",
+      "question": "One thing you wish was easier.",
+      "answers": [
+        "Code review takes forever, the queue is always backed up",
+        "Slow tests make me dread pushing changes",
+        "Onboarding new engineers is painful, docs are scattered",
+        "Flaky CI pipelines waste hours every week",
+        "Standup meetings are too long and add no value",
+        "Deployment process is brittle, breaks half the time",
+        "Documentation is outdated, can never trust the README",
+        "Too many notifications, real signal gets lost",
+        "Local dev environment setup is a nightmare",
+        "Code review feels rushed because of deadlines"
+      ],
+      "expected": {
+        "dominant_sentiment": "negative",
+        "themes": ["review", "tests", "documentation", "deployment", "onboarding"]
+      }
+    },
+    {
+      "id": "neutral-mix",
+      "question": "How was your week?",
+      "answers": [
+        "It was fine, nothing special",
+        "Average week, some meetings",
+        "Normal, got through my tasks",
+        "Okay I guess, a bit busy",
+        "Standard week at work"
+      ],
+      "expected": {
+        "dominant_sentiment": "neutral",
+        "themes": ["week", "work", "meetings"]
+      }
+    }
+  ]
+}
