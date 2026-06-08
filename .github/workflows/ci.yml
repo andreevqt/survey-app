@@ -67,7 +67,12 @@ jobs:
       # Re-export the OpenAPI spec + regenerate the typed client, then fail if the
       # committed openapi.json / schema.ts differ — i.e. someone changed a DTO/route
       # without running `npm run gen:api`.
+      # spec:export boots the Nest app, whose JWT strategies require these secrets at
+      # construction. Dummy values are fine — only Swagger metadata is exported, no auth runs.
       - name: Regenerate API contract
+        env:
+          JWT_ACCESS_SECRET: ci-spec-export-dummy
+          JWT_REFRESH_SECRET: ci-spec-export-dummy
         run: npm run gen:api
 
       - name: Fail if contract is out of date
