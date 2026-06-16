@@ -25,6 +25,55 @@
 - 8 моделей: по дешёвому и топовому варианту от DeepSeek, Google, OpenAI, Anthropic.
 - Скрипт: `/tmp/determinism.mjs` (вызовы через RouterAI; ключ не коммитится).
 
+### Пример промпта
+
+Каждый вызов — два сообщения. **System:**
+
+```
+You analyze open-text survey responses. Respond with strict JSON only — no prose, no markdown fences.
+```
+
+**User** (на примере вопроса `service-feedback` из `gold-set.json`):
+
+```
+Return STRICT JSON of the shape:
+{
+  "summary": string (1-2 sentences),
+  "sentiment": { "positive": number, "neutral": number, "negative": number } (integer percentages, sum 100),
+  "themes": [ { "label": string, "count": number, "quote": string } ] (3-5 themes; quote is a short verbatim from the input, <= 140 chars)
+}
+Do not include any prose outside the JSON. Do not wrap in markdown fences.
+
+Question: Tell us, in a sentence or two, what stood out.
+
+Responses:
+1. Pricing was great and the support team was super helpful
+2. The pricing page is confusing but the product works fine
+3. Love it! Easy to use and pricing is fair
+4. Hated the slow loading. Pricing seems high
+5. Pricing is reasonable, support helped me twice
+6. The export feature is amazing, saved me hours
+7. Documentation could be better, but support filled the gap
+8. Best polling tool I have tried this year
+```
+
+Параметры запроса: `temperature: 0`, `max_tokens: 800`. Ожидаемый ответ — один
+JSON-объект, например:
+
+```json
+{
+  "summary": "Overall positive feedback highlights fair pricing and helpful support, though some users found loading slow.",
+  "sentiment": { "positive": 62, "neutral": 25, "negative": 13 },
+  "themes": [
+    { "label": "pricing", "count": 5, "quote": "Pricing was great and the support team was super helpful" },
+    { "label": "support", "count": 3, "quote": "Pricing is reasonable, support helped me twice" }
+  ]
+}
+```
+
+Именно побитовое совпадение таких ответов между 5 прогонами и измеряет метрика
+**byte-identical**.
+
 ## Результаты — дешёвые модели
 
 | Модель | byte-identical | разброс sentiment | стабильность тем (Jaccard) |
