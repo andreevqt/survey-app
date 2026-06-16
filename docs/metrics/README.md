@@ -73,6 +73,11 @@ The cache stores the analysis per question and serves it on reopen unless the an
 |---|---|---|---|
 | Latency to show analysis | ~2 924 ms (LLM round-trip) | ~5 ms (DB read) | **≈ 585× faster** |
 | Cost per repeat open | $0.00035 | **$0** | **100% saved** |
+
+> The cache also guarantees **consistency**: LLM output is not reproducible even at
+> `temperature=0` (measured across 8 models — see
+> [llm-determinism.md](llm-determinism.md)), so without caching every reopen could
+> show a different analysis of the same data.
 | External API calls per N opens of unchanged data | N | 1 | (N−1) eliminated |
 
 **Business value:** for any poll whose analytics page is opened more than once between new
