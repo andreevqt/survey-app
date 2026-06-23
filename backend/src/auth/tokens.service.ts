@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { nanoid } from 'nanoid';
+import { createHash, randomBytes } from 'node:crypto';
 
 export interface AccessTokenPayload { sub: string; role: 'USER' | 'ADMIN' }
 export interface RefreshTokenPayload { sub: string; jti: string }
@@ -61,6 +62,21 @@ export class TokensService {
 
   refreshExpiresAt(): Date {
     return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  }
+
+  /** Opaque token to embed in an email link (256-bit entropy). */
+  generateUrlToken(): string {
+    return randomBytes(32).toString('base64url');
+  }
+
+  /** Deterministic hash stored in DB so the token can be looked up by findUnique. */
+  hashUrlToken(raw: string): string {
+    return createHash('sha256').update(raw).digest('hex');
+  }
+
+  authTokenExpiresAt(type: 'EMAIL_VERIFY' | 'PASSWORD_RESET'): Date {
+    const ms = type === 'EMAIL_VERIFY' ? 24 * 60 * 60 * 1000 : 60 * 60 * 1000;
+    return new Date(Date.now() + ms);
   }
 
   private requireEnv(name: string): string {
