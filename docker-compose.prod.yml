@@ -28,6 +28,14 @@ services:
       FRONTEND_ORIGIN: https://survey.andreevxdr.ru
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
       DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-}
+      # Mail (email verification + password reset). Set these in /opt/survey-app/.env
+      # on the VPS. Without SMTP_HOST the backend stays up but cannot send
+      # verification emails, so new signups can't complete (existing users unaffected).
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-Survey App <noreply@survey.andreevxdr.ru>}
     depends_on:
       db:
         condition: service_healthy
