@@ -23,14 +23,18 @@ export function useLoginScreen() {
     try {
       await login.mutateAsync(values);
       navigate(location.state?.from ?? '/dashboard', { replace: true });
-    } catch {
-      toast.error('Invalid email or password');
+    } catch (err: unknown) {
+      const apiErr = err as { code?: string };
+      if (apiErr?.code === 'EMAIL_NOT_VERIFIED') {
+        toast.error('Please verify your email first.');
+        navigate('/check-email', { state: { email: values.email } });
+      } else {
+        toast.error('Invalid email or password');
+      }
     }
   });
 
-  const onForgotClick = () => {
-    toast.info('Password reset is not implemented yet.');
-  };
+  const onForgotClick = () => navigate('/forgot-password');
 
   return {
     register,

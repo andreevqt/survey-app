@@ -20,8 +20,9 @@ export function useRegisterScreen() {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      await reg.mutateAsync(values);
-      navigate('/dashboard', { replace: true });
+      const res = await reg.mutateAsync(values);
+      if (res.status === 'verified') navigate('/dashboard', { replace: true });
+      else navigate('/check-email', { replace: true, state: { email: res.email } });
     } catch (err: unknown) {
       const apiErr = err as { code?: string };
       if (apiErr?.code === 'EMAIL_TAKEN') toast.error('That email is already registered.');
