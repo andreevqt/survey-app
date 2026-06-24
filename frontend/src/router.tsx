@@ -4,6 +4,10 @@ import { DashboardShell } from './layouts/DashboardShell';
 import { LandingScreen } from './routes/landing/LandingScreen';
 import { LoginScreen } from './routes/auth/LoginScreen';
 import { RegisterScreen } from './routes/auth/RegisterScreen';
+import { CheckEmailScreen } from './routes/auth/CheckEmailScreen';
+import { VerifyEmailScreen } from './routes/auth/VerifyEmailScreen';
+import { ForgotPasswordScreen } from './routes/auth/ForgotPasswordScreen';
+import { ResetPasswordScreen } from './routes/auth/ResetPasswordScreen';
 import { MyPollsTab } from './routes/dashboard/MyPollsTab';
 import { UsersTab } from './routes/dashboard/UsersTab';
 import { AllPollsTab } from './routes/dashboard/AllPollsTab';
@@ -24,6 +28,10 @@ export const router = createBrowserRouter([
   { path: '/', element: <LandingScreen /> },
   { path: '/login', element: <LoginScreen /> },
   { path: '/register', element: <RegisterScreen /> },
+  { path: '/check-email', element: <CheckEmailScreen /> },
+  { path: '/verify-email', element: <VerifyEmailScreen /> },
+  { path: '/forgot-password', element: <ForgotPasswordScreen /> },
+  { path: '/reset-password', element: <ResetPasswordScreen /> },
 
   {
     element: <MainLayout />,
