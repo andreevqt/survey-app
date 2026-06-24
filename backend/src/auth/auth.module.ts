@@ -8,9 +8,10 @@ import { TokensService } from './tokens.service';
 import { JwtAccessStrategy } from './strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { JwtAccessGuard } from '../common/guards/jwt-access.guard';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
-  imports: [PassportModule, JwtModule.register({})],
+  imports: [PassportModule, JwtModule.register({}), MailModule],
   controllers: [AuthController],
   providers: [
     AuthService,
