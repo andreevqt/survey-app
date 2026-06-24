@@ -17,6 +17,7 @@ beforeAll(async () => {
   process.env.JWT_REFRESH_SECRET = 'r-secret';
   process.env.NODE_ENV = 'test';
   process.env.FRONTEND_ORIGIN = 'http://localhost:5173';
+  process.env.SKIP_EMAIL_VERIFICATION = 'true';
 
   execSync('npx prisma migrate deploy', {
     cwd: __dirname + '/..',

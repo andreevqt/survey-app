@@ -10,6 +10,11 @@ import { Public } from '../common/decorators/public.decorator';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto, AuthUserDto } from './dto/auth-response.dto';
+import { RegisterResponseDto } from './dto/register-response.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateMeDto } from './dto/update-me.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 
@@ -24,11 +29,14 @@ export class AuthController {
 
   @Post('register')
   @Public()
-  @ApiCreatedResponse({ type: AuthResponseDto })
-  async register(@Body() body: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<AuthResponseDto> {
+  @ApiCreatedResponse({ type: RegisterResponseDto })
+  async register(@Body() body: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<RegisterResponseDto> {
     const result = await this.auth.register(body);
-    this.setCookies(res, result.tokens);
-    return { user: result.user };
+    if (result.status === 'verified') {
+      this.setCookies(res, result.tokens);
+      return { status: 'verified', email: result.user.email, user: result.user };
+    }
+    return { status: 'verification_required', email: result.email };
   }
 
   @Post('login')
@@ -39,6 +47,37 @@ export class AuthController {
     const result = await this.auth.login(body);
     this.setCookies(res, result.tokens);
     return { user: result.user };
+  }
+
+  @Post('verify-email')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthResponseDto })
+  async verifyEmail(@Body() body: VerifyEmailDto, @Res({ passthrough: true }) res: Response): Promise<AuthResponseDto> {
+    const result = await this.auth.verifyEmail(body.token);
+    this.setCookies(res, result.tokens);
+    return { user: result.user };
+  }
+
+  @Post('resend-verification')
+  @Public()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async resendVerification(@Body() body: ResendVerificationDto): Promise<void> {
+    await this.auth.resendVerification(body.email);
+  }
+
+  @Post('forgot-password')
+  @Public()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async forgotPassword(@Body() body: ForgotPasswordDto): Promise<void> {
+    await this.auth.forgotPassword(body.email);
+  }
+
+  @Post('reset-password')
+  @Public()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async resetPassword(@Body() body: ResetPasswordDto): Promise<void> {
+    await this.auth.resetPassword(body.token, body.newPassword);
   }
 
   @Post('refresh')

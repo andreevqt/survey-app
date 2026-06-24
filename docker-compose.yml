@@ -29,6 +29,7 @@ services:
       NODE_ENV: development
       PORT: "3000"
       FRONTEND_ORIGIN: http://localhost:5173
+      SKIP_EMAIL_VERIFICATION: "true"   # e2e/dev: register-and-login immediately (no SMTP)
     volumes:
       - ./backend:/app
       - /app/node_modules

@@ -17,8 +17,17 @@ export async function buildApp() {
     transformOptions: { enableImplicitConversion: true },
   }));
   app.useGlobalFilters(new HttpExceptionFilter());
+  // FRONTEND_ORIGIN may be a comma-separated list. Vercel PR previews are
+  // served from pr-<n>.survey.andreevxdr.ru, so allow those too. The cors lib
+  // reflects the matched origin (required for credentialed requests — a literal
+  // "*" would be rejected by the browser when credentials: true).
+  const allowedOrigins: (string | RegExp)[] = (process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  allowedOrigins.push(/^https:\/\/pr-\d+\.survey\.andreevxdr\.ru$/);
   app.enableCors({
-    origin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173',
+    origin: allowedOrigins,
     credentials: true,
   });
 

@@ -18,9 +18,47 @@ export function useRegisterMutation() {
     mutationFn: async (input: { email: string; name: string; password: string }) => {
       const r = await apiClient.POST('/auth/register', { body: input });
       if (!r.response.ok) throw r.error ?? new Error('Register failed');
+      return r.data as { status: 'verified' | 'verification_required'; email: string; user?: AuthUser };
+    },
+    onSuccess: (data) => {
+      if (data.status === 'verified' && data.user) setMeInCache(data.user);
+    },
+  });
+}
+
+export function useVerifyEmailMutation() {
+  return useMutation({
+    mutationFn: async (input: { token: string }) => {
+      const r = await apiClient.POST('/auth/verify-email', { body: input });
+      if (!r.response.ok) throw r.error ?? new Error('Verification failed');
       return (r.data as { user: AuthUser }).user;
     },
     onSuccess: (user) => setMeInCache(user),
+  });
+}
+
+export function useResendVerificationMutation() {
+  return useMutation({
+    mutationFn: async (input: { email: string }) => {
+      await apiClient.POST('/auth/resend-verification', { body: input });
+    },
+  });
+}
+
+export function useForgotPasswordMutation() {
+  return useMutation({
+    mutationFn: async (input: { email: string }) => {
+      await apiClient.POST('/auth/forgot-password', { body: input });
+    },
+  });
+}
+
+export function useResetPasswordMutation() {
+  return useMutation({
+    mutationFn: async (input: { token: string; newPassword: string }) => {
+      const r = await apiClient.POST('/auth/reset-password', { body: input });
+      if (!r.response.ok) throw r.error ?? new Error('Reset failed');
+    },
   });
 }
 

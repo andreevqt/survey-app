@@ -11,7 +11,7 @@ async function ensureAdmin(prisma: PrismaClient): Promise<string> {
   }
   const passwordHash = await bcrypt.hash(password, 10);
   const created = await prisma.user.create({
-    data: { email, name: 'Admin', passwordHash, role: Role.ADMIN },
+    data: { email, name: 'Admin', passwordHash, role: Role.ADMIN, emailVerified: true },
   });
   console.log(`Seed: created admin ${email}.`);
   return created.id;
