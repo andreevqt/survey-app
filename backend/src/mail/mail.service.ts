@@ -20,8 +20,13 @@ export class MailService {
       });
     } else {
       // No SMTP configured: log links instead of sending (dev/CI), like the DeepSeek mock.
+      // In production this is a misconfiguration — warn loudly but DON'T crash the
+      // app, otherwise the backend crash-loops and takes down already-verified users
+      // too. Verification / reset emails simply won't be delivered until SMTP is set.
       if (process.env.NODE_ENV === 'production') {
-        throw new Error('SMTP_HOST is required in production');
+        this.logger.error(
+          'SMTP_HOST is not set in production — verification & password-reset emails will NOT be sent. Configure SMTP to enable new-user signups.',
+        );
       }
       this.transporter = null;
     }
